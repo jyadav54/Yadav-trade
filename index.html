@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#030712">
-<title>Delta Pro+ Ultra</title>
+<title>Yadav Trade Pro+ Ultra</title>
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -120,7 +120,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .ohlc-item{text-align:center}
 .ohlc-item .l{color:var(--muted);font-size:8px;letter-spacing:1px;display:block}
 .ohlc-item .v{color:var(--text);font-weight:700;font-size:10px}
-/* ═══════════ LEVELS PANEL ═══════════ */
+
+/* LEVELS PANEL */
 .levels-panel{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
 .levels-title{font-size:10px;color:var(--muted);letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
 .levels-badge{font-size:9px;padding:3px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace}
@@ -157,7 +158,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .copy-btn{margin-top:10px;width:100%;padding:11px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(59,130,246,.05));border:1px solid rgba(59,130,246,.4);color:var(--blue);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;border-radius:9px;cursor:pointer;transition:all .2s}
 .copy-btn.done{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.4);color:var(--green)}
 
-/* ═══════════ ULTRA PANEL (naye features) ═══════════ */
+/* ULTRA PANEL */
 .ultra-panel{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
 .panel-title{font-size:10px;color:var(--muted);letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
 .ultra-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
@@ -270,6 +271,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 /* DISCLAIMER */
 .disc{background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.15);border-radius:9px;padding:10px;font-size:10px;color:rgba(245,158,11,.6);line-height:1.7;text-align:center;margin-bottom:14px}
 
+/* OVERLAY TOGGLES + LEGEND + SIGNAL CHIP */
+.ov-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.ov-btn{padding:5px 9px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer}
+.ov-btn.on{color:var(--amber);border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.08)}
+.chart-legend{font-size:8px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-align:center;margin-top:4px;line-height:1.7;opacity:.85}
+.chart-sig{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px}
+
 /* TOAST */
 #toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:8px 16px;font-size:11px;font-family:'JetBrains Mono',monospace;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 #toast.show{opacity:1}
@@ -281,7 +289,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="hdr">
   <div class="hdr-logo">
     <div class="hdr-icon">⚡</div>
-    <div class="hdr-title">DELTA ULTRA</div>
+    <div class="hdr-title">YADAV TRADE</div>
   </div>
   <div class="hdr-right">
     <div class="pulse"></div>
@@ -297,7 +305,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
   <div class="status" id="statusBar">CONNECTING TO BINANCE...</div>
 
-  <!-- ═══ SIGNAL CARD ═══ -->
+  <!-- SIGNAL CARD -->
   <div class="sig-card hold" id="sigCard">
     <div class="sig-top">
       <div>
@@ -332,15 +340,17 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </div>
 
-  <!-- ═══ TIMEFRAME ═══ -->
+  <!-- TIMEFRAME -->
   <div class="tf-panel"><div class="tf-row" id="tfRow"></div></div>
 
-  <!-- ═══ CHART ═══ -->
+  <!-- CHART -->
   <div class="chart-card">
     <div class="chart-header">
       <div class="chart-ttl" id="chartTitle">BTCUSDT · 5M</div>
+      <div class="chart-sig" id="chartSig"></div>
       <div class="chart-price" id="chartPrice">---</div>
     </div>
+    <div class="ov-row" id="ovRow"></div>
     <div class="ohlc-row">
       <div class="ohlc-item"><span class="l">O</span><span class="v" id="ohlcO">--</span></div>
       <div class="ohlc-item"><span class="l">H</span><span class="v" id="ohlcH">--</span></div>
@@ -350,9 +360,19 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
     <div id="tvChart"><canvas id="overlayCanvas"></canvas></div>
     <div class="chart-hint">👆 Pinch to zoom · Drag to pan · Tap candle for OHLC</div>
+    <div class="chart-legend">SH/SL first swing · HH HL <span style="color:var(--green)">bull</span> · LH LL <span style="color:var(--red)">bear</span> · EQH/EQL equal (liquidity) · NEW = latest swing · BOS/CHoCH/MSS = structure break · IDM = inducement<br>FVG box · EXT/INT BSL/SSL = liquidity (buy-side above, sell-side below) · ◆ SWEEP · ▲ BUY / ▼ SELL = sweep + reclaim signal</div>
   </div>
 
-  <!-- ═══ TRADE LEVELS ═══ -->
+  <!-- SMC EARLY SIGNAL -->
+  <div class="ultra-panel">
+    <div class="panel-title">
+      🎯 SMC EARLY SIGNAL
+      <span id="smcSigBadge" style="font-size:9px;padding:3px 8px;border-radius:5px;background:rgba(100,116,139,.1);color:var(--muted);font-family:'JetBrains Mono',monospace">WATCH</span>
+    </div>
+    <div id="smcSigBody"><div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:8px 0">Scanning...</div></div>
+  </div>
+
+  <!-- TRADE LEVELS -->
   <div class="levels-panel">
     <div class="levels-title">
       TRADE LEVELS
@@ -378,7 +398,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <button class="copy-btn" id="copyBtn" onclick="copyLevels()">📋 COPY LEVELS</button>
   </div>
 
-  <!-- ═══ FIBONACCI (NEW) ═══ -->
+  <!-- FIBONACCI -->
   <div class="ultra-panel">
     <div class="panel-title">
       📐 FIBONACCI RETRACEMENT
@@ -387,7 +407,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div id="fibList"><div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:8px 0">Loading...</div></div>
   </div>
 
-  <!-- ═══ PRICE RANGE (NEW) ═══ -->
+  <!-- PRICE RANGE -->
   <div class="ultra-panel">
     <div class="panel-title">📊 PRICE RANGE</div>
     <div class="ultra-grid">
@@ -400,7 +420,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </div>
 
-  <!-- ═══ LIQUIDITY (NEW) ═══ -->
+  <!-- LIQUIDITY -->
   <div class="ultra-panel">
     <div class="panel-title">
       💧 LIQUIDITY LEVELS
@@ -409,11 +429,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div id="liqList"><div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:8px 0">Loading...</div></div>
   </div>
 
-  <!-- ═══ VOLUME PROFILE (NEW) ═══ -->
+  <!-- VOLUME PROFILE -->
   <div class="ultra-panel">
     <div class="panel-title">
       📊 VOLUME PROFILE
-      <span id="vpBadge" style="font-size:9px;padding:3px 8px;border-radius:5px;background:rgba(100,116,139,.1);color:var(--muted);font-family:'JetBrains Mono',monospace">RANGE</span>
+      <span id="vpBadge" style="font-size:9px;padding:3px 8px;border-radius:5px;background:rgba(100,116,139,.1);color:var(--muted);font-family:'JetBrains Mono',monospace">FIXED RANGE</span>
     </div>
     <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px">
       <span>POC <b id="vpPOC" style="color:var(--amber)">---</b></span>
@@ -423,7 +443,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div id="vpList"><div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:8px 0">Loading...</div></div>
   </div>
 
-  <!-- ═══ PATTERNS (NEW) ═══ -->
+  <!-- PATTERNS -->
   <div class="ultra-panel">
     <div class="panel-title">
       🎯 CHART PATTERNS
@@ -432,13 +452,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div id="patternList"><div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:8px 0">Scanning...</div></div>
   </div>
 
-  <!-- ═══ MAGNET POINTS (NEW) ═══ -->
+  <!-- MAGNET POINTS -->
   <div class="ultra-panel">
     <div class="panel-title">🧲 MAGNET POINTS</div>
     <div id="magnetList"><div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:8px 0">Loading...</div></div>
   </div>
 
-  <!-- ═══ POSITIONS ═══ -->
+  <!-- POSITIONS -->
   <div class="smc-panel">
     <div class="panel-title">POSITIONS</div>
     <div class="pos-grid">
@@ -448,7 +468,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="pos-card scalper"><div class="pos-lbl">⚡ SCALPER</div><div id="scalperPosBody"><div class="pos-none">No setup</div></div></div>
   </div>
 
-  <!-- ═══ SMC ═══ -->
+  <!-- SMC -->
   <div class="smc-panel">
     <div class="panel-title">
       MARKET STRUCTURE · SMC
@@ -461,6 +481,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="struct-box"><div class="struct-lbl">LAST MSS</div><div class="struct-val" id="structMss">--</div></div>
       <div class="struct-box"><div class="struct-lbl">IDM</div><div class="struct-val" id="structIdm">--</div></div>
       <div class="struct-box"><div class="struct-lbl">SWINGS</div><div class="struct-val" id="structSwings">--</div></div>
+      <div class="struct-box"><div class="struct-lbl">LATEST SWING HIGH</div><div class="struct-val" id="structSH">--</div></div>
+      <div class="struct-box"><div class="struct-lbl">LATEST SWING LOW</div><div class="struct-val" id="structSL">--</div></div>
     </div>
     <div class="fvg-section">
       <div class="fvg-title">UNFILLED FVGs</div>
@@ -468,7 +490,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </div>
 
-  <!-- ═══ EMA ═══ -->
+  <!-- EMA -->
   <div class="ema-panel">
     <div class="panel-title">
       EMA 20 / 50 / 100 / 200
@@ -482,7 +504,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </div>
 
-  <!-- ═══ CALCULATOR ═══ -->
+  <!-- CALCULATOR -->
   <div class="calc-panel">
     <div class="panel-title">POSITION SIZE CALCULATOR</div>
     <div class="calc-inputs">
@@ -497,46 +519,48 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="calc-note" id="calcNote">Enter account size</div>
   </div>
 
-  <!-- ═══ RSI CHART ═══ -->
+  <!-- RSI CHART -->
   <div class="rsi-card">
     <div class="panel-title" style="padding:0 4px">RSI(14) · STOCH RSI</div>
     <canvas id="rsiChart"></canvas>
   </div>
 
-  <!-- ═══ HISTORY ═══ -->
+  <!-- HISTORY -->
   <div class="hist-card">
     <div class="panel-title">SIGNAL HISTORY</div>
     <div id="histList"><div class="loading"><div class="spin"></div>WAITING...</div></div>
   </div>
 
-  <!-- ═══ DISCLAIMER ═══ -->
+  <!-- DISCLAIMER -->
   <div class="disc">
-    ⚡ DELTA PRO+ ULTRA · Binance feed · EMA + Kernel + SMC + Volume + Fibonacci + Liquidity + VP<br>
+    ⚡ YADAV TRADE PRO+ ULTRA · Binance feed · EMA + Kernel + SMC + Volume + Fibonacci + Liquidity + VP<br>
     <span style="font-size:9px;opacity:.7">Not financial advice · Always use your own risk management</span>
   </div>
 
 </div>
 
-<!-- ═══ TOAST ═══ -->
+<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════
-//  DELTA PRO+ ULTRA — Phase 4: Config, Helpers, Indicators
+//  YADAV TRADE PRO+ ULTRA — Core Engine
 // ═══════════════════════════════════════════════════════════════════════
 
 // ─── SYMBOLS ───────────────────────────────────────────────────────────
+// FIX #2: XRP ko hata kar XAUT (Tether Gold) add kiya
+// Agar Binance pe XAUTUSDT ka data na aaye toh 'xautusdt' ko 'paxgusdt' se replace karo
 const SYMS = [
-  { id:'BTC', label:'BTCUSDT', icon:'₿',  color:'#f59e0b', binance:'btcusdt', decimals:2, contractValue:0.001, contractCurrency:'BTC' },
-  { id:'ETH', label:'ETHUSDT', icon:'⟠',  color:'#6366f1', binance:'ethusdt', decimals:2, contractValue:0.01,  contractCurrency:'ETH' },
-  { id:'SOL', label:'SOLUSDT', icon:'◎',  color:'#9945ff', binance:'solusdt', decimals:3, contractValue:1,     contractCurrency:'SOL' },
-  { id:'BNB', label:'BNBUSDT', icon:'🟡', color:'#f0b90b', binance:'bnbusdt', decimals:2, contractValue:0.01,  contractCurrency:'BNB' },
-  { id:'XRP', label:'XRPUSDT', icon:'💧', color:'#00aae4', binance:'xrpusdt', decimals:4, contractValue:10,    contractCurrency:'XRP' },
+  { id:'BTC',  label:'BTCUSDT',  icon:'₿',  color:'#f59e0b', binance:'btcusdt',  decimals:2, contractValue:0.001, contractCurrency:'BTC' },
+  { id:'ETH',  label:'ETHUSDT',  icon:'⟠',  color:'#6366f1', binance:'ethusdt',  decimals:2, contractValue:0.01,  contractCurrency:'ETH' },
+  { id:'SOL',  label:'SOLUSDT',  icon:'◎',  color:'#9945ff', binance:'solusdt',  decimals:3, contractValue:1,     contractCurrency:'SOL' },
+  { id:'BNB',  label:'BNBUSDT',  icon:'🟡', color:'#f0b90b', binance:'bnbusdt',  decimals:2, contractValue:0.01,  contractCurrency:'BNB' },
+  { id:'XAUT', label:'XAUTUSDT', icon:'🪙', color:'#ffd700', binance:'xautusdt', decimals:2, contractValue:0.01,  contractCurrency:'XAUT' },
 ];
 
 // ─── TIMEFRAMES ────────────────────────────────────────────────────────
 const TIMEFRAMES = [
-  { label:'1s',  binance:'1s'  },   // FIXED: Binance has no 30s interval
+  { label:'1s',  binance:'1s'  },
   { label:'1m',  binance:'1m'  },
   { label:'3m',  binance:'3m'  },
   { label:'5m',  binance:'5m'  },
@@ -552,7 +576,7 @@ const TIMEFRAMES = [
   { label:'1M',  binance:'1M'  },
 ];
 
-// ─── ENDPOINTS (India-friendly) ────────────────────────────────────────
+// ─── ENDPOINTS ─────────────────────────────────────────────────────────
 const BINANCE_REST = 'https://data-api.binance.vision/api/v3';
 const BINANCE_WS   = 'wss://data-stream.binance.vision/stream?streams=';
 
@@ -585,6 +609,8 @@ const S = {
   _lastLen: 0,
   _priceLines: [],
   _lastRecompute: 0,
+  show: { struct:true, liq:true, fvg:true, vp:true, sweep:true, sig:true },
+  _smcSeen: {},
 };
 SYMS.forEach(s => { S.prices[s.id] = null; S.open24h[s.id] = null; });
 
@@ -755,15 +781,6 @@ function kernelReg(prices, h=8) {
   return res;
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-//  END OF PHASE 4
-// ═══════════════════════════════════════════════════════════════════════
-
-// ═══ PHASE 5 STARTS HERE ═══
-// ═══════════════════════════════════════════════════════════════════════
-//  DELTA PRO+ ULTRA — Phase 5: SMC, FVG, Signal Engine, Fib, Range, Liquidity
-// ═══════════════════════════════════════════════════════════════════════
-
 // ─── SUPPORT & RESISTANCE ─────────────────────────────────────────────
 function calcSR(candles) {
   if (candles.length < 50) return { supports:[], resistances:[], allLevels:[] };
@@ -834,11 +851,10 @@ function calcTradeLevels(candles, sig, sr) {
   let entry, sl, tp1, tp2, tp3, exit;
   if (sig === 'BUY') {
     const ns = supports[0]?.price;
-    entry = ns && ns > p * 0.995 ? Math.min(p, ns + atr14 * 0.2) : p;   // never a buy-stop above market
+    entry = ns && ns > p * 0.995 ? Math.min(p, ns + atr14 * 0.2) : p;
     let csl = ns ? Math.min(ns - atr14 * 0.5, entry - atr14 * 1.5) : entry - atr14 * 1.5;
     if (Math.abs(entry - csl) > maxSL) csl = entry - maxSL;
     sl = csl;
-    // targets: only resistances that are really above entry (>= 0.5 ATR), always ascending TP1 < TP2 < TP3
     const up = resistances.map(r => r.price).filter(x => x > entry + atr14 * 0.5);
     tp1 = up[0] ?? entry + atr14 * 1.5;
     tp2 = up[1] ?? Math.max(entry + atr14 * 3, tp1 + atr14);
@@ -846,7 +862,7 @@ function calcTradeLevels(candles, sig, sr) {
     exit = bbU && bbU > entry && bbU < tp3 ? bbU : tp3;
   } else if (sig === 'SELL') {
     const nr = resistances[0]?.price;
-    entry = nr && nr < p * 1.005 ? Math.max(p, nr - atr14 * 0.2) : p;   // never a sell-stop below market
+    entry = nr && nr < p * 1.005 ? Math.max(p, nr - atr14 * 0.2) : p;
     let csl = nr ? Math.max(nr + atr14 * 0.5, entry + atr14 * 1.5) : entry + atr14 * 1.5;
     if (Math.abs(csl - entry) > maxSL) csl = entry + maxSL;
     sl = csl;
@@ -874,183 +890,312 @@ function calcTradeLevels(candles, sig, sr) {
   };
 }
 
-// ─── MARKET STRUCTURE (SMC) ───────────────────────────────────────────
-// FIXED: proper protected high/low for CHoCH, working MSS, IDM on the correct side
-function detectStructure(candles) {
-  const empty = { swings:[], minorSwings:[], trend:'NEUTRAL', events:[], lastHigh:null, lastLow:null, idm:null };
-  if (candles.length < 20) return empty;
-
-  const hi = candles.map(c => c.high);
-  const lo = candles.map(c => c.low);
-
-  const LB = 2;
-  const rawSwings = [];
-  for (let i = LB; i < candles.length - LB; i++) {
-    const isSH = hi.slice(i-LB, i).every(v => v <= hi[i]) && hi.slice(i+1, i+LB+1).every(v => v <= hi[i]);
-    const isSL = lo.slice(i-LB, i).every(v => v >= lo[i]) && lo.slice(i+1, i+LB+1).every(v => v >= lo[i]);
-    if (isSH) rawSwings.push({ i, price: hi[i], type: 'high' });
-    if (isSL) rawSwings.push({ i, price: lo[i], type: 'low' });
+// ─── SMC ENGINE · shared helpers ──────────────────────────────────────
+function findPivots(candles, LB) {
+  const n = candles.length, out = [];
+  for (let p = LB; p < n - LB; p++) {
+    let isH = true, isL = true;
+    for (let k = 1; k <= LB; k++) {
+      if (candles[p-k].high > candles[p].high || candles[p+k].high >= candles[p].high) isH = false;
+      if (candles[p-k].low  < candles[p].low  || candles[p+k].low  <= candles[p].low)  isL = false;
+      if (!isH && !isL) break;
+    }
+    if (isH) out.push({ i:p, price:candles[p].high, type:'H', conf:p+LB });
+    if (isL) out.push({ i:p, price:candles[p].low,  type:'L', conf:p+LB });
   }
-  rawSwings.sort((a,b) => a.i - b.i);
-  if (!rawSwings.length) return empty;
+  return out;
+}
 
-  // hiRef = level a bullish break must beat, loRef = level a bearish break must beat
-  // UP trend  : hiRef = last HH,  loRef = protected low (pullback low that launched last HH)
-  // DOWN trend: loRef = last LL,  hiRef = protected high (pullback high that launched last LL)
-  let hiRef = null, loRef = null;
-  let lastHighSw = null, lastLowSw = null;
-  let trend = 'NEUTRAL';
-  let shiftPending = null;   // direction of a CHoCH still waiting for its first confirming break (-> MSS)
-  const events = [];
-  const structureSwings = [];
-  const minorSwings = [];
-  let lastMinorPullback = null;
+function atrAt(candles, j, p = 14) {
+  let sum = 0, cnt = 0;
+  for (let k = Math.max(1, j - p + 1); k <= j; k++) {
+    const c = candles[k], pc = candles[k-1].close;
+    sum += Math.max(c.high - c.low, Math.abs(c.high - pc), Math.abs(c.low - pc));
+    cnt++;
+  }
+  return cnt ? sum / cnt : (candles[j].high - candles[j].low) || 1e-9;
+}
 
-  rawSwings.forEach(s => {
-    if (s.type === 'high') {
-      if (hiRef === null) {
-        hiRef = s.price;
-        structureSwings.push({ ...s, label: 'H' });
-      } else if (s.price > hiRef) {
-        if (trend === 'DOWN') {
-          events.push({ i:s.i, price:s.price, dir:'BULLISH', label:'CHoCH' });
-          shiftPending = 'BULLISH';
-          lastMinorPullback = null;
-          trend = 'UP';
-        } else if (trend === 'UP') {
-          if (shiftPending === 'BULLISH') {
-            events.push({ i:s.i, price:s.price, dir:'BULLISH', label:'MSS' });
-            shiftPending = null;
-          } else {
-            events.push({ i:s.i, price:s.price, dir:'BULLISH', label:'BOS' });
-          }
-        } else {
-          trend = 'UP';
+// ─── MARKET STRUCTURE (SMC) — MSS FIX ─────────────────────────────────
+// FIX #4: Ab CHoCH fire hone pe MSS bhi SAME candle pe fire hoga.
+// SMC mein CHoCH aur MSS dono "structure shift" hi hain — isliye reversal pe dono labels dikhenge.
+function detectStructure(candles) {
+  const n = candles.length;
+  const empty = { swings:[], minorSwings:[], trend:'NEUTRAL', events:[], lastHigh:null, lastLow:null,
+                  idm:null, idms:[], trendAt:new Array(n).fill(0), lastSwingHigh:null, lastSwingLow:null, anchorI:null };
+  if (n < 20) return empty;
+  const LB = 3, EQ = 0.0006;
+  const piv = findPivots(candles, LB);
+  if (!piv.length) return empty;
+
+  let pp = 0, trend = 0;
+  let lastSH = null, lastSL = null, prevH = null, prevL = null;
+  let protLow = null, protHigh = null, pending = null, shiftPending = null, originI = null;
+  const swings = [], events = [], idms = [], trendAt = new Array(n).fill(0);
+
+  for (let j = 0; j < n; j++) {
+    while (pp < piv.length && piv[pp].conf <= j) {
+      const s = { ...piv[pp++] };
+      if (s.type === 'H') {
+        s.label = !prevH ? 'SH' : Math.abs(s.price - prevH.price) / prevH.price <= EQ ? 'EQH' : s.price > prevH.price ? 'HH' : 'LH';
+        prevH = s; lastSH = { i:s.i, price:s.price, crossed:false };
+        if (pending && pending.dir === 'BEARISH' && s.i > pending.after) {
+          idms.push({ i:s.i, price:s.price, dir:'BEARISH', label:'IDM', taken:false, takenAt:null }); pending = null;
         }
-        hiRef = s.price;
-        if (lastLowSw !== null) loRef = lastLowSw;
-        structureSwings.push({ ...s, label: 'HH' });
       } else {
-        minorSwings.push({ ...s, label: 'LH' });
-        if (trend === 'DOWN') lastMinorPullback = { i:s.i, price:s.price };
-      }
-      lastHighSw = s.price;
-    } else {
-      if (loRef === null) {
-        loRef = s.price;
-        structureSwings.push({ ...s, label: 'L' });
-      } else if (s.price < loRef) {
-        if (trend === 'UP') {
-          events.push({ i:s.i, price:s.price, dir:'BEARISH', label:'CHoCH' });
-          shiftPending = 'BEARISH';
-          lastMinorPullback = null;
-          trend = 'DOWN';
-        } else if (trend === 'DOWN') {
-          if (shiftPending === 'BEARISH') {
-            events.push({ i:s.i, price:s.price, dir:'BEARISH', label:'MSS' });
-            shiftPending = null;
-          } else {
-            events.push({ i:s.i, price:s.price, dir:'BEARISH', label:'BOS' });
-          }
-        } else {
-          trend = 'DOWN';
+        s.label = !prevL ? 'SL' : Math.abs(s.price - prevL.price) / prevL.price <= EQ ? 'EQL' : s.price > prevL.price ? 'HL' : 'LL';
+        prevL = s; lastSL = { i:s.i, price:s.price, crossed:false };
+        if (pending && pending.dir === 'BULLISH' && s.i > pending.after) {
+          idms.push({ i:s.i, price:s.price, dir:'BULLISH', label:'IDM', taken:false, takenAt:null }); pending = null;
         }
-        loRef = s.price;
-        if (lastHighSw !== null) hiRef = lastHighSw;
-        structureSwings.push({ ...s, label: 'LL' });
-      } else {
-        minorSwings.push({ ...s, label: 'HL' });
-        if (trend === 'UP') lastMinorPullback = { i:s.i, price:s.price };
       }
-      lastLowSw = s.price;
+      swings.push(s);
     }
-  });
 
-  minorSwings.forEach(ms => {
-    let swept = false;
-    for (let j = ms.i + 1; j < candles.length; j++) {
-      if (ms.label === 'LH' && candles[j].high > ms.price) { swept = true; break; }
-      if (ms.label === 'HL' && candles[j].low < ms.price) { swept = true; break; }
+    const c = candles[j];
+    idms.forEach(m => {
+      if (m.taken) return;
+      if (m.dir === 'BULLISH' ? c.low < m.price : c.high > m.price) { m.taken = true; m.takenAt = j; }
+    });
+
+    // --- BULLISH BREAK ---
+    if (lastSH && !lastSH.crossed && c.close > lastSH.price) {
+      lastSH.crossed = true;
+      let label = 'BOS';
+      // MSS FIX: CHoCH aur MSS dono push karo jab reversal ho
+      if (trend === -1) {
+        label = 'CHoCH';
+        shiftPending = 'BULLISH';
+        // Extra MSS event (same candle, thoda offset se draw hoga)
+        events.push({ i:j, from:lastSH.i, price:lastSH.price, dir:'BULLISH', label:'MSS' });
+      } else if (shiftPending === 'BULLISH') {
+        label = 'MSS';
+        shiftPending = null;
+      }
+      events.push({ i:j, from:lastSH.i, price:lastSH.price, dir:'BULLISH', label });
+      const flip = trend !== 1;
+      trend = 1;
+      let m = Infinity, mi = lastSH.i;
+      for (let k = lastSH.i; k <= j; k++) if (candles[k].low < m) { m = candles[k].low; mi = k; }
+      protLow = { price:m, i:mi };
+      if (flip || originI === null) originI = mi;
+      pending = { dir:'BULLISH', after:j };
     }
-    ms.swept = swept;
-  });
+    // --- BEARISH BREAK ---
+    else if (lastSL && !lastSL.crossed && c.close < lastSL.price) {
+      lastSL.crossed = true;
+      let label = 'BOS';
+      // MSS FIX: CHoCH aur MSS dono push karo jab reversal ho
+      if (trend === 1) {
+        label = 'CHoCH';
+        shiftPending = 'BEARISH';
+        events.push({ i:j, from:lastSL.i, price:lastSL.price, dir:'BEARISH', label:'MSS' });
+      } else if (shiftPending === 'BEARISH') {
+        label = 'MSS';
+        shiftPending = null;
+      }
+      events.push({ i:j, from:lastSL.i, price:lastSL.price, dir:'BEARISH', label });
+      const flip = trend !== -1;
+      trend = -1;
+      let m = -Infinity, mi = lastSL.i;
+      for (let k = lastSL.i; k <= j; k++) if (candles[k].high > m) { m = candles[k].high; mi = k; }
+      protHigh = { price:m, i:mi };
+      if (flip || originI === null) originI = mi;
+      pending = { dir:'BEARISH', after:j };
+    }
+    trendAt[j] = trend;
+  }
 
-  const idm = lastMinorPullback ? {
-    i: lastMinorPullback.i,
-    price: lastMinorPullback.price,
-    dir: trend === 'UP' ? 'BEARISH' : 'BULLISH',
-    label: 'IDM'
-  } : null;
+  const highs = swings.filter(s => s.type === 'H'), lows = swings.filter(s => s.type === 'L');
+  const lastSwingHigh = highs.length ? highs[highs.length - 1] : null;
+  const lastSwingLow  = lows.length ? lows[lows.length - 1] : null;
+  let lastHigh = lastSwingHigh ? lastSwingHigh.price : null, lastLow = lastSwingLow ? lastSwingLow.price : null;
+  let anchorI = null;
+  if (trend === 1 && protLow) {
+    lastLow = protLow.price; anchorI = originI;
+    let m = -Infinity; for (let k = protLow.i; k < n; k++) m = Math.max(m, candles[k].high); lastHigh = m;
+  } else if (trend === -1 && protHigh) {
+    lastHigh = protHigh.price; anchorI = originI;
+    let m = Infinity; for (let k = protHigh.i; k < n; k++) m = Math.min(m, candles[k].low); lastLow = m;
+  }
+  const want = trend === -1 ? 'BEARISH' : 'BULLISH';
+  const mine = idms.filter(m => m.dir === want);
+  const idm = mine.length ? mine[mine.length - 1] : null;
 
   return {
-    swings: structureSwings,
-    minorSwings,
-    trend,
-    events: events.slice(-12),
-    lastHigh: hiRef,
-    lastLow: loRef,
-    idm,
+    swings, minorSwings:[], trend: trend === 1 ? 'UP' : trend === -1 ? 'DOWN' : 'NEUTRAL',
+    events: events.slice(-14), lastHigh, lastLow, idm, idms, trendAt,
+    lastSwingHigh, lastSwingLow, anchorI,
   };
 }
 
 // ─── FVG ──────────────────────────────────────────────────────────────
-function detectFVG(candles, lb=100) {
-  const st = Math.max(0, candles.length - lb);
-  const fvgs = [];
-  for (let i = st + 2; i < candles.length; i++) {
-    const c1 = candles[i-2], c3 = candles[i];
-    if (c3.low > c1.high) fvgs.push({ i, top: c3.low, bottom: c1.high, dir: 'BULLISH', filled: false });
-    if (c3.high < c1.low) fvgs.push({ i, top: c1.low, bottom: c3.high, dir: 'BEARISH', filled: false });
+function detectFVG(candles, lb = 500) {
+  const n = candles.length;
+  if (n < 5) return [];
+  const a = atr(candles, 14) || candles[n-1].close * 0.005;
+  const minGap = Math.max(a * 0.1, candles[n-1].close * 0.0002);
+  const out = [];
+  for (let i = Math.max(0, n - lb) + 2; i < n; i++) {
+    const c1 = candles[i-2], c2 = candles[i-1], c3 = candles[i];
+    if (c3.low > c1.high && c3.low - c1.high >= minGap && c2.close > c2.open)
+      out.push({ i, start:i-2, top:c3.low, bottom:c1.high, origTop:c3.low, origBottom:c1.high, dir:'BULLISH', filled:false, filledAt:null });
+    else if (c3.high < c1.low && c1.low - c3.high >= minGap && c2.close < c2.open)
+      out.push({ i, start:i-2, top:c1.low, bottom:c3.high, origTop:c1.low, origBottom:c3.high, dir:'BEARISH', filled:false, filledAt:null });
   }
-  fvgs.forEach(f => {
-    for (let j = f.i + 1; j < candles.length; j++) {
+  out.forEach(f => {
+    for (let j = f.i + 1; j < n; j++) {
       const c = candles[j];
-      if (f.dir === 'BULLISH' && c.low <= f.top) { f.filled = true; break; }
-      if (f.dir === 'BEARISH' && c.high >= f.bottom) { f.filled = true; break; }
+      if (f.dir === 'BULLISH') {
+        if (c.low <= f.origBottom) { f.filled = true; f.filledAt = j; break; }
+        if (c.low < f.top) f.top = c.low;
+      } else {
+        if (c.high >= f.origTop) { f.filled = true; f.filledAt = j; break; }
+        if (c.high > f.bottom) f.bottom = c.high;
+      }
     }
   });
-  return fvgs.slice(-12);
+  return out;
 }
 
-// ─── POSITIONS (Long/Short/Scalper) ───────────────────────────────────
-// FIXED: SL must sit on the correct side of entry (below for long, above for short)
+// ─── LIQUIDITY SWEEPS ─────────────────────────────────────────────────
+function detectSweeps(candles) {
+  const n = candles.length;
+  if (n < 20) return [];
+  const minor = findPivots(candles, 3), major = findPivots(candles, 8);
+  const ext = new Set(major.map(p => p.type + p.i));
+  const levels = [], sweeps = [];
+  let pp = 0;
+  for (let j = 0; j < n; j++) {
+    while (pp < minor.length && minor[pp].conf <= j) { const p = minor[pp++]; levels.push({ ...p, ext: ext.has(p.type + p.i), taken:false }); }
+    const c = candles[j];
+    let bl = null, bh = null;
+    for (const lv of levels) {
+      if (lv.taken) continue;
+      if (lv.type === 'L' && c.low < lv.price) { lv.taken = true; if (c.close > lv.price && (!bl || lv.price < bl.price)) bl = lv; }
+      else if (lv.type === 'H' && c.high > lv.price) { lv.taken = true; if (c.close < lv.price && (!bh || lv.price > bh.price)) bh = lv; }
+    }
+    let pick = null, side = null;
+    if (bl && bh) { if (bl.price - c.low >= c.high - bh.price) { pick = bl; side = 'BULL'; } else { pick = bh; side = 'BEAR'; } }
+    else if (bl) { pick = bl; side = 'BULL'; }
+    else if (bh) { pick = bh; side = 'BEAR'; }
+    if (!pick) continue;
+    const up = levels.filter(l => l.type === 'H' && !l.taken && l.price > c.close).map(l => l.price).sort((a, b) => a - b).slice(0, 4);
+    const dn = levels.filter(l => l.type === 'L' && !l.taken && l.price < c.close).map(l => l.price).sort((a, b) => b - a).slice(0, 4);
+    sweeps.push({ i:j, time:c.time, side, level:pick.price, levelI:pick.i, ext:pick.ext, up, dn });
+  }
+  return sweeps;
+}
+
+// ─── EARLY SIGNALS ────────────────────────────────────────────────────
+function calcSmcSignals(candles, structure, fvgs, sweeps) {
+  const n = candles.length, out = [];
+  if (n < 30 || !sweeps.length) return out;
+  const MIN_SCORE = 5;
+  sweeps.forEach(sw => {
+    const j = sw.i;
+    if (j < 25) return;
+    const c = candles[j], bull = sw.side === 'BULL';
+    const rng = (c.high - c.low) || 1e-9;
+    const a = atrAt(candles, j);
+    let score = 2;
+    const why = [bull ? 'SSL sweep + reclaim' : 'BSL sweep + reclaim'];
+
+    const wick = bull ? (Math.min(c.open, c.close) - c.low) / rng : (c.high - Math.max(c.open, c.close)) / rng;
+    if (wick >= 0.4) { score++; why.push('rejection wick'); }
+
+    const tr = structure.trendAt[j - 1] || 0;
+    if ((bull && tr === 1) || (!bull && tr === -1)) { score++; why.push('with trend'); }
+
+    let hh = -Infinity, ll = Infinity;
+    for (let k = Math.max(0, j - 60); k <= j; k++) { hh = Math.max(hh, candles[k].high); ll = Math.min(ll, candles[k].low); }
+    const eq = (hh + ll) / 2;
+    if (bull ? c.close < eq : c.close > eq) { score++; why.push(bull ? 'discount zone' : 'premium zone'); }
+
+    const fv = fvgs.some(f => f.dir === (bull ? 'BULLISH' : 'BEARISH') && f.i < j && (f.filledAt === null || f.filledAt >= j) &&
+      (bull ? (c.low <= f.origTop && c.close >= f.origBottom) : (c.high >= f.origBottom && c.close <= f.origTop)));
+    if (fv) { score++; why.push('FVG'); }
+
+    let vs = 0; for (let k = Math.max(0, j - 20); k < j; k++) vs += candles[k].volume || 0;
+    const vavg = vs / Math.max(1, Math.min(20, j));
+    if (vavg > 0 && (c.volume || 0) >= vavg * 1.2) { score++; why.push('volume'); }
+
+    if (sw.ext) { score++; why.push('external liquidity'); }
+    if (structure.idms.some(m => m.i === sw.levelI && m.dir === (bull ? 'BULLISH' : 'BEARISH'))) { score++; why.push('IDM sweep'); }
+
+    if (score < MIN_SCORE) return;
+
+    const entry = c.close;
+    let sl = bull ? c.low - a * 0.2 : c.high + a * 0.2;
+    if (Math.abs(entry - sl) < a * 0.8) sl = bull ? entry - a * 0.8 : entry + a * 0.8;
+    const R = Math.abs(entry - sl);
+    const tg = bull ? sw.up.filter(x => x >= entry + R * 1.2) : sw.dn.filter(x => x <= entry - R * 1.2);
+    let tp1 = (tg.length && Math.abs(tg[0] - entry) <= R * 2.5) ? tg[0] : (bull ? entry + R * 1.5 : entry - R * 1.5);
+    let tp2 = tg.find(x => bull ? x > tp1 + R * 0.5 : x < tp1 - R * 0.5);
+    if (tp2 === undefined) tp2 = bull ? Math.max(entry + R * 3, tp1 + R) : Math.min(entry - R * 3, tp1 - R);
+
+    let status = 'ACTIVE';
+    for (let k = j + 1; k < n; k++) {
+      const x = candles[k];
+      if (bull ? x.low <= sl : x.high >= sl) { status = 'SL'; break; }
+      if (bull ? x.high >= tp1 : x.low <= tp1) { status = 'TP1'; break; }
+    }
+    out.push({
+      i:j, time:c.time, dir: bull ? 'BUY' : 'SELL', side:sw.side, score, why,
+      grade: score >= 7 ? 'A' : 'B',
+      level:sw.level, entry, sl, tp1, tp2, rr1: Math.abs(tp1 - entry) / R, status,
+    });
+  });
+  return out;
+}
+
+function smcStats(signals) {
+  const s = { total:signals.length, tp1:0, sl:0, open:0 };
+  signals.forEach(x => { if (x.status === 'TP1') s.tp1++; else if (x.status === 'SL') s.sl++; else s.open++; });
+  return s;
+}
+
+// ─── POSITIONS ────────────────────────────────────────────────────────
 function calcPositions(candles, structure, fvgs) {
   if (!candles.length) return { long:null, short:null, scalper:null };
   const cl = candles.map(c => c.close), p = cl[cl.length - 1];
   const atr14 = atr(candles, 14) || p * 0.005;
   const uf = fvgs.filter(f => !f.filled);
-  const bf = uf.filter(f => f.dir === 'BULLISH').slice(-1)[0];
-  const sf = uf.filter(f => f.dir === 'BEARISH').slice(-1)[0];
+  const mid = f => (f.top + f.bottom) / 2;
+  const bf = uf.filter(f => f.dir === 'BULLISH' && mid(f) < p).sort((a, b) => mid(b) - mid(a))[0];
+  const sf = uf.filter(f => f.dir === 'BEARISH' && mid(f) > p).sort((a, b) => mid(a) - mid(b))[0];
+  const idmTxt = structure.idm ? (structure.idm.taken ? ' + IDM taken' : ' + IDM open') : '';
   let long = null, short = null;
 
   if (structure.trend === 'UP') {
-    const entry = bf ? (bf.top + bf.bottom)/2 : p;
-    let sl = structure.idm?.price ?? structure.lastLow ?? (entry - atr14 * 1.5);
+    const entry = bf ? mid(bf) : p;
+    let sl = structure.lastLow != null ? structure.lastLow - atr14 * 0.2 : entry - atr14 * 1.5;
+    if (!(sl < entry) || entry - sl > atr14 * 4) sl = bf ? Math.min(bf.bottom - atr14 * 0.3, entry - atr14 * 0.8) : entry - atr14 * 1.5;
     if (!(sl < entry)) sl = entry - atr14 * 1.5;
     const tp = structure.lastHigh && structure.lastHigh > entry ? structure.lastHigh : entry + atr14 * 3;
     const rr = entry !== sl ? (Math.abs(tp - entry) / Math.abs(entry - sl)).toFixed(2) : '---';
-    long = { entry, sl, tp, rr, basis: bf ? 'Bullish FVG + UP structure' : 'UP structure' };
+    long = { entry, sl, tp, rr, basis: (bf ? 'Bullish FVG + UP structure' : 'UP structure') + idmTxt };
   }
   if (structure.trend === 'DOWN') {
-    const entry = sf ? (sf.top + sf.bottom)/2 : p;
-    let sl = structure.idm?.price ?? structure.lastHigh ?? (entry + atr14 * 1.5);
+    const entry = sf ? mid(sf) : p;
+    let sl = structure.lastHigh != null ? structure.lastHigh + atr14 * 0.2 : entry + atr14 * 1.5;
+    if (!(sl > entry) || sl - entry > atr14 * 4) sl = sf ? Math.max(sf.top + atr14 * 0.3, entry + atr14 * 0.8) : entry + atr14 * 1.5;
     if (!(sl > entry)) sl = entry + atr14 * 1.5;
     const tp = structure.lastLow && structure.lastLow < entry ? structure.lastLow : entry - atr14 * 3;
     const rr = entry !== sl ? (Math.abs(entry - tp) / Math.abs(sl - entry)).toFixed(2) : '---';
-    short = { entry, sl, tp, rr, basis: sf ? 'Bearish FVG + DOWN structure' : 'DOWN structure' };
+    short = { entry, sl, tp, rr, basis: (sf ? 'Bearish FVG + DOWN structure' : 'DOWN structure') + idmTxt };
   }
 
-  const nf = uf.slice(-1)[0];
+  const nf = uf.slice().sort((a, b) => Math.abs(mid(a) - p) - Math.abs(mid(b) - p))[0];
   let scalper = null;
   if (nf) {
     const du = nf.dir === 'BULLISH';
-    const entry = (nf.top + nf.bottom) / 2;
+    const entry = mid(nf);
     const sl = du ? nf.bottom - atr14 * 0.3 : nf.top + atr14 * 0.3;
     const tp = du ? entry + atr14 * 1.2 : entry - atr14 * 1.2;
     const rr = entry !== sl ? (Math.abs(tp - entry) / Math.abs(entry - sl)).toFixed(2) : '---';
     scalper = { dir: du ? 'LONG' : 'SHORT', entry, sl, tp, rr, basis: `Nearest ${nf.dir} FVG` };
   }
-
   return { long, short, scalper };
 }
 
@@ -1114,7 +1259,7 @@ function calcSig(candles) {
   };
 }
 
-// ─── FIBONACCI RETRACEMENT (NEW) ──────────────────────────────────────
+// ─── FIBONACCI ────────────────────────────────────────────────────────
 function calcFibonacci(candles) {
   if (candles.length < 30) return null;
   const slice = candles.slice(-60);
@@ -1138,24 +1283,19 @@ function calcFibonacci(candles) {
   return { hi, lo, fibs, trend: inUptrend ? 'UP' : 'DOWN' };
 }
 
-// ─── PRICE RANGE (NEW) ────────────────────────────────────────────────
+// ─── PRICE RANGE ──────────────────────────────────────────────────────
 function calcPriceRange(candles) {
   if (!candles.length) return null;
-  const lastT = candles[candles.length - 1].time;           // FIXED: real 24h / 7d window on any timeframe
+  const lastT = candles[candles.length - 1].time;
   const day = candles.filter(c => c.time > lastT - 86400000);
   const week = candles.filter(c => c.time > lastT - 7 * 86400000);
   const dayH = Math.max(...day.map(c => c.high));
   const dayL = Math.min(...day.map(c => c.low));
   const weekH = week.length ? Math.max(...week.map(c => c.high)) : dayH;
   const weekL = week.length ? Math.min(...week.map(c => c.low)) : dayL;
-  return {
-    dayH, dayL, weekH, weekL,
-    dayRange: dayH - dayL,
-    weekRange: weekH - weekL
-  };
+  return { dayH, dayL, weekH, weekL, dayRange: dayH - dayL, weekRange: weekH - weekL };
 }
 
-// ─── VOLUME MA (NEW) ──────────────────────────────────────────────────
 function calcVolMA(candles, n=20) {
   if (candles.length < n) return null;
   const vols = candles.map(c => c.volume || 0);
@@ -1164,67 +1304,35 @@ function calcVolMA(candles, n=20) {
   return { ma, cur, ratio: cur / ma };
 }
 
-// ─── INTERNAL / EXTERNAL LIQUIDITY (NEW) ──────────────────────────────
-// Internal liquidity = minor swing highs/lows (inside current range) - "inducements"
-// External liquidity = major swing highs/lows (outside range) - "targets"
+// ─── LIQUIDITY ────────────────────────────────────────────────────────
 function calcLiquidity(candles) {
-  if (candles.length < 30) return { internal:[], external:[] };
-  const hi = candles.map(c => c.high), lo = candles.map(c => c.low);
-  const p = candles[candles.length - 1].close;
-  const LB = 5;
-  const swings = [];
-  for (let i = LB; i < candles.length - LB; i++) {
-    const isSH = hi.slice(i-LB, i).every(v => v <= hi[i]) && hi.slice(i+1, i+LB+1).every(v => v <= hi[i]);
-    const isSL = lo.slice(i-LB, i).every(v => v >= lo[i]) && lo.slice(i+1, i+LB+1).every(v => v >= lo[i]);
-    if (isSH) swings.push({ price: hi[i], type: 'H', i });
-    if (isSL) swings.push({ price: lo[i], type: 'L', i });
-  }
-  // All swing highs/lows
-  const highs = swings.filter(s => s.type === 'H').sort((a,b) => b.price - a.price);
-  const lows  = swings.filter(s => s.type === 'L').sort((a,b) => a.price - b.price);
-
-  // Check "swept" (already crossed by any later candle)
-  const swept = (lvl, type, idx) => {
-    for (let j = idx + 1; j < candles.length; j++) {
-      if (type === 'H' && candles[j].high > lvl) return true;
-      if (type === 'L' && candles[j].low < lvl) return true;
-    }
-    return false;
-  };
-
-  // External = top 3 highs above price + bottom 3 lows below price
-  // Internal = nearest 3 highs above price (small) + nearest 3 lows below price
-  const ext = [
-    ...highs.filter(h => h.price > p).slice(0, 2).map(h => ({ ...h, kind:'H', level:'EXT', swept: swept(h.price, 'H', h.i) })),
-    ...lows.filter(l => l.price < p).slice(0, 2).map(l => ({ ...l, kind:'L', level:'EXT', swept: swept(l.price, 'L', l.i) })),
-  ];
-  const intl = [
-    ...highs.filter(h => h.price > p).slice(-3).map(h => ({ ...h, kind:'H', level:'INT', swept: swept(h.price, 'H', h.i) })),
-    ...lows.filter(l => l.price < p).slice(-3).map(l => ({ ...l, kind:'L', level:'INT', swept: swept(l.price, 'L', l.i) })),
-  ];
-
-  // sort by distance from price
-  const sortByDist = arr => arr.sort((a,b) => Math.abs(a.price - p) - Math.abs(b.price - p));
-
-  return {
-    internal: sortByDist(intl).slice(0, 4),
-    external: sortByDist(ext).slice(0, 4)
-  };
+  const n = candles.length;
+  if (n < 30) return { internal:[], external:[], sweptCount:0 };
+  const p = candles[n-1].close;
+  const minor = findPivots(candles, 3), major = findPivots(candles, 8);
+  const ext = new Set(major.map(x => x.type + x.i));
+  const items = minor.map(pv => {
+    let taken = false;
+    for (let j = pv.conf; j < n; j++) { if (pv.type === 'H' ? candles[j].high > pv.price : candles[j].low < pv.price) { taken = true; break; } }
+    return { price:pv.price, type:pv.type, kind:pv.type, i:pv.i, swept:taken, level: ext.has(pv.type + pv.i) ? 'EXT' : 'INT', eq:false };
+  });
+  const active = items.filter(x => !x.swept);
+  active.forEach(a => { a.eq = active.some(b => b !== a && b.type === a.type && Math.abs(b.price - a.price) / a.price <= 0.001); });
+  const bsl = active.filter(x => x.type === 'H' && x.price > p).sort((a, b) => a.price - b.price);
+  const ssl = active.filter(x => x.type === 'L' && x.price < p).sort((a, b) => b.price - a.price);
+  const pick = lvl => [...bsl.filter(x => x.level === lvl).slice(0, 2), ...ssl.filter(x => x.level === lvl).slice(0, 2)]
+                        .sort((a, b) => Math.abs(a.price - p) - Math.abs(b.price - p));
+  return { external: pick('EXT'), internal: pick('INT'), sweptCount: items.length - active.length };
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-//  END OF PHASE 5
-// ═══════════════════════════════════════════════════════════════════════
-
-// ═══ PHASE 6 STARTS HERE ═══
-// ═══════════════════════════════════════════════════════════════════════
-//  DELTA PRO+ ULTRA — Phase 6: Volume Profile, XABCD, H&S, Magnet, Boot
-// ═══════════════════════════════════════════════════════════════════════
-
-// ─── VOLUME PROFILE (POC / VAH / VAL) ─────────────────────────────────
-function calcVolumeProfile(candles, bins=24) {
-  if (candles.length < 30) return null;
-  const slice = candles.slice(-120);
+// ─── VOLUME PROFILE ───────────────────────────────────────────────────
+function calcVolumeProfile(candles, structure, bins = 24) {
+  const n = candles.length;
+  if (n < 30) return null;
+  let startI = Math.max(0, n - 120);
+  if (structure && structure.anchorI != null) startI = Math.max(0, Math.min(structure.anchorI, n - 60));
+  startI = Math.max(startI, n - 300);
+  const slice = candles.slice(startI);
   const hi = Math.max(...slice.map(c => c.high));
   const lo = Math.min(...slice.map(c => c.low));
   const step = (hi - lo) / bins;
@@ -1236,26 +1344,21 @@ function calcVolumeProfile(candles, bins=24) {
     buckets[idx].vol += c.volume || 0;
   });
   const total = buckets.reduce((s, b) => s + b.vol, 0) || 1;
-  const sorted = [...buckets].sort((a, b) => b.vol - a.vol);
-  const poc = sorted[0];
-  // Value Area: 70% of total volume around POC
+  const poc = buckets.reduce((m, b) => b.vol > m.vol ? b : m, buckets[0]);
   const target = total * 0.7;
-  let acc = poc.vol;
+  let acc = poc.vol, upIdx = buckets.indexOf(poc), loIdx = upIdx;
   let upper = poc.price, lower = poc.price;
-  let upIdx = buckets.findIndex(b => b.price === poc.price);
-  let loIdx = upIdx;
   while (acc < target) {
-    const upV = buckets[upIdx + 1]?.vol || 0;
-    const loV = buckets[loIdx - 1]?.vol || 0;
-    if (upV >= loV && buckets[upIdx + 1]) { acc += upV; upIdx++; upper = buckets[upIdx].price; }
-    else if (buckets[loIdx - 1]) { acc += loV; loIdx--; lower = buckets[loIdx].price; }
-    else break;
+    const upV = buckets[upIdx + 1] ? buckets[upIdx + 1].vol : -1;
+    const loV = buckets[loIdx - 1] ? buckets[loIdx - 1].vol : -1;
+    if (upV < 0 && loV < 0) break;
+    if (upV >= loV) { acc += upV; upIdx++; upper = buckets[upIdx].price; }
+    else { acc += loV; loIdx--; lower = buckets[loIdx].price; }
   }
-  return { buckets, poc: poc.price, vah: upper, val: lower, hi, lo };
+  return { buckets, poc: poc.price, vah: upper, val: lower, hi, lo, step, startI, count: slice.length };
 }
 
-// ─── PATTERN HELPER: alternating swing points (H, L, H, L ...) ─────────
-// merges equal / consecutive same-side pivots (keeps the more extreme one)
+// ─── ALTERNATING SWINGS ───────────────────────────────────────────────
 function altSwings(candles, LB = 5) {
   const hi = candles.map(c => c.high), lo = candles.map(c => c.low);
   const raw = [];
@@ -1276,41 +1379,34 @@ function altSwings(candles, LB = 5) {
   return out;
 }
 
-// ─── XABCD HARMONIC PATTERN ───────────────────────────────────────────
-// FIXED: standard ratios  (AB = B retrace of XA, BC = C retrace of AB, AD = D retrace of XA, CD = ext of BC)
+// ─── XABCD ────────────────────────────────────────────────────────────
 function detectXABCD(candles) {
   if (candles.length < 40) return [];
   const swings = altSwings(candles);
   if (swings.length < 5) return [];
-
   const near = (v, t, tol) => Math.abs(v - t) <= tol;
   const within = (v, a, b) => v >= a - 0.02 && v <= b + 0.02;
-
   const patterns = [];
   for (let i = swings.length - 5; i >= Math.max(0, swings.length - 15); i--) {
     const [X, A, B, C, D] = swings.slice(i, i + 5);
     if (!X || !A || !B || !C || !D) continue;
-    if (D.i < candles.length - 120) continue;                       // only recent patterns
-
+    if (D.i < candles.length - 120) continue;
     const XA = A.price - X.price;
     if (XA === 0) continue;
-    const sg = XA > 0 ? 1 : -1;                                     // +1 = bullish (X low → A high)
+    const sg = XA > 0 ? 1 : -1;
     if ((A.price - B.price) * sg <= 0 || (C.price - B.price) * sg <= 0 || (C.price - D.price) * sg <= 0) continue;
-
-    const pos = p => (p - X.price) / XA;                            // 0 at X, 1 at A
-    const AB = 1 - pos(B.price);                                    // B retracement of XA
-    const AD = 1 - pos(D.price);                                    // D retracement of XA (>1 = beyond X)
+    const pos = p => (p - X.price) / XA;
+    const AB = 1 - pos(B.price);
+    const AD = 1 - pos(D.price);
     const ABs = Math.abs(B.price - A.price), BCs = Math.abs(C.price - B.price);
     if (ABs === 0 || BCs === 0) continue;
-    const bcR = BCs / ABs;                                          // BC / AB
-    const CD = Math.abs(D.price - C.price) / BCs;                   // CD / BC
-
+    const bcR = BCs / ABs;
+    const CD = Math.abs(D.price - C.price) / BCs;
     let name = null, conf = 0;
     if (near(AB, 0.618, 0.05) && within(bcR, 0.382, 0.886) && near(AD, 0.786, 0.05) && within(CD, 1.13, 1.618)) { name = 'Gartley';   conf = 78; }
     else if (within(AB, 0.382, 0.5) && within(bcR, 0.382, 0.886) && near(AD, 0.886, 0.05) && within(CD, 1.618, 2.618)) { name = 'Bat';       conf = 80; }
     else if (near(AB, 0.786, 0.05) && within(bcR, 0.382, 0.886) && within(AD, 1.27, 1.618) && within(CD, 1.618, 2.24)) { name = 'Butterfly'; conf = 74; }
     else if (within(AB, 0.382, 0.618) && within(bcR, 0.382, 0.886) && near(AD, 1.618, 0.08) && within(CD, 2.24, 3.618)) { name = 'Crab';      conf = 82; }
-
     if (name) {
       patterns.push({
         name, dir: sg > 0 ? 'BULL' : 'BEAR', conf,
@@ -1323,7 +1419,6 @@ function detectXABCD(candles) {
 }
 
 // ─── HEAD & SHOULDERS ─────────────────────────────────────────────────
-// FIXED: real 3-peak structure  (LS – neck – HEAD – neck – RS)
 function detectHS(candles) {
   if (candles.length < 30) return [];
   const swings = altSwings(candles);
@@ -1331,17 +1426,15 @@ function detectHS(candles) {
   for (let i = Math.max(0, swings.length - 15); i <= swings.length - 5; i++) {
     const [s0, s1, s2, s3, s4] = swings.slice(i, i + 5);
     if (!s0 || !s1 || !s2 || !s3 || !s4) continue;
-    if (s4.i < candles.length - 120) continue;                      // only recent patterns
+    if (s4.i < candles.length - 120) continue;
     const ls = s0.price, rs = s4.price, head = s2.price;
     const neckline = (s1.price + s3.price) / 2;
-    if (Math.abs(s1.price - s3.price) / Math.abs(head) > 0.04) continue;      // neckline roughly flat
-    if (Math.abs(ls - rs) / Math.abs(head) > 0.05) continue;                  // shoulders similar height
+    if (Math.abs(s1.price - s3.price) / Math.abs(head) > 0.04) continue;
+    if (Math.abs(ls - rs) / Math.abs(head) > 0.05) continue;
     if (s0.type === 'H') {
-      // H&S top: head above both shoulders
       if (head > Math.max(ls, rs) * 1.005 && Math.max(ls, rs) > neckline)
         patterns.push({ name: 'H&S TOP', dir: 'BEAR', conf: 72, neckline, target: neckline - (head - neckline) });
     } else {
-      // Inverse H&S: head below both shoulders
       if (head < Math.min(ls, rs) * 0.995 && Math.min(ls, rs) < neckline)
         patterns.push({ name: 'INV H&S', dir: 'BULL', conf: 72, neckline, target: neckline + (neckline - head) });
     }
@@ -1349,25 +1442,18 @@ function detectHS(candles) {
   return patterns.slice(-2);
 }
 
-// ─── MAGNET POINTS ────────────────────────────────────────────────────
-// Magnet points = high volume price levels + swing points + POC + round numbers
+// ─── MAGNETS ──────────────────────────────────────────────────────────
 function calcMagnets(candles, vp) {
   if (!candles.length) return [];
   const p = candles[candles.length - 1].close;
   const magnets = [];
-
-  // 1. Volume POC
   if (vp?.poc) magnets.push({ price: vp.poc, label: 'POC', strength: 3 });
-
-  // 2. Top-3 volume buckets (excluding POC)
   if (vp?.buckets) {
     const top = [...vp.buckets].sort((a,b) => b.vol - a.vol).slice(0, 3);
     top.forEach((b, i) => {
       if (Math.abs(b.price - vp.poc) > 0.001) magnets.push({ price: b.price, label: 'HVN', strength: 2 });
     });
   }
-
-  // 3. Recent swing highs/lows
   const hi = candles.map(c => c.high), lo = candles.map(c => c.low);
   const LB = 5;
   const swings = [];
@@ -1379,15 +1465,9 @@ function calcMagnets(candles, vp) {
     if (isSL) swings.push({ price: lo[i], label: 'Swing Low', strength: 2 });
   }
   swings.slice(-4).forEach(s => magnets.push(s));
-
-  // 4. Round numbers near current price
   const step = p > 1000 ? 500 : p > 100 ? 50 : p > 10 ? 5 : 1;
-  const roundUp = Math.ceil(p / step) * step;
-  const roundDn = Math.floor(p / step) * step;
-  magnets.push({ price: roundUp, label: 'Round', strength: 1 });
-  magnets.push({ price: roundDn, label: 'Round', strength: 1 });
-
-  // Sort by distance from price, take top 6
+  magnets.push({ price: Math.ceil(p / step) * step, label: 'Round', strength: 1 });
+  magnets.push({ price: Math.floor(p / step) * step, label: 'Round', strength: 1 });
   return magnets
     .filter(m => Math.abs(m.price - p) / p > 0.0005)
     .sort((a,b) => Math.abs(a.price - p) - Math.abs(b.price - p))
@@ -1447,7 +1527,6 @@ function connectWs() {
   S.ws.onclose = () => { S.connected = false; updateConn(); scheduleReconnect(); };
   S.ws.onerror = () => { try { S.ws.close(); } catch {} };
 }
-// FIXED: detach handlers before closing so an intentional close doesn't trigger a reconnect loop
 function disconnectWs() {
   if (S.ws) {
     S.ws.onclose = null; S.ws.onerror = null; S.ws.onmessage = null;
@@ -1469,6 +1548,7 @@ function handleLive(k) {
   const last = a[a.length - 1];
   if (last && last.time === c.time) a[a.length - 1] = c;
   else if (!last || c.time > last.time) { a.push(c); if (a.length > 600) a.shift(); }
+  // FIX #3: Sirf active symbol ki hi price update karo
   S.prices[S.activeSym] = c.close;
   try { updateChartLast(c); } catch {}
   updateLive();
@@ -1545,7 +1625,8 @@ function initChart() {
     priceFormat: { type: 'volume' },
     priceScaleId: 'vol',
   });
-  ch.priceScale('vol').applyOptions({ scaleMargins: { top: 0.35, bottom: 0.02 } });
+  // FIX #1: Volume candle size 18% kam kiya (0.55 → 0.63)
+  ch.priceScale('vol').applyOptions({ scaleMargins: { top: 0.63, bottom: 0.02 } });
 
   const e20s = ch.addLineSeries({ color: '#f59e0b', lineWidth: 1.5, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
   const e50s = ch.addLineSeries({ color: '#3b82f6', lineWidth: 1.5, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
@@ -1556,7 +1637,6 @@ function initChart() {
   S.tvChart = ch;
   S.tvSeries = { candleSeries: cs, volumeSeries: vs, ema20Series: e20s, ema50Series: e50s, ema100Series: e100s, ema200Series: e200s, krSeries: krs };
 
-  // FIXED: keep the SMC overlay (FVG boxes, BOS/CHoCH/MSS, swings) glued to the chart on pan / zoom
   let _ovRaf = false;
   const scheduleOv = () => {
     if (_ovRaf) return;
@@ -1596,7 +1676,6 @@ function updateChartData() {
     open: c.open, high: c.high, low: c.low, close: c.close,
   })));
 
-  // Volume with LARGE bars + colored by direction
   S.tvSeries.volumeSeries.setData(d.map(c => ({
     time: Math.floor(c.time/1000),
     value: c.volume,
@@ -1614,6 +1693,7 @@ function updateChartData() {
   S.tvSeries.krSeries.setData(ln(kernelReg(cl, 8)));
 
   applyPriceLines();
+  applyMarkers();
 
   if (!S._fitDone || (d.length > 100 && S._lastLen !== d.length)) {
     setTimeout(() => { try { S.tvChart.timeScale().fitContent(); } catch {} }, 50);
@@ -1705,12 +1785,12 @@ function redrawOverlay() {
   const par = $('tvChart');
   if (par) {
     const dpr = window.devicePixelRatio || 1;
-    const pw = par.clientWidth, ph = par.clientHeight;
-    if (cv.width !== pw*dpr || cv.height !== ph*dpr) {
-      cv.width = pw*dpr;
-      cv.height = ph*dpr;
-      cv.style.width = pw + 'px';
-      cv.style.height = ph + 'px';
+    const pw0 = par.clientWidth, ph0 = par.clientHeight;
+    if (cv.width !== pw0*dpr || cv.height !== ph0*dpr) {
+      cv.width = pw0*dpr;
+      cv.height = ph0*dpr;
+      cv.style.width = pw0 + 'px';
+      cv.style.height = ph0 + 'px';
       S.overlayCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
   }
@@ -1718,118 +1798,151 @@ function redrawOverlay() {
   const w = cv.clientWidth, h = cv.clientHeight;
   ctx.clearRect(0, 0, w, h);
 
-  const smc = S.smc[ak()], d = S.candles[ak()];
+  const sk = ak(), smc = S.smc[sk], d = S.candles[sk];
   if (!smc || !d || !d.length) return;
 
   const ts = S.tvChart.timeScale(), cs = S.tvSeries.candleSeries;
-  const tX = t => {
-    const x = ts.timeToCoordinate(Math.floor(t/1000));
-    return x === null ? null : x;
-  };
-  const tY = p => {
-    const y = cs.priceToCoordinate(p);
-    return y === null ? null : y;
-  };
+  let pw = 56; try { pw = S.tvChart.priceScale('right').width() || 56; } catch {}
+  const R = w - pw - 2;
+  const tX = i => { const c = d[i]; if (!c) return null; const x = ts.timeToCoordinate(Math.floor(c.time / 1000)); return (x === null || x === undefined) ? null : x; };
+  const tY = p => { const y = cs.priceToCoordinate(p); return (y === null || y === undefined) ? null : y; };
+  const txt = (t, x, y, col, size, align) => { ctx.font = 'bold ' + (size || 9) + 'px JetBrains Mono, monospace'; ctx.textAlign = align || 'center'; ctx.fillStyle = col; ctx.fillText(t, x, y); };
+  const hline = (x1, x2, y, col, dash, lw) => { ctx.strokeStyle = col; ctx.lineWidth = lw || 1; ctx.setLineDash(dash || []); ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke(); ctx.setLineDash([]); };
+  const sh = S.show, st = smc.structure, pr = d[d.length - 1].close;
 
-  // FVG boxes
-  smc.fvgs.forEach(f => {
-    if (f.filled) return;   // FIXED: filled FVGs are no longer drawn
-    const sc = d[f.i];
-    if (!sc) return;
-    const x1 = tX(sc.time), x2 = tX(d[d.length - 1].time);
-    const yT = tY(Math.max(f.top, f.bottom)), yB = tY(Math.min(f.top, f.bottom));
-    if (x1 == null || x2 == null || yT == null || yB == null) return;
-    if (x2 < 0 || x1 > w) return;
-    const bull = f.dir === 'BULLISH';
-    ctx.fillStyle = bull ? 'rgba(16,185,129,.08)' : 'rgba(239,68,68,.08)';
-    ctx.fillRect(x1, yT, x2 - x1, yB - yT);
-    ctx.strokeStyle = bull ? 'rgba(16,185,129,.4)' : 'rgba(239,68,68,.4)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([3, 3]);
-    ctx.strokeRect(x1, yT, x2 - x1, yB - yT);
-    ctx.setLineDash([]);
-  });
+  ctx.save();
+  ctx.beginPath(); ctx.rect(0, 0, R, h); ctx.clip();
 
-  // Swing labels
-  smc.structure.swings.forEach(sw => {
-    const c = d[sw.i];
-    if (!c) return;
-    const x = tX(c.time);
-    if (x == null || x < -30 || x > w + 30) return;
-    const isH = sw.type === 'high';
-    const y = tY(isH ? c.high : c.low);
-    if (y == null) return;
-    const bull = sw.label === 'HH' || sw.label === 'HL';
-    ctx.font = 'bold 9px JetBrains Mono';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = bull ? 'rgba(16,185,129,.9)' : 'rgba(239,68,68,.9)';
-    ctx.fillText(sw.label, x, isH ? y - 6 : y + 14);
-  });
-
-  // BOS / CHoCH / MSS markers
-  smc.structure.events.forEach(ev => {
-    const c = d[ev.i];
-    if (!c) return;
-    const x = tX(c.time);
-    if (x == null || x < -40 || x > w + 40) return;
-    const y = tY(ev.price);
-    if (y == null) return;
-    const bull = ev.dir === 'BULLISH';
-    const col = bull ? '#10b981' : '#ef4444';
-    ctx.fillStyle = col;
-    ctx.beginPath();
-    if (bull) {
-      ctx.moveTo(x, y - 6);
-      ctx.lineTo(x - 5, y - 14);
-      ctx.lineTo(x + 5, y - 14);
-    } else {
-      ctx.moveTo(x, y + 6);
-      ctx.lineTo(x - 5, y + 14);
-      ctx.lineTo(x + 5, y + 14);
+  // VOLUME PROFILE
+  const vp = S.vp[sk];
+  if (sh.vp && vp) {
+    const x0 = tX(vp.startI);
+    if (x0 !== null) {
+      const xs = Math.max(0, x0), maxV = Math.max(...vp.buckets.map(b => b.vol)) || 1;
+      const maxLen = Math.max(20, Math.min(130, (R - xs) * 0.35));
+      vp.buckets.forEach(b => {
+        const y1 = tY(b.price + vp.step / 2), y2 = tY(b.price - vp.step / 2);
+        if (y1 === null || y2 === null) return;
+        const inVA = b.price >= vp.val - 1e-9 && b.price <= vp.vah + 1e-9, isPoc = b.price === vp.poc;
+        ctx.fillStyle = isPoc ? 'rgba(245,158,11,.38)' : inVA ? 'rgba(59,130,246,.24)' : 'rgba(100,116,139,.16)';
+        ctx.fillRect(xs, y1, Math.max(1, (b.vol / maxV) * maxLen), Math.max(1, y2 - y1 - 1));
+      });
+      const yP = tY(vp.poc), yH = tY(vp.vah), yL = tY(vp.val);
+      if (yP !== null) { hline(xs, R, yP, 'rgba(245,158,11,.85)', [], 1.2); txt('POC', R - 3, yP - 3, '#f59e0b', 8, 'right'); }
+      if (yH !== null) { hline(xs, R, yH, 'rgba(59,130,246,.6)', [4, 3], 1); txt('VAH', R - 3, yH - 3, '#60a5fa', 8, 'right'); }
+      if (yL !== null) { hline(xs, R, yL, 'rgba(59,130,246,.6)', [4, 3], 1); txt('VAL', R - 3, yL + 9, '#60a5fa', 8, 'right'); }
+      const yT = tY(vp.hi);
+      if (yT !== null) txt('FRVP', xs + 3, yT + 9, 'rgba(148,163,184,.9)', 8, 'left');
     }
-    ctx.closePath();
-    ctx.fill();
-    ctx.font = 'bold 9px JetBrains Mono';
-    const lbl = ev.label;
-    const tw = ctx.measureText(lbl).width + 8;
-    const lx = Math.min(Math.max(x - tw/2, 2), w - tw - 2);
-    const ly = bull ? y - 30 : y + 18;
-    ctx.fillStyle = col + '33';
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 1;
-    roundRect(ctx, lx, ly, tw, 13, 3);
-    ctx.fill();
-    ctx.stroke();
-    ctx.fillStyle = col;
-    ctx.textAlign = 'center';
-    ctx.fillText(lbl, x, ly + 9.5);
-  });
+  }
 
-  // Minor sweeps (liquidity grabs)
-  if (smc.structure.minorSwings) {
-    smc.structure.minorSwings.forEach(ms => {
-      if (!ms.swept) return;
-      const c = d[ms.i];
-      if (!c) return;
-      const x = tX(c.time);
-      if (x == null || x < -40 || x > w + 40) return;
-      const y = tY(ms.price);
-      if (y == null) return;
-      ctx.fillStyle = 'rgba(245,158,11,.7)';
-      ctx.beginPath();
-      ctx.moveTo(x, y - 5);
-      ctx.lineTo(x + 5, y);
-      ctx.lineTo(x, y + 5);
-      ctx.lineTo(x - 5, y);
-      ctx.closePath();
-      ctx.fill();
-      ctx.font = 'bold 8px JetBrains Mono';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = 'rgba(245,158,11,.9)';
-      ctx.fillText('SWEEP', x, ms.label === 'LH' ? y - 10 : y + 16);
+  // FVG BOXES
+  if (sh.fvg) {
+    const mid = f => (f.top + f.bottom) / 2;
+    smc.fvgs.filter(f => !f.filled).sort((a, b) => Math.abs(mid(a) - pr) - Math.abs(mid(b) - pr)).slice(0, 6).forEach(f => {
+      const x1 = tX(f.start), yT = tY(f.top), yB = tY(f.bottom);
+      if (x1 === null || yT === null || yB === null) return;
+      const xs = Math.max(0, x1);
+      if (xs >= R) return;
+      const bull = f.dir === 'BULLISH', col = bull ? 'rgba(16,185,129,' : 'rgba(239,68,68,';
+      ctx.fillStyle = col + '.11)'; ctx.fillRect(xs, yT, R - xs, yB - yT);
+      hline(xs, R, yT, col + '.45)', [3, 3], 1); hline(xs, R, yB, col + '.45)', [3, 3], 1);
+      hline(xs, R, (yT + yB) / 2, col + '.3)', [1, 3], 1);
+      txt('FVG', R - 4, yT + 9, col + '.9)', 8, 'right');
     });
   }
+
+  // LIQUIDITY
+  if (sh.liq) {
+    const lq = S.liq[sk];
+    if (lq) [...lq.external, ...lq.internal].forEach(l => {
+      const x1 = tX(l.i), y = tY(l.price);
+      if (x1 === null || y === null) return;
+      const isExt = l.level === 'EXT', col = isExt ? 'rgba(245,158,11,.85)' : 'rgba(96,165,250,.8)';
+      hline(Math.max(0, x1), R, y, col, isExt ? [7, 3] : [2, 3], isExt ? 1.3 : 1);
+      txt(l.level + ' ' + (l.kind === 'H' ? 'BSL' : 'SSL') + (l.eq ? ' EQ' : ''), R - 3, l.kind === 'H' ? y - 3 : y + 10, col, 8, 'right');
+    });
+  }
+
+  // STRUCTURE — IDM, BOS / CHoCH / MSS lines, swing labels
+  if (sh.struct) {
+    const idm = st.idm;
+    if (idm) {
+      const x1 = tX(idm.i), y = tY(idm.price);
+      if (x1 !== null && y !== null) {
+        let x2 = R;
+        if (idm.taken) { const tx = tX(idm.takenAt); if (tx !== null) x2 = tx; }
+        hline(Math.max(0, x1), Math.min(R, x2), y, 'rgba(179,136,255,.9)', [4, 3], 1.1);
+        txt(idm.taken ? 'IDM✓' : 'IDM', Math.max(4, x1) + 2, idm.dir === 'BULLISH' ? y + 10 : y - 3, '#b388ff', 8, 'left');
+      }
+    }
+    // MSS FIX: events slice 6 → 14, aur MSS/CHoCH ko priority milti hai
+    st.events.slice(-14).forEach(ev => {
+      const x1 = tX(ev.from), x2 = tX(ev.i), y = tY(ev.price);
+      if (x1 === null || x2 === null || y === null) return;
+      const bull = ev.dir === 'BULLISH', col = bull ? '#10b981' : '#ef4444';
+      const isMSS = ev.label === 'MSS', isCHoCH = ev.label === 'CHoCH';
+      hline(x1, x2, y, col, isCHoCH ? [5, 3] : [], isMSS ? 2.5 : 1.2);
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x2, y, isMSS ? 3 : 2.2, 0, 6.2832); ctx.fill();
+      // MSS label thoda upar/niche draw karo taaki CHoCH se overlap na ho
+      const yOffset = isMSS ? (bull ? -14 : 20) : (bull ? -3 : 10);
+      txt(ev.label, (x1 + x2) / 2, y + yOffset, col, isMSS ? 10 : 9);
+    });
+    st.swings.slice(-16).forEach(sp => {
+      const x = tX(sp.i), y = tY(sp.price);
+      if (x === null || y === null || x < -20 || x > R + 5) return;
+      const col = (sp.label === 'HH' || sp.label === 'HL') ? '#10b981' : (sp.label === 'LH' || sp.label === 'LL') ? '#ef4444' : '#f59e0b';
+      const isNew = sp === st.lastSwingHigh || sp === st.lastSwingLow;
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, isNew ? 3 : 2, 0, 6.2832); ctx.fill();
+      txt((isNew ? 'NEW ' : '') + sp.label, x, sp.type === 'H' ? y - 6 : y + 14, col, isNew ? 9 : 8);
+    });
+  }
+
+  // SWEEPS
+  if (sh.sweep) {
+    const list = smc.sweeps.slice(-5);
+    list.forEach((sw, k) => {
+      const c = d[sw.i], x = tX(sw.i);
+      if (!c || x === null) return;
+      const bull = sw.side === 'BULL', y = tY(bull ? c.low : c.high);
+      if (y === null) return;
+      const cy = y + (bull ? 8 : -8);
+      ctx.fillStyle = 'rgba(245,158,11,.95)';
+      ctx.beginPath(); ctx.moveTo(x, cy - 4); ctx.lineTo(x + 4, cy); ctx.lineTo(x, cy + 4); ctx.lineTo(x - 4, cy); ctx.closePath(); ctx.fill();
+      if (k >= list.length - 3) txt('SWEEP', x, cy + (bull ? 13 : -7), 'rgba(245,158,11,.95)', 8);
+    });
+  }
+
+  ctx.restore();
 }
+
+function applyMarkers() {
+  const cs = S.tvSeries && S.tvSeries.candleSeries;
+  if (!cs) return;
+  const smc = S.smc[ak()], d = S.candles[ak()];
+  if (!S.show.sig || !smc || !d) { try { cs.setMarkers([]); } catch {} return; }
+  const m = smc.signals.slice(-10).filter(sg => d[sg.i]).map(sg => ({
+    time: Math.floor(d[sg.i].time / 1000),
+    position: sg.dir === 'BUY' ? 'belowBar' : 'aboveBar',
+    color: sg.dir === 'BUY' ? '#10b981' : '#ef4444',
+    shape: sg.dir === 'BUY' ? 'arrowUp' : 'arrowDown',
+    text: sg.dir + ' ' + sg.grade,
+  }));
+  m.sort((a, b) => a.time - b.time);
+  try { cs.setMarkers(m); } catch {}
+}
+
+function renderToggles() {
+  const r = $('ovRow');
+  if (!r) return;
+  const items = [['struct', 'STRUCT'], ['liq', 'LIQ'], ['fvg', 'FVG'], ['vp', 'VP'], ['sweep', 'SWEEP'], ['sig', 'SIGNALS']];
+  r.innerHTML = items.map(([k, l]) => `<div class="ov-btn${S.show[k] ? ' on' : ''}" data-k="${k}">${l}</div>`).join('');
+  r.querySelectorAll('.ov-btn').forEach(b => b.addEventListener('click', () => {
+    S.show[b.dataset.k] = !S.show[b.dataset.k];
+    renderToggles(); applyMarkers(); redrawOverlay();
+  }));
+}
+
 function updateLive() {
   const p = S.prices[S.activeSym];
   if (p == null) return;
@@ -1886,6 +1999,7 @@ function renderSigCard(s, sig) {
   c.className = 'sig-card ' + a.toLowerCase();
   setText('sigSym', s.label);
   setText('sigAct', a);
+  // FIX #3: Current symbol ki price hi show hogi
   setText('sigPrice', p != null ? '$' + fmtP(p, S.activeSym) : '---');
   setColor('sigPrice', s.color);
   const o = S.open24h[S.activeSym];
@@ -1999,27 +2113,20 @@ function renderVolMA(v) {
 function renderLiquidity(liq) {
   const el = $('liqList');
   if (!el) return;
-  if (!liq || (!liq.internal.length && !liq.external.length)) {
-    el.innerHTML = '<div style="font-size:10px;color:var(--muted);font-family:\'JetBrains Mono\',monospace;padding:8px 0">No levels found</div>';
+  const all = liq ? [...liq.external, ...liq.internal] : [];
+  const lb = $('liqBadge');
+  if (lb && liq) lb.textContent = liq.sweptCount + ' SWEPT';
+  if (!all.length) {
+    el.innerHTML = '<div style="font-size:10px;color:var(--muted);font-family:\'JetBrains Mono\',monospace;padding:8px 0">No active levels</div>';
     return;
   }
   const p = S.prices[S.activeSym];
-  const rows = [];
-  liq.external.forEach(l => {
-    rows.push(`<div class="liq-row">
-      <span class="liq-tag ext${l.swept ? ' swept' : ''}">EXT ${l.kind}</span>
+  el.innerHTML = all.map(l => `<div class="liq-row">
+      <span class="liq-tag ${l.level === 'EXT' ? 'ext' : 'int'}">${l.level} ${l.kind === 'H' ? 'BSL' : 'SSL'}${l.eq ? ' · EQ' : ''}</span>
       <span>$${fmtP(l.price, S.activeSym)}</span>
       <span style="color:var(--muted)">${distPct(l.price, p)}</span>
-    </div>`);
-  });
-  liq.internal.forEach(l => {
-    rows.push(`<div class="liq-row">
-      <span class="liq-tag int${l.swept ? ' swept' : ''}">INT ${l.kind}</span>
-      <span>$${fmtP(l.price, S.activeSym)}</span>
-      <span style="color:var(--muted)">${distPct(l.price, p)}</span>
-    </div>`);
-  });
-  el.innerHTML = rows.join('');
+    </div>`).join('') +
+    `<div style="font-size:8px;color:var(--muted);font-family:'JetBrains Mono',monospace;padding-top:6px;line-height:1.6">BSL = buy-side liquidity (stops above highs) · SSL = sell-side (stops below lows) · EXT = major swing · INT = minor swing inside the range · EQ = equal highs/lows</div>`;
 }
 
 function renderVP(vp) {
@@ -2029,6 +2136,7 @@ function renderVP(vp) {
   setText('vpPOC', '$' + fmtP(vp.poc, S.activeSym));
   setText('vpVAH', '$' + fmtP(vp.vah, S.activeSym));
   setText('vpVAL', '$' + fmtP(vp.val, S.activeSym));
+  const vb = $('vpBadge'); if (vb) vb.textContent = 'FIXED · ' + vp.count + ' candles';
   const max = Math.max(...vp.buckets.map(b => b.vol));
   el.innerHTML = vp.buckets.slice().reverse().map(b => {
     const pct = max > 0 ? (b.vol / max * 100) : 0;
@@ -2117,21 +2225,21 @@ function renderSMC(smc) {
     setText(id, v);
     if (c) setColor(id, c);
   };
+  const dirCol = e => e.dir === 'BULLISH' ? 'var(--green)' : 'var(--red)';
   setV('structTrend',
     structure.trend === 'UP' ? '▲ BULLISH' : structure.trend === 'DOWN' ? '▼ BEARISH' : 'NEUTRAL',
     structure.trend === 'UP' ? 'var(--green)' : structure.trend === 'DOWN' ? 'var(--red)' : 'var(--muted)');
-  const bos = [...structure.events].reverse().find(e => e.label === 'BOS');
-  setV('structBos', bos ? `${bos.dir} @ $${fmtP(bos.price, S.activeSym)}` : '--',
-    bos ? (bos.dir === 'BULLISH' ? 'var(--green)' : 'var(--red)') : 'var(--muted)');
-  const ch = [...structure.events].reverse().find(e => e.label === 'CHoCH');
-  setV('structChoch', ch ? `${ch.dir} @ $${fmtP(ch.price, S.activeSym)}` : '--',
-    ch ? (ch.dir === 'BULLISH' ? 'var(--green)' : 'var(--red)') : 'var(--muted)');
-  const ms = [...structure.events].reverse().find(e => e.label === 'MSS');
-  setV('structMss', ms ? `${ms.dir} @ $${fmtP(ms.price, S.activeSym)}` : '--',
-    ms ? (ms.dir === 'BULLISH' ? 'var(--green)' : 'var(--red)') : 'var(--muted)');
-  setV('structIdm', structure.idm ? `$${fmtP(structure.idm.price, S.activeSym)}` : '--',
-    structure.idm ? (structure.idm.dir === 'BULLISH' ? 'var(--green)' : 'var(--red)') : 'var(--muted)');
+  ['BOS', 'CHoCH', 'MSS'].forEach(k => {
+    const e = [...structure.events].reverse().find(x => x.label === k);
+    setV('struct' + (k === 'BOS' ? 'Bos' : k === 'CHoCH' ? 'Choch' : 'Mss'), e ? `${e.dir} @ $${fmtP(e.price, S.activeSym)}` : '--', e ? dirCol(e) : 'var(--muted)');
+  });
+  setV('structIdm', structure.idm ? `$${fmtP(structure.idm.price, S.activeSym)} · ${structure.idm.taken ? 'TAKEN' : 'OPEN'}` : '--',
+    structure.idm ? (structure.idm.taken ? 'var(--amber)' : dirCol(structure.idm)) : 'var(--muted)');
   setV('structSwings', String(structure.swings.length), 'var(--text)');
+  const lc = l => (l === 'HH' || l === 'HL') ? 'var(--green)' : (l === 'LH' || l === 'LL') ? 'var(--red)' : 'var(--amber)';
+  const nh = structure.lastSwingHigh, nl = structure.lastSwingLow;
+  setV('structSH', nh ? `NEW ${nh.label} $${fmtP(nh.price, S.activeSym)}` : '--', nh ? lc(nh.label) : 'var(--muted)');
+  setV('structSL', nl ? `NEW ${nl.label} $${fmtP(nl.price, S.activeSym)}` : '--', nl ? lc(nl.label) : 'var(--muted)');
 
   const fl = $('fvgList');
   if (fl) {
@@ -2145,13 +2253,77 @@ function renderSMC(smc) {
   }
 }
 
+function renderSmcSignal(smc, liq) {
+  const body = $('smcSigBody');
+  if (!smc || !body) return;
+  const d = S.candles[ak()] || [];
+  const sg = smc.signals.length ? smc.signals[smc.signals.length - 1] : null;
+  const st = smc.stats || { total: 0, tp1: 0, sl: 0, open: 0 };
+  const mono = "font-family:'JetBrains Mono',monospace";
+  const dim = 'font-size:9px;color:var(--muted);' + mono;
+  let h = '';
+  if (sg) {
+    const buy = sg.dir === 'BUY', col = buy ? 'var(--green)' : 'var(--red)';
+    const age = Math.max(0, d.length - 2 - sg.i);
+    const stCol = sg.status === 'TP1' ? 'var(--green)' : sg.status === 'SL' ? 'var(--red)' : 'var(--amber)';
+    const line = (a, b) => `<div class="pos-line"><span>${a}</span><span>${b}</span></div>`;
+    h += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:26px;font-weight:700;letter-spacing:2px;color:${col}">${buy ? '▲ BUY' : '▼ SELL'} <span style="font-size:12px">GRADE ${sg.grade}</span></div>
+        <div style="${dim};text-align:right">${age === 0 ? 'just closed' : age + ' candles ago'}<br><span style="color:${stCol};font-weight:700">${sg.status === 'ACTIVE' ? 'ACTIVE' : sg.status === 'TP1' ? 'TP1 HIT' : 'SL HIT'}</span></div>
+      </div>` +
+      line('ENTRY', '$' + fmtP(sg.entry, S.activeSym)) + line('SL', '$' + fmtP(sg.sl, S.activeSym)) +
+      line('TP1', '$' + fmtP(sg.tp1, S.activeSym)) + line('TP2', '$' + fmtP(sg.tp2, S.activeSym)) +
+      line('R:R (TP1)', '1 : ' + sg.rr1.toFixed(2)) +
+      `<div style="${dim};margin-top:6px;line-height:1.6">${sg.why.join(' · ')}</div>`;
+  } else {
+    h += `<div style="${dim};padding:4px 0 6px">No sweep + reclaim setup on this chart yet</div>`;
+  }
+  const lq = liq ? [...liq.external, ...liq.internal] : [];
+  const bsl = lq.filter(x => x.kind === 'H').sort((a, b) => a.price - b.price)[0];
+  const ssl = lq.filter(x => x.kind === 'L').sort((a, b) => b.price - a.price)[0];
+  if (bsl || ssl) {
+    h += `<div style="${dim};margin-top:8px;padding-top:8px;border-top:1px solid var(--dim);line-height:1.7">WATCH · ` +
+      (ssl ? `<span style="color:var(--green)">BUY</span> if SSL $${fmtP(ssl.price, S.activeSym)} is swept &amp; reclaimed` : '') +
+      (ssl && bsl ? ' · ' : '') +
+      (bsl ? `<span style="color:var(--red)">SELL</span> if BSL $${fmtP(bsl.price, S.activeSym)} is swept &amp; rejected` : '') + `</div>`;
+  }
+  h += `<div style="font-size:8px;color:var(--muted);${mono};margin-top:6px;line-height:1.6;opacity:.85">This chart's past signals (worst case, SL counted first if both hit in one candle): ${st.total} · TP1 first ${st.tp1} · SL first ${st.sl} · open ${st.open}.<br>A setup after a liquidity sweep, confirmed on candle close. Not a prediction — always use the SL.</div>`;
+  body.innerHTML = h;
+  const bd = $('smcSigBadge');
+  if (bd) {
+    bd.textContent = sg ? sg.dir + ' ' + sg.grade : 'WATCH';
+    bd.style.color = sg ? (sg.dir === 'BUY' ? 'var(--green)' : 'var(--red)') : 'var(--muted)';
+    bd.style.background = sg ? (sg.dir === 'BUY' ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.15)') : 'rgba(100,116,139,.1)';
+  }
+}
+
+function maybeSmcAlert(sk) {
+  const smc = S.smc[sk], d = S.candles[sk];
+  if (!smc || !d || !smc.signals.length) return;
+  const sg = smc.signals[smc.signals.length - 1];
+  if (sg.i < d.length - 2) return;
+  const key = sk + ':' + sg.time;
+  if (S._smcSeen[key]) return;
+  S._smcSeen[key] = 1;
+  const s = asd();
+  S.hist.unshift({
+    ts: new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:false }),
+    id: s.id, label: s.label, icon: s.icon, sig: sg.dir, price: sg.entry, strength: Math.round(sg.score / 9 * 100), tf: S.activeTf + ' SMC',
+  });
+  if (S.hist.length > 50) S.hist.pop();
+  renderHistory();
+  toast(`🎯 ${sg.dir} setup ${sg.grade} — ${s.label} ${S.activeTf}`, sg.dir === 'BUY' ? 'green' : 'red');
+  beep(sg.dir === 'BUY');
+  if (navigator.vibrate) navigator.vibrate(sg.dir === 'BUY' ? [40, 60, 40] : [100]);
+}
+
 function renderEMA(sig) {
   const ind = sig?.ind || {};
   const p = S.prices[S.activeSym];
   const tr = ind.emaSig === 'BUY' ? 'BULLISH' : ind.emaSig === 'SELL' ? 'BEARISH' : 'NEUTRAL';
   const eb = $('emaBadge');
   if (eb) {
-  eb.textContent = tr;
+    eb.textContent = tr;
     eb.style.background = tr === 'BULLISH' ? 'rgba(16,185,129,.15)' : tr === 'BEARISH' ? 'rgba(239,68,68,.15)' : 'rgba(100,116,139,.1)';
     eb.style.color = tr === 'BULLISH' ? 'var(--green)' : tr === 'BEARISH' ? 'var(--red)' : 'var(--muted)';
   }
@@ -2201,7 +2373,6 @@ function renderCalc() {
   if (n) n.textContent = `${s.label} · 1c = ${s.contractValue} ${s.contractCurrency}`;
 }
 
-// ─── RSI(14) + STOCH RSI panel (was never drawn) ──────────────────────
 function drawRsi() {
   const cv = $('rsiChart');
   const d = S.candles[ak()];
@@ -2218,7 +2389,7 @@ function drawRsi() {
   const N = Math.min(120, cl.length), off = cl.length - N;
   const X = i => 2 + (i / (N - 1)) * (w - 4);
   const Y = v => (h - 4) - (Math.max(0, Math.min(100, v)) / 100) * (h - 8);
-  g.fillStyle = 'rgba(100,116,139,.08)'; g.fillRect(0, Y(70), w, Y(30) - Y(70));       // 30-70 zone
+  g.fillStyle = 'rgba(100,116,139,.08)'; g.fillRect(0, Y(70), w, Y(30) - Y(70));
   g.strokeStyle = 'rgba(100,116,139,.35)'; g.lineWidth = 1; g.setLineDash([3, 3]);
   [30, 50, 70].forEach(v => { g.beginPath(); g.moveTo(0, Y(v)); g.lineTo(w, Y(v)); g.stroke(); });
   g.setLineDash([]);
@@ -2255,18 +2426,21 @@ function recomputeAll() {
   const trade = calcTradeLevels(cd, sig.sig, sr);
   S.levels[sk] = { sr, trade };
 
-  const structure = detectStructure(cd);
-  const fvgs = detectFVG(cd);
+  const cc = cd.length > 40 ? cd.slice(0, -1) : cd;
+  const structure = detectStructure(cc);
+  const fvgs = detectFVG(cc);
+  const sweeps = detectSweeps(cc);
+  const signals = calcSmcSignals(cc, structure, fvgs, sweeps);
   const positions = calcPositions(cd, structure, fvgs);
-  S.smc[sk] = { structure, fvgs, positions };
+  S.smc[sk] = { structure, fvgs, positions, sweeps, signals, stats: smcStats(signals) };
 
   S.fib[sk] = calcFibonacci(cd);
   S.range[sk] = calcPriceRange(cd);
 
-  const vp = calcVolumeProfile(cd);
+  const vp = calcVolumeProfile(cc, structure);
   S.vp[sk] = vp;
 
-  S.liq[sk] = calcLiquidity(cd);
+  S.liq[sk] = calcLiquidity(cc);
   S.magnets[sk] = calcMagnets(cd, vp);
 
   const xabcd = detectXABCD(cd);
@@ -2300,6 +2474,8 @@ function updateAll() {
   renderMagnets(S.magnets[sk]);
   renderPatterns(S.patterns[sk]);
   renderPositions(smc?.positions);
+  renderSmcSignal(smc, S.liq[sk]);
+  applyMarkers();
   const volMA = calcVolMA(S.candles[sk] || []);
   renderVolMA(volMA);
   renderCalc();
@@ -2307,8 +2483,11 @@ function updateAll() {
   updateLive();
   redrawOverlay();
 
+  const chip = $('chartSig');
+  if (chip && sig) { chip.textContent = `${sig.sig} ${sig.strength}%`; chip.style.color = sig.sig === 'BUY' ? 'var(--green)' : sig.sig === 'SELL' ? 'var(--red)' : 'var(--muted)'; }
+  maybeSmcAlert(sk);
   if (sig && sig.sig !== 'HOLD') maybeAlert(s, sig);
-  else if (S._lastAlertSig) delete S._lastAlertSig[sk];   // FIXED: allow the next BUY/SELL to alert again
+  else if (S._lastAlertSig) delete S._lastAlertSig[sk];
   try { drawRsi(); } catch {}
 }
 
@@ -2317,7 +2496,6 @@ function updateAll() {
 // ═══════════════════════════════════════════════════════════════════════
 
 async function loadActiveData() {
-  // FIXED: if a load is already running, wait for it instead of silently dropping this one
   while (S.loadInProgress) await new Promise(r => setTimeout(r, 120));
   S.loadInProgress = true;
   const s = asd(), t = atd();
@@ -2335,7 +2513,9 @@ async function loadActiveData() {
       return;
     }
     S.candles[sk] = cd;
-    if (sk === ak()) {                       // only draw if the user is still on this symbol/timeframe
+    // FIX #3: Last candle ke close se price update karo
+    S.prices[sym] = cd[cd.length - 1].close;
+    if (sk === ak()) {
       recomputeAll();
       setStatus(`LIVE · ${s.label} · ${t.label} · ${cd.length} candles`, 'ok');
       updateChartData();
@@ -2349,8 +2529,7 @@ async function loadActiveData() {
   S.loadInProgress = false;
 }
 
-// FIXED: stop the old stream first, reconnect to the NEW timeframe after data loads
-let _navTok = 0;   // only the LAST tap is allowed to reopen the live stream
+let _navTok = 0;
 async function switchTf(l) {
   if (l === S.activeTf) return;
   S.activeTf = l;
@@ -2373,6 +2552,12 @@ async function switchSym(s) {
   S._lastLen = 0;
   renderTabs();
   setText('chartTitle', `${asd()?.label} · ${S.activeTf}`);
+  // FIX #3: Naye symbol ka fresh 24h price fetch karo
+  try {
+    const t = await fetch24h(s);
+    if (t) { S.prices[s] = t.price; S.open24h[s] = t.open; }
+  } catch {}
+  renderSigCard(asd(), S.sigs[`${s}:${S.activeTf}`]);
   await loadActiveData();
   if (tok === _navTok) connectWs();
 }
@@ -2440,14 +2625,11 @@ function renderHistory() {
     </div>`).join('');
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-//  COPY LEVELS
-// ═══════════════════════════════════════════════════════════════════════
 function copyLevels() {
   const lvl = S.levels[ak()], p = S.prices[S.activeSym], s = asd(), sg = S.sigs[ak()]?.sig || 'HOLD';
   if (!lvl || !lvl.trade || !s || p == null) { toast('No trade levels', ''); return; }
   const t = lvl.trade;
-  const txt = `⚡ DELTA ULTRA\n${s.label} · ${sg} · ${S.activeTf}\nPrice: $${fmtP(p, S.activeSym)}\n────────\nEntry: $${fmtP(t.entry, S.activeSym)}\nSL: $${fmtP(t.sl, S.activeSym)} (${distPct(t.sl, t.entry)})\nTP1: $${fmtP(t.tp1, S.activeSym)} (${distPct(t.tp1, t.entry)})\nTP2: $${fmtP(t.tp2, S.activeSym)} (${distPct(t.tp2, t.entry)})\nTP3: $${fmtP(t.tp3, S.activeSym)} (${distPct(t.tp3, t.entry)})\nR:R 1:${t.rr}\n────────\n${new Date().toLocaleString()}\nNot financial advice.`;
+  const txt = `⚡ YADAV TRADE\n${s.label} · ${sg} · ${S.activeTf}\nPrice: $${fmtP(p, S.activeSym)}\n────────\nEntry: $${fmtP(t.entry, S.activeSym)}\nSL: $${fmtP(t.sl, S.activeSym)} (${distPct(t.sl, t.entry)})\nTP1: $${fmtP(t.tp1, S.activeSym)} (${distPct(t.tp1, t.entry)})\nTP2: $${fmtP(t.tp2, S.activeSym)} (${distPct(t.tp2, t.entry)})\nTP3: $${fmtP(t.tp3, S.activeSym)} (${distPct(t.tp3, t.entry)})\nR:R 1:${t.rr}\n────────\n${new Date().toLocaleString()}\nNot financial advice.`;
   const b = $('copyBtn');
   const done = () => {
     if (b) { b.textContent = '✅ COPIED'; b.classList.add('done'); setTimeout(() => { b.textContent = '📋 COPY LEVELS'; b.classList.remove('done'); }, 2000); }
@@ -2468,6 +2650,7 @@ async function boot() {
   renderTfRow();
   renderTabs();
   renderHistory();
+  renderToggles();
   setText('chartTitle', `${asd()?.label} · ${S.activeTf}`);
   initChart();
 
@@ -2515,11 +2698,7 @@ async function boot() {
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();
 
-// ═══════════════════════════════════════════════════════════════════════
-//  EXPOSE FOR DEBUG
-// ═══════════════════════════════════════════════════════════════════════
-window.DeltaUltra = { S, SYMS, TIMEFRAMES, switchSym, switchTf, copyLevels };
-
+window.YadavTrade = { S, SYMS, TIMEFRAMES, switchSym, switchTf, copyLevels };
 </script>
 </body>
 </html>
