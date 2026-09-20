@@ -1,554 +1,556 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yadav Trade PRO | Live Crypto Terminal</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0a0e1a">
+<title>Yadav Code Playground</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/selection/active-line.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  body { margin:0; background:#050510; color:#e2e8f0; font-family:'Segoe UI',sans-serif; overflow-x:hidden; }
-  .glass { background:rgba(10,15,30,0.8); backdrop-filter:blur(10px); border:1px solid rgba(0,255,128,0.15); border-radius:12px; }
-  .neon { color:#00ff80; text-shadow:0 0 8px rgba(0,255,128,0.6); }
-  .neon-red { color:#ff3366; text-shadow:0 0 8px rgba(255,51,102,0.6); }
-  .neon-blue { color:#00d4ff; text-shadow:0 0 8px rgba(0,212,255,0.6); }
-  .buy-btn { background:#00ff80; color:#000; font-weight:bold; padding:6px 14px; border-radius:6px; cursor:pointer; border:none; }
-  .sell-btn { background:#ff3366; color:#fff; font-weight:bold; padding:6px 14px; border-radius:6px; cursor:pointer; border:none; }
-  .tf-btn { background:transparent; border:1px solid #333; color:#888; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px; }
-  .tf-btn.active { background:#00ff80; color:#000; border-color:#00ff80; }
-  .signal-card { border-left:4px solid #00ff80; padding:8px 12px; margin-bottom:8px; background:rgba(0,255,128,0.05); border-radius:4px; }
-  .signal-card.sell { border-left-color:#ff3366; background:rgba(255,51,102,0.05); }
-  .signal-card.watch { border-left-color:#ffaa00; background:rgba(255,170,0,0.05); }
-  ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:#0a0a15; } ::-webkit-scrollbar-thumb { background:#00ff80; border-radius:3px; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--border:#2d3748;
+  --green:#10b981;--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;
+  --cyan:#06b6d4;--purple:#a855f7;
+  --text:#e2e8f0;--muted:#64748b;
+}
+html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;height:100vh;overflow:hidden}
+
+/* ═══ HEADER ═══ */
+.hdr{height:52px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 12px;position:relative;z-index:100}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#f59e0b,#10b981);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.logo-txt{font-size:14px;font-weight:700;letter-spacing:1.5px}
+.logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;font-family:'JetBrains Mono',monospace}
+.actions{display:flex;gap:6px;align-items:center}
+.btn{padding:7px 12px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .2s;white-space:nowrap}
+.btn:hover{border-color:var(--green);color:var(--green)}
+.btn.run{background:linear-gradient(135deg,#10b981,#059669);border-color:transparent;color:#fff}
+.btn.run:hover{color:#fff;box-shadow:0 0 15px rgba(16,185,129,.4)}
+.btn.danger:hover{border-color:var(--red);color:var(--red)}
+.btn.save:hover{border-color:var(--blue);color:var(--blue)}
+
+/* ═══ MAIN LAYOUT ═══ */
+.main{display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 52px);overflow:hidden}
+.pane{display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.pane-left{border-right:1px solid var(--border)}
+.pane-right{background:var(--bg)}
+
+/* ═══ TABS ═══ */
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:10px 16px;background:transparent;border:none;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:1px;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:6px}
+.tab.active{color:var(--text);border-bottom-color:var(--amber);background:var(--bg3)}
+.tab .dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.tab.active .dot{background:var(--amber)}
+.tab[data-lang="html"] .dot{background:#e44d26}
+.tab[data-lang="css"] .dot{background:#264de4}
+.tab[data-lang="js"] .dot{background:#f7df1e}
+
+/* ═══ EDITOR ═══ */
+.editor-wrap{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+.editor{display:none;height:100%;width:100%}
+.editor.active{display:block}
+.CodeMirror{height:100%!important;font-family:'JetBrains Mono',monospace!important;font-size:13px!important;background:var(--bg)!important;color:var(--text)!important;line-height:1.6}
+.CodeMirror-gutters{background:var(--bg2)!important;border-right:1px solid var(--border)!important}
+.CodeMirror-linenumber{color:var(--muted)!important;font-size:11px}
+.CodeMirror-cursor{border-left:2px solid var(--green)!important}
+.CodeMirror-selected{background:rgba(59,130,246,.25)!important}
+.CodeMirror-activeline-background{background:rgba(255,255,255,.02)!important}
+.cm-keyword{color:#c084fc!important}
+.cm-string{color:#86efac!important}
+.cm-number{color:#fbbf24!important}
+.cm-comment{color:#64748b!important;font-style:italic}
+.cm-tag{color:#f87171!important}
+.cm-attribute{color:#fbbf24!important}
+.cm-property{color:#60a5fa!important}
+.cm-variable{color:#e2e8f0!important}
+.cm-def{color:#22d3ee!important}
+.cm-operator{color:#f472b6!important}
+.cm-atom{color:#fbbf24!important}
+.cm-builtin{color:#a78bfa!important}
+.cm-punctuation{color:#94a3b8!important}
+
+/* ═══ PREVIEW ═══ */
+.preview-header{height:38px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:8px}
+.preview-header .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;font-weight:700}
+.preview-header .status{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green);display:flex;align-items:center;gap:5px}
+.preview-header .status .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#preview{flex:1;border:none;background:#fff;width:100%}
+
+/* ═══ CONSOLE ═══ */
+.console{height:140px;background:#050810;border-top:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.console-hdr{padding:6px 12px;background:var(--bg2);display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;border-bottom:1px solid var(--border)}
+.console-hdr .clear-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 6px}
+.console-hdr .clear-btn:hover{color:var(--red)}
+.console-body{flex:1;overflow-y:auto;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6}
+.console-line{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);display:flex;gap:8px}
+.console-line .time{color:var(--muted);flex-shrink:0;font-size:10px}
+.console-line.log{color:var(--text)}
+.console-line.error{color:#f87171}
+.console-line.warn{color:#fbbf24}
+.console-line.info{color:#60a5fa}
+.console-line.success{color:#86efac}
+
+/* ═══ MOBILE ═══ */
+.mobile-tabs{display:none}
+@media(max-width:768px){
+  .main{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+  .pane-left{border-right:none;border-bottom:1px solid var(--border)}
+  .logo-sub{display:none}
+  .btn{padding:7px 9px;font-size:9px}
+  .btn .btxt{display:none}
+  .actions{gap:4px}
+  .console{height:100px}
+}
+@media(max-width:480px){
+  .hdr{padding:0 8px}
+  .logo-txt{font-size:12px;letter-spacing:1px}
+  .logo-icon{width:28px;height:28px;font-size:14px}
+}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="glass m-2 p-3 flex flex-wrap justify-between items-center gap-3">
-  <div>
-    <h1 class="text-xl font-bold neon tracking-widest">YADAV TRADE PRO</h1>
-    <p class="text-[10px] text-gray-500">Live Crypto Terminal | Binance Data</p>
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-icon">💻</div>
+    <div>
+      <div class="logo-txt">YADAV CODE</div>
+      <div class="logo-sub">PLAYGROUND</div>
+    </div>
   </div>
-  <div class="flex gap-2 items-center flex-wrap">
-    <select id="symbolSelect" class="bg-black border border-gray-700 text-white text-sm p-2 rounded">
-      <option value="BTCUSDT">BTC/USDT</option>
-      <option value="ETHUSDT">ETH/USDT</option>
-      <option value="SOLUSDT">SOL/USDT</option>
-      <option value="XAUTUSDT">XAUT/USDT</option>
-      <option value="BNBUSDT">BNB/USDT</option>
-      <option value="XRPUSDT">XRP/USDT</option>
-    </select>
-    <div id="livePrice" class="glass px-3 py-2 rounded text-lg font-bold neon-blue">Loading...</div>
-    <div id="connStatus" class="text-xs px-2 py-1 rounded bg-green-900 text-green-300">● LIVE</div>
+  <div class="actions">
+    <button class="btn save" onclick="saveProject()">💾 <span class="btxt">Save</span></button>
+    <button class="btn" onclick="loadProject()">📂 <span class="btxt">Load</span></button>
+    <button class="btn" onclick="downloadHTML()">⬇ <span class="btxt">Export</span></button>
+    <button class="btn danger" onclick="clearAll()">🗑 <span class="btxt">Clear</span></button>
+    <button class="btn run" onclick="runCode()">▶ <span class="btxt">RUN</span></button>
   </div>
 </div>
 
-<!-- TIMEFRAME BAR -->
-<div class="glass mx-2 p-2 flex flex-wrap gap-1 items-center">
-  <span class="text-xs text-gray-500 mr-2">Timeframe:</span>
-  <button class="tf-btn" data-tf="1m">1m</button>
-  <button class="tf-btn" data-tf="3m">3m</button>
-  <button class="tf-btn" data-tf="5m">5m</button>
-  <button class="tf-btn" data-tf="15m">15m</button>
-  <button class="tf-btn active" data-tf="1h">1H</button>
-  <button class="tf-btn" data-tf="4h">4H</button>
-  <button class="tf-btn" data-tf="1d">1D</button>
-  <button class="tf-btn" data-tf="1w">1W</button>
-  <button class="tf-btn" data-tf="1M">1M</button>
-  <span class="ml-auto flex gap-2">
-    <button class="tf-btn" id="scalperBtn" style="border-color:#ffaa00;color:#ffaa00;">⚡ SCALPER MODE</button>
-    <button class="tf-btn" id="backupBtn">💾 Backup</button>
-    <button class="tf-btn" id="restoreBtn">📂 Restore</button>
-  </span>
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <!-- LEFT: EDITOR -->
+  <div class="pane pane-left">
+    <div class="tabs">
+      <button class="tab active" data-lang="html" onclick="switchTab('html')"><span class="dot"></span>index.html</button>
+      <button class="tab" data-lang="css" onclick="switchTab('css')"><span class="dot"></span>style.css</button>
+      <button class="tab" data-lang="js" onclick="switchTab('js')"><span class="dot"></span>script.js</button>
+    </div>
+    <div class="editor-wrap">
+      <textarea id="editor-html" class="editor active"></textarea>
+      <textarea id="editor-css" class="editor"></textarea>
+      <textarea id="editor-js" class="editor"></textarea>
+    </div>
+    <div class="console">
+      <div class="console-hdr">
+        <span>⚡ CONSOLE</span>
+        <button class="clear-btn" onclick="clearConsole()">CLEAR</button>
+      </div>
+      <div class="console-body" id="consoleBody"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: PREVIEW -->
+  <div class="pane pane-right">
+    <div class="preview-header">
+      <span class="lbl">🔍 LIVE PREVIEW</span>
+      <span class="status"><span class="dot"></span>RUNNING</span>
+    </div>
+    <iframe id="preview" sandbox="allow-scripts allow-modals allow-forms allow-popups"></iframe>
+  </div>
 </div>
-
-<!-- MAIN GRID -->
-<div class="grid grid-cols-12 gap-2 m-2">
-
-  <!-- CHART AREA -->
-  <div class="col-span-12 lg:col-span-9 glass p-2">
-    <div id="chart" style="width:100%;height:520px;"></div>
-    <div id="emaLabels" class="flex flex-wrap gap-3 text-xs mt-2 px-2">
-      <span style="color:#00ff80">EMA20: <span id="ema20val">-</span></span>
-      <span style="color:#00d4ff">EMA50: <span id="ema50val">-</span></span>
-      <span style="color:#ffaa00">EMA100: <span id="ema100val">-</span></span>
-      <span style="color:#ff3366">EMA200: <span id="ema200val">-</span></span>
-      <span class="ml-auto" style="color:#a855f7">SMC: <span id="smcStatus">Detecting...</span></span>
-    </div>
-  </div>
-
-  <!-- SIGNALS PANEL -->
-  <div class="col-span-12 lg:col-span-3 glass p-3">
-    <h3 class="text-sm font-bold neon mb-2 border-b border-gray-700 pb-1">🎯 LIVE SIGNALS</h3>
-    <div id="signalPanel" class="space-y-2 text-xs max-h-[520px] overflow-y-auto">
-      <p class="text-gray-500">Loading signals...</p>
-    </div>
-  </div>
-
-  <!-- BOTTOM: TRADE SETUP + MTF + BACKUP -->
-  <div class="col-span-12 md:col-span-6 lg:col-span-4 glass p-3">
-    <h3 class="text-sm font-bold neon mb-2 border-b border-gray-700 pb-1">💼 TRADE SETUP (Auto)</h3>
-    <div id="tradeSetup" class="text-xs space-y-1">
-      <p class="text-gray-500">Waiting for signal...</p>
-    </div>
-  </div>
-
-  <div class="col-span-12 md:col-span-6 lg:col-span-4 glass p-3">
-    <h3 class="text-sm font-bold neon mb-2 border-b border-gray-700 pb-1">📊 MULTI-TIMEFRAME TREND</h3>
-    <div id="mtfPanel" class="text-xs grid grid-cols-3 gap-2">
-      <p class="text-gray-500 col-span-3">Analyzing...</p>
-    </div>
-  </div>
-
-  <div class="col-span-12 lg:col-span-4 glass p-3">
-    <h3 class="text-sm font-bold neon mb-2 border-b border-gray-700 pb-1">📈 MARKET STATS</h3>
-    <div id="marketStats" class="text-xs space-y-1">
-      <p class="text-gray-500">Loading...</p>
-    </div>
-  </div>
-
-</div>
-
-<!-- FOOTER -->
-<div class="text-center text-[10px] text-gray-600 my-2">
-  Yadav Trade PRO © 2025 | Data: Binance Public API | For educational purposes only. Not financial advice.
-</div>
-
-<!-- HIDDEN FILE INPUT FOR RESTORE -->
-<input type="file" id="restoreFile" accept=".json" style="display:none">
 
 <script>
-// ============================================================
-// YADAV TRADE PRO — Complete Engine
-// ============================================================
+// ═══════════════════════════════════════════════════════════════════
+//  YADAV CODE PLAYGROUND — Core Engine
+// ═══════════════════════════════════════════════════════════════════
 
-const BINANCE_API = 'https://api1.binance.com/api/v3';
-const BINANCE_WS = 'wss://stream.binance.me:9443/ws';
+const DEFAULT_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My First Page</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Hello, Yadav!</h1>
+    <p>Yahan apna HTML likho aur live preview dekho.</p>
+    <button onclick="greet()">Click Me</button>
+    <div id="output"></div>
+  </div>
+  <script src="script.js"><\/script>
+</body>
+</html>`;
 
-let currentSymbol = 'BTCUSDT';
-let currentTF = '1h';
-let ws = null;
-let chart, candleSeries, ema20Series, ema50Series, ema100Series, ema200Series;
-let volumeSeries;
-let lastSignals = [];
-let scalperMode = false;
+const DEFAULT_CSS = `body {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #e2e8f0;
+  font-family: system-ui, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  text-align: center;
+  max-width: 400px;
+}
+h1 { color: #10b981; margin-bottom: 12px; }
+p { color: #94a3b8; line-height: 1.6; margin-bottom: 20px; }
+button {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+button:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16,185,129,0.3);
+}
+#output { margin-top: 20px; font-weight: bold; color: #fbbf24; }`;
 
-// ---------- EMA Calculation ----------
-function calcEMA(data, period) {
-  const k = 2 / (period + 1);
-  const ema = [];
-  let prev = null;
-  for (let i = 0; i < data.length; i++) {
-    if (i < period - 1) { ema.push(null); continue; }
-    if (prev === null) {
-      // SMA for first EMA
-      let sum = 0;
-      for (let j = i - period + 1; j <= i; j++) sum += data[j].close;
-      prev = sum / period;
-    } else {
-      prev = data[i].close * k + prev * (1 - k);
-    }
-    ema.push(prev);
-  }
-  return ema;
+const DEFAULT_JS = `function greet() {
+  console.log("Button clicked! 🎉");
+  const output = document.getElementById('output');
+  output.textContent = "Namaste from Yadav Code! 🚀";
+  output.style.fontSize = "20px";
 }
 
-// ---------- SMC Detection (Simplified but functional) ----------
-function detectSMC(data) {
-  const result = { bos: null, choch: null, orderBlocks: [], fvg: [], lastSwingHigh: null, lastSwingLow: null };
-  const lookback = 5;
-  const swingHighs = [], swingLows = [];
+console.log("🚀 Yadav Code Playground ready!");
+console.log("Aap HTML, CSS, aur JS directly likh sakte ho.");`;
 
-  for (let i = lookback; i < data.length - lookback; i++) {
-    let isHigh = true, isLow = true;
-    for (let j = 1; j <= lookback; j++) {
-      if (data[i].high <= data[i - j].high || data[i].high <= data[i + j].high) isHigh = false;
-      if (data[i].low >= data[i - j].low || data[i].low >= data[i + j].low) isLow = false;
-    }
-    if (isHigh) swingHighs.push({ idx: i, price: data[i].high });
-    if (isLow) swingLows.push({ idx: i, price: data[i].low });
-  }
+let editors = {};
+let currentLang = 'html';
 
-  if (swingHighs.length) result.lastSwingHigh = swingHighs[swingHighs.length - 1];
-  if (swingLows.length) result.lastSwingLow = swingLows[swingLows.length - 1];
-
-  // BOS/CHoCH Detection
-  const last = data[data.length - 1];
-  if (result.lastSwingHigh && last.close > result.lastSwingHigh.price) {
-    result.bos = 'bullish';
-  } else if (result.lastSwingLow && last.close < result.lastSwingLow.price) {
-    result.bos = 'bearish';
-  }
-
-  // Fair Value Gaps (3-candle gap)
-  for (let i = 2; i < data.length; i++) {
-    const c1 = data[i - 2], c3 = data[i];
-    if (c1.high < c3.low) result.fvg.push({ type: 'bullish', top: c3.low, bottom: c1.high, idx: i });
-    if (c1.low > c3.high) result.fvg.push({ type: 'bearish', top: c1.low, bottom: c3.high, idx: i });
-  }
-  result.fvg = result.fvg.slice(-3); // last 3 FVG
-
-  return result;
-}
-
-// ---------- Signal Generation ----------
-function generateSignals(data, ema20, ema50, ema100, ema200) {
-  const signals = [];
-  const last = data[data.length - 1];
-  const i = data.length - 1;
-  const e20 = ema20[i], e50 = ema50[i], e100 = ema100[i], e200 = ema200[i];
-  if (!e20 || !e50 || !e100 || !e200) return signals;
-
-  const bullAlign = e20 > e50 && e50 > e100 && e100 > e200;
-  const bearAlign = e20 < e50 && e50 < e100 && e100 < e200;
-  const smc = detectSMC(data);
-  const vol = data[i].volume;
-  const avgVol = data.slice(-20).reduce((a, b) => a + b.volume, 0) / 20;
-  const volSpike = vol > avgVol * 1.3;
-
-  // TP/SL Calculation
-  const atr = data.slice(-14).reduce((a, b) => a + (b.high - b.low), 0) / 14;
-  const entry = last.close;
-  const slDist = atr * 1.5;
-
-  // BULLISH setup
-  if (bullAlign && smc.bos === 'bullish') {
-    const sl = entry - slDist;
-    const risk = entry - sl;
-    signals.push({
-      type: 'BUY', price: entry, sl: sl.toFixed(2),
-      tp1: (entry + risk * 1).toFixed(2),
-      tp2: (entry + risk * 2).toFixed(2),
-      tp3: (entry + risk * 3).toFixed(2),
-      confidence: volSpike ? 'HIGH' : 'MEDIUM',
-      reason: 'EMA Bullish Alignment + BOS'
+// ─── INIT EDITORS ────────────────────────────────────────────────────
+function initEditors() {
+  const configs = {
+    html: { mode: 'htmlmixed', value: DEFAULT_HTML },
+    css:  { mode: 'css',       value: DEFAULT_CSS },
+    js:   { mode: 'javascript', value: DEFAULT_JS }
+  };
+  
+  ['html', 'css', 'js'].forEach(lang => {
+    editors[lang] = CodeMirror.fromTextArea(document.getElementById('editor-' + lang), {
+      mode: configs[lang].mode,
+      theme: 'default',
+      lineNumbers: true,
+      autoCloseBrackets: true,
+      matchBrackets: true,
+      styleActiveLine: true,
+      indentUnit: 2,
+      tabSize: 2,
+      lineWrapping: true,
+      value: configs[lang].value
     });
-  }
-
-  // BEARISH setup
-  if (bearAlign && smc.bos === 'bearish') {
-    const sl = entry + slDist;
-    const risk = sl - entry;
-    signals.push({
-      type: 'SELL', price: entry, sl: sl.toFixed(2),
-      tp1: (entry - risk * 1).toFixed(2),
-      tp2: (entry - risk * 2).toFixed(2),
-      tp3: (entry - risk * 3).toFixed(2),
-      confidence: volSpike ? 'HIGH' : 'MEDIUM',
-      reason: 'EMA Bearish Alignment + BOS'
+    editors[lang].setValue(configs[lang].value);
+    
+    // Auto-save on change
+    editors[lang].on('change', () => {
+      clearTimeout(window._saveTimer);
+      window._saveTimer = setTimeout(() => autoSave(), 1500);
     });
+  });
+}
+
+// ─── SWITCH TABS ─────────────────────────────────────────────────────
+function switchTab(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.lang === lang));
+  document.querySelectorAll('.editor').forEach(e => e.classList.remove('active'));
+  document.getElementById('editor-' + lang).classList.add('active');
+  setTimeout(() => editors[lang].refresh(), 10);
+}
+
+// ─── CONSOLE LOGGING ─────────────────────────────────────────────────
+function logToConsole(msg, type = 'log') {
+  const body = document.getElementById('consoleBody');
+  const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  const line = document.createElement('div');
+  line.className = 'console-line ' + type;
+  line.innerHTML = `<span class="time">[${time}]</span><span>${escapeHtml(String(msg))}</span>`;
+  body.appendChild(line);
+  body.scrollTop = body.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function clearConsole() {
+  document.getElementById('consoleBody').innerHTML = '';
+  logToConsole('Console cleared.', 'info');
+}
+
+// ─── RUN CODE ────────────────────────────────────────────────────────
+function runCode() {
+  const html = editors.html.getValue();
+  const css = editors.css.getValue();
+  const js = editors.js.getValue();
+  
+  logToConsole('▶ Running code...', 'info');
+  
+  // Inject console interception into the iframe
+  const consoleInterceptor = `
+    <script>
+      (function() {
+        const origLog = console.log;
+        const origErr = console.error;
+        const origWarn = console.warn;
+        const origInfo = console.info;
+        
+        function send(type, args) {
+          try {
+            const msg = Array.from(args).map(a => {
+              if (typeof a === 'object') {
+                try { return JSON.stringify(a, null, 2); } catch(e) { return String(a); }
+              }
+              return String(a);
+            }).join(' ');
+            parent.postMessage({ __yadavConsole: true, type: type, msg: msg }, '*');
+          } catch(e) {}
+        }
+        
+        console.log = function() { send('log', arguments); origLog.apply(console, arguments); };
+        console.error = function() { send('error', arguments); origErr.apply(console, arguments); };
+        console.warn = function() { send('warn', arguments); origWarn.apply(console, arguments); };
+        console.info = function() { send('info', arguments); origInfo.apply(console, arguments); };
+        
+        window.addEventListener('error', function(e) {
+          send('error', ['Uncaught: ' + e.message + ' (line ' + e.lineno + ')']);
+        });
+      })();
+    <\/script>
+  `;
+  
+  // Build final HTML
+  let finalHTML = html;
+  
+  // Replace external css/js links with inline content
+  finalHTML = finalHTML.replace(/<link[^>]*href=["']style\.css["'][^>]*>/gi, `<style>${css}</style>`);
+  finalHTML = finalHTML.replace(/<script[^>]*src=["']script\.js["'][^>]*><\/script>/gi, `<script>${js}<\/script>`);
+  
+  // If no inline style tag was added and CSS is non-empty, add it
+  if (css.trim() && !finalHTML.includes('<style>')) {
+    finalHTML = finalHTML.replace('</head>', `<style>${css}</style></head>`);
   }
-
-  // WATCH (Early Signal - buy/sell se pehle)
-  if (!bullAlign && !bearAlign) {
-    const nearBull = e20 > e50 && e50 > e100;
-    const nearBear = e20 < e50 && e50 < e100;
-    if (nearBull && volSpike) signals.push({ type: 'WATCH-BUY', price: entry, confidence: 'EARLY', reason: 'Bullish EMA forming + Volume spike' });
-    if (nearBear && volSpike) signals.push({ type: 'WATCH-SELL', price: entry, confidence: 'EARLY', reason: 'Bearish EMA forming + Volume spike' });
+  
+  // If no inline script was added and JS is non-empty, add it
+  if (js.trim() && !finalHTML.includes('<' + 'script>') ) {
+    finalHTML = finalHTML.replace('</body>', `<script>${js}<\/script></body>`);
   }
-
-  return signals;
+  
+  // Inject console interceptor at the very top
+  finalHTML = finalHTML.replace(/<head>/i, '<head>' + consoleInterceptor);
+  
+  // Write to iframe
+  const iframe = document.getElementById('preview');
+  iframe.srcdoc = finalHTML;
+  
+  logToConsole('✓ Code executed successfully.', 'success');
 }
 
-// ---------- Fetch Data from Binance ----------
-async function fetchKlines(symbol, interval, limit = 500) {
-  const url = `${BINANCE_API}/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
-  const res = await fetch(url);
-  const raw = await res.json();
-  return raw.map(k => ({
-    time: k[0] / 1000,
-    open: parseFloat(k[1]),
-    high: parseFloat(k[2]),
-    low: parseFloat(k[3]),
-    close: parseFloat(k[4]),
-    volume: parseFloat(k[5])
-  }));
-}
+// ─── MESSAGE LISTENER (for iframe console) ──────────────────────────
+window.addEventListener('message', (e) => {
+  if (e.data && e.data.__yadavConsole) {
+    logToConsole(e.data.msg, e.data.type);
+  }
+});
 
-// ---------- Chart Initialization ----------
-function initChart() {
-  const container = document.getElementById('chart');
-  container.innerHTML = '';
-  chart = LightweightCharts.createChart(container, {
-    layout: { background: { color: '#050510' }, textColor: '#9ca3af' },
-    grid: { vertLines: { color: 'rgba(255,255,255,0.04)' }, horzLines: { color: 'rgba(255,255,255,0.04)' } },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-    rightPriceScale: { borderColor: '#1f2937' },
-    timeScale: { borderColor: '#1f2937', timeVisible: true },
-    width: container.clientWidth,
-    height: 520
-  });
-
-  candleSeries = chart.addCandlestickSeries({
-    upColor: '#00ff80', downColor: '#ff3366',
-    borderUpColor: '#00ff80', borderDownColor: '#ff3366',
-    wickUpColor: '#00ff80', wickDownColor: '#ff3366'
-  });
-
-  ema20Series = chart.addLineSeries({ color: '#00ff80', lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
-  ema50Series = chart.addLineSeries({ color: '#00d4ff', lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
-  ema100Series = chart.addLineSeries({ color: '#ffaa00', lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
-  ema200Series = chart.addLineSeries({ color: '#ff3366', lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
-
-  volumeSeries = chart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: '' });
-  volumeSeries.priceScale().applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } });
-
-  window.addEventListener('resize', () => {
-    chart.applyOptions({ width: container.clientWidth });
-  });
-}
-
-// ---------- Render All ----------
-async function renderAll() {
+// ─── SAVE / LOAD (localStorage) ──────────────────────────────────────
+function autoSave() {
   try {
-    const data = await fetchKlines(currentSymbol, currentTF, 500);
-    if (!data.length) return;
-
-    // Candles
-    candleSeries.setData(data.map(d => ({ time: d.time, open: d.open, high: d.high, low: d.low, close: d.close })));
-
-    // Volume
-    volumeSeries.setData(data.map(d => ({
-      time: d.time, value: d.volume,
-      color: d.close >= d.open ? 'rgba(0,255,128,0.4)' : 'rgba(255,51,102,0.4)'
-    })));
-
-    // EMAs
-    const ema20 = calcEMA(data, 20);
-    const ema50 = calcEMA(data, 50);
-    const ema100 = calcEMA(data, 100);
-    const ema200 = calcEMA(data, 200);
-
-    const toLine = (arr) => arr.map((v, i) => v ? { time: data[i].time, value: v } : null).filter(Boolean);
-    ema20Series.setData(toLine(ema20));
-    ema50Series.setData(toLine(ema50));
-    ema100Series.setData(toLine(ema100));
-    ema200Series.setData(toLine(ema200));
-
-    const li = data.length - 1;
-    document.getElementById('ema20val').textContent = ema20[li]?.toFixed(2) || '-';
-    document.getElementById('ema50val').textContent = ema50[li]?.toFixed(2) || '-';
-    document.getElementById('ema100val').textContent = ema100[li]?.toFixed(2) || '-';
-    document.getElementById('ema200val').textContent = ema200[li]?.toFixed(2) || '-';
-
-    // SMC
-    const smc = detectSMC(data);
-    document.getElementById('smcStatus').textContent = smc.bos ? smc.bos.toUpperCase() + ' BOS' : 'Neutral';
-
-    // Signals
-    const signals = generateSignals(data, ema20, ema50, ema100, ema200);
-    renderSignals(signals);
-
-    // Trade Setup
-    renderTradeSetup(signals, data);
-
-    // Market Stats
-    renderMarketStats(data);
-
-    // MTF Analysis (async, separate)
-    renderMTF();
-
-  } catch (e) {
-    console.error('Render error:', e);
-    document.getElementById('connStatus').textContent = '● ERROR';
-    document.getElementById('connStatus').className = 'text-xs px-2 py-1 rounded bg-red-900 text-red-300';
-  }
-}
-
-// ---------- Render Signals Panel ----------
-function renderSignals(signals) {
-  const panel = document.getElementById('signalPanel');
-  if (!signals.length) {
-    panel.innerHTML = '<p class="text-gray-500">No strong signal on this timeframe. Try scalper mode or another TF.</p>';
-    return;
-  }
-  panel.innerHTML = signals.map(s => {
-    const cls = s.type.includes('BUY') ? '' : s.type.includes('SELL') ? 'sell' : 'watch';
-    const color = s.type.includes('BUY') ? 'neon' : s.type.includes('SELL') ? 'neon-red' : 'text-yellow-400';
-    return `<div class="signal-card ${cls}">
-      <div class="flex justify-between items-center">
-        <span class="font-bold ${color}">${s.type}</span>
-        <span class="text-[10px] text-gray-500">${s.confidence}</span>
-      </div>
-      <div class="text-gray-400 text-[10px] mt-1">${s.reason}</div>
-      ${s.sl ? `<div class="text-[10px] mt-1 text-gray-500">Entry: $${s.price.toFixed(2)} | SL: $${s.sl}</div>` : ''}
-    </div>`;
-  }).join('');
-}
-
-// ---------- Render Trade Setup ----------
-function renderTradeSetup(signals, data) {
-  const el = document.getElementById('tradeSetup');
-  const active = signals.find(s => s.type === 'BUY' || s.type === 'SELL');
-  if (!active) {
-    el.innerHTML = '<p class="text-gray-500">No active trade setup. Watching for WATCH signals...</p>';
-    return;
-  }
-  const isBuy = active.type === 'BUY';
-  el.innerHTML = `
-    <div class="flex justify-between"><span class="text-gray-400">Position:</span><span class="${isBuy ? 'neon' : 'neon-red'} font-bold">${isBuy ? '🟢 LONG' : '🔴 SHORT'}</span></div>
-    <div class="flex justify-between"><span class="text-gray-400">Entry:</span><span>$${active.price.toFixed(2)}</span></div>
-    <div class="flex justify-between"><span class="text-gray-400">Stop Loss:</span><span class="neon-red">$${active.sl}</span></div>
-    <div class="flex justify-between"><span class="text-gray-400">TP1:</span><span class="neon">$${active.tp1}</span></div>
-    <div class="flex justify-between"><span class="text-gray-400">TP2:</span><span class="neon">$${active.tp2}</span></div>
-    <div class="flex justify-between"><span class="text-gray-400">TP3:</span><span class="neon">$${active.tp3}</span></div>
-    <div class="flex justify-between"><span class="text-gray-400">Confidence:</span><span>${active.confidence}</span></div>
-    <div class="text-[10px] text-gray-500 mt-2">Risk/Reward: 1:3</div>
-  `;
-}
-
-// ---------- Render Market Stats ----------
-function renderMarketStats(data) {
-  const last = data[data.length - 1];
-  const first = data[0];
-  const change = ((last.close - first.close) / first.close * 100).toFixed(2);
-  const high = Math.max(...data.map(d => d.high));
-  const low = Math.min(...data.map(d => d.low));
-  const avgVol = data.slice(-20).reduce((a, b) => a + b.volume, 0) / 20;
-  document.getElementById('marketStats').innerHTML = `
-    <div class="flex justify-between"><span class="text-gray-400">24h Change:</span><span class="${change >= 0 ? 'neon' : 'neon-red'}">${change}%</span></div>
-    <div class="flex justify-between"><span class="text-gray-400">Period High:</span><span>$${high.toFixed(2)}</span></div>
-    <div class="flex justify-between"><span class="text-gray-400">Period Low:</span><span>$${low.toFixed(2)}</span></div>
-    <div class="flex justify-between"><span class="text-gray-400">Avg Volume:</span><span>${avgVol.toFixed(0)}</span></div>
-    <div class="flex justify-between"><span class="text-gray-400">Current Vol:</span><span>${last.volume.toFixed(0)}</span></div>
-  `;
-}
-
-// ---------- MTF Analysis ----------
-async function renderMTF() {
-  const tfs = ['15m', '1h', '4h', '1d'];
-  const panel = document.getElementById('mtfPanel');
-  panel.innerHTML = '';
-  for (const tf of tfs) {
-    try {
-      const d = await fetchKlines(currentSymbol, tf, 200);
-      const e20 = calcEMA(d, 20), e50 = calcEMA(d, 50), e200 = calcEMA(d, 200);
-      const i = d.length - 1;
-      const bull = e20[i] > e50[i] && e50[i] > e200[i];
-      const bear = e20[i] < e50[i] && e50[i] < e200[i];
-      const trend = bull ? '🟢 BULL' : bear ? '🔴 BEAR' : '🟡 SIDE';
-      panel.innerHTML += `<div class="glass p-2 text-center"><div class="text-gray-500 text-[10px]">${tf.toUpperCase()}</div><div class="${bull ? 'neon' : bear ? 'neon-red' : 'text-yellow-400'} font-bold">${trend}</div></div>`;
-    } catch (e) { /* skip */ }
-  }
-}
-
-// ---------- Live WebSocket ----------
-function connectWS() {
-  if (ws) ws.close();
-  const stream = `${currentSymbol.toLowerCase()}@kline_${currentTF}`;
-  ws = new WebSocket(`${BINANCE_WS}/${stream}`);
-  ws.onmessage = (event) => {
-    const msg = JSON.parse(event.data);
-    const k = msg.k;
-    const candle = {
-      time: k.t / 1000, open: parseFloat(k.o), high: parseFloat(k.h),
-      low: parseFloat(k.l), close: parseFloat(k.c), volume: parseFloat(k.v)
+    const project = {
+      html: editors.html.getValue(),
+      css: editors.css.getValue(),
+      js: editors.js.getValue(),
+      savedAt: new Date().toISOString()
     };
-    candleSeries.update(candle);
-    volumeSeries.update({ time: candle.time, value: candle.volume, color: candle.close >= candle.open ? 'rgba(0,255,128,0.4)' : 'rgba(255,51,102,0.4)' });
-    document.getElementById('livePrice').textContent = '$' + candle.close.toFixed(2);
-    document.getElementById('connStatus').textContent = '● LIVE';
-    document.getElementById('connStatus').className = 'text-xs px-2 py-1 rounded bg-green-900 text-green-300';
-  };
-  ws.onerror = () => {
-    document.getElementById('connStatus').textContent = '● RECONNECTING';
-    document.getElementById('connStatus').className = 'text-xs px-2 py-1 rounded bg-yellow-900 text-yellow-300';
-  };
-  ws.onclose = () => setTimeout(connectWS, 3000);
+    localStorage.setItem('yadavCodeProject', JSON.stringify(project));
+    logToConsole('💾 Auto-saved', 'info');
+  } catch (e) {
+    logToConsole('Auto-save failed: ' + e.message, 'error');
+  }
 }
 
-// ---------- Timeframe Switching ----------
-document.querySelectorAll('.tf-btn[data-tf]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tf-btn[data-tf]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentTF = btn.dataset.tf;
-    renderAll();
-    connectWS();
-  });
-});
-
-// ---------- Symbol Switching ----------
-document.getElementById('symbolSelect').addEventListener('change', (e) => {
-  currentSymbol = e.target.value;
-  renderAll();
-  connectWS();
-});
-
-// ---------- Scalper Mode ----------
-document.getElementById('scalperBtn').addEventListener('click', () => {
-  scalperMode = !scalperMode;
-  const btn = document.getElementById('scalperBtn');
-  if (scalperMode) {
-    btn.style.background = '#ffaa00';
-    btn.style.color = '#000';
-    currentTF = '1m';
-    document.querySelectorAll('.tf-btn[data-tf]').forEach(b => b.classList.toggle('active', b.dataset.tf === '1m'));
-    renderAll();
-    connectWS();
-  } else {
-    btn.style.background = 'transparent';
-    btn.style.color = '#ffaa00';
+function saveProject() {
+  try {
+    const project = {
+      html: editors.html.getValue(),
+      css: editors.css.getValue(),
+      js: editors.js.getValue(),
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem('yadavCodeProject', JSON.stringify(project));
+    
+    // Also download as JSON for backup
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'yadav-code-project-' + Date.now() + '.json';
+    a.click();
+    
+    logToConsole('✓ Project saved to localStorage + downloaded', 'success');
+    showToast('✅ Project saved!');
+  } catch (e) {
+    logToConsole('Save failed: ' + e.message, 'error');
   }
-});
+}
 
-// ---------- Backup (Save to localStorage + Download JSON) ----------
-document.getElementById('backupBtn').addEventListener('click', () => {
-  const backup = {
-    symbol: currentSymbol,
-    timeframe: currentTF,
-    scalperMode: scalperMode,
-    timestamp: new Date().toISOString(),
-    signals: lastSignals,
-    note: 'Yadav Trade PRO Backup'
-  };
-  localStorage.setItem('yadavTradeBackup', JSON.stringify(backup));
-  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `yadav-trade-backup-${Date.now()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  alert('✅ Backup saved! File download + LocalStorage dono mein save ho gaya.');
-});
-
-// ---------- Restore ----------
-document.getElementById('restoreBtn').addEventListener('click', () => {
-  document.getElementById('restoreFile').click();
-});
-document.getElementById('restoreFile').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
+function loadProject() {
+  // Try localStorage first
+  const saved = localStorage.getItem('yadavCodeProject');
+  if (saved) {
     try {
-      const backup = JSON.parse(ev.target.result);
-      currentSymbol = backup.symbol || 'BTCUSDT';
-      currentTF = backup.timeframe || '1h';
-      document.getElementById('symbolSelect').value = currentSymbol;
-      document.querySelectorAll('.tf-btn[data-tf]').forEach(b => b.classList.toggle('active', b.dataset.tf === currentTF));
-      renderAll();
-      connectWS();
-      alert('✅ Backup restored successfully!');
-    } catch (err) {
-      alert('❌ Invalid backup file');
+      const p = JSON.parse(saved);
+      editors.html.setValue(p.html || '');
+      editors.css.setValue(p.css || '');
+      editors.js.setValue(p.js || '');
+      logToConsole('✓ Project loaded from localStorage (saved at ' + new Date(p.savedAt).toLocaleString() + ')', 'success');
+      showToast('✅ Project loaded!');
+      runCode();
+      return;
+    } catch (e) {
+      logToConsole('Load failed: ' + e.message, 'error');
     }
-  };
-  reader.readAsText(file);
+  } else {
+    logToConsole('No saved project found. Loading default template.', 'warn');
+    resetToDefault();
+  }
+}
+
+function resetToDefault() {
+  editors.html.setValue(DEFAULT_HTML);
+  editors.css.setValue(DEFAULT_CSS);
+  editors.js.setValue(DEFAULT_JS);
+  logToConsole('Reset to default template.', 'info');
+  runCode();
+}
+
+function clearAll() {
+  if (!confirm('Are you sure? This will erase all your code!')) return;
+  editors.html.setValue('');
+  editors.css.setValue('');
+  editors.js.setValue('');
+  localStorage.removeItem('yadavCodeProject');
+  logToConsole('🗑 All code cleared.', 'warn');
+  runCode();
+}
+
+// ─── EXPORT AS SINGLE HTML ──────────────────────────────────────────
+function downloadHTML() {
+  const html = editors.html.getValue();
+  const css = editors.css.getValue();
+  const js = editors.js.getValue();
+  
+  let finalHTML = html;
+  finalHTML = finalHTML.replace(/<link[^>]*href=["']style\.css["'][^>]*>/gi, `<style>${css}</style>`);
+  finalHTML = finalHTML.replace(/<script[^>]*src=["']script\.js["'][^>]*><\/script>/gi, `<script>${js}<\/script>`);
+  
+  if (css.trim() && !finalHTML.includes('<style>')) {
+    finalHTML = finalHTML.replace('</head>', `<style>${css}</style></head>`);
+  }
+  if (js.trim() && !finalHTML.includes('<script>')) {
+    finalHTML = finalHTML.replace('</body>', `<script>${js}<\/script></body>`);
+  }
+  
+  const blob = new Blob([finalHTML], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'yadav-code-export-' + Date.now() + '.html';
+  a.click();
+  
+  logToConsole('✓ Exported as standalone HTML file.', 'success');
+  showToast('✅ Exported!');
+}
+
+// ─── TOAST ──────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = `
+    position:fixed;top:70px;left:50%;transform:translateX(-50%);
+    background:#10b981;color:#fff;padding:10px 20px;border-radius:8px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+    z-index:9999;box-shadow:0 8px 30px rgba(16,185,129,0.4);
+    opacity:0;transition:opacity 0.3s;
+  `;
+  document.body.appendChild(t);
+  setTimeout(() => t.style.opacity = '1', 10);
+  setTimeout(() => {
+    t.style.opacity = '0';
+    setTimeout(() => t.remove(), 300);
+  }, 2000);
+}
+
+// ─── KEYBOARD SHORTCUTS ─────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  // Ctrl+Enter: Run
+  if (e.ctrlKey && e.key === 'Enter') {
+    e.preventDefault();
+    runCode();
+  }
+  // Ctrl+S: Save
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    saveProject();
+  }
+  // Tab switching: Ctrl+1/2/3
+  if (e.ctrlKey && e.key === '1') { e.preventDefault(); switchTab('html'); }
+  if (e.ctrlKey && e.key === '2') { e.preventDefault(); switchTab('css'); }
+  if (e.ctrlKey && e.key === '3') { e.preventDefault(); switchTab('js'); }
 });
 
-// ---------- Auto-Refresh Every 30s for signals ----------
-setInterval(() => {
-  if (!scalperMode) renderAll();
-}, 30000);
-
-// ---------- Initial Load ----------
-initChart();
-renderAll();
-connectWS();
-
+// ─── BOOT ───────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  initEditors();
+  
+  // Try to load saved project
+  const saved = localStorage.getItem('yadavCodeProject');
+  if (saved) {
+    try {
+      const p = JSON.parse(saved);
+      editors.html.setValue(p.html || DEFAULT_HTML);
+      editors.css.setValue(p.css || DEFAULT_CSS);
+      editors.js.setValue(p.js || DEFAULT_JS);
+      logToConsole('✓ Restored previous session', 'success');
+    } catch(e) {
+      logToConsole('Could not restore previous session', 'warn');
+    }
+  }
+  
+  logToConsole('🚀 Yadav Code Playground started!', 'success');
+  logToConsole('💡 Shortcuts: Ctrl+Enter (Run) · Ctrl+S (Save) · Ctrl+1/2/3 (Switch tabs)', 'info');
+  
+  runCode();
+});
 </script>
 </body>
 </html>
