@@ -1671,6 +1671,25 @@ function updateChartData() {
   const s = asd();
   if (!s) return;
 
+  // ✅ FIX: Pehle saare purane data aur priceLines clear karo
+  if (S._priceLines && S._priceLines.length) {
+    S._priceLines.forEach(p => { try { S.tvSeries.candleSeries.removePriceLine(p); } catch {} });
+  }
+  S._priceLines = [];
+  try { S.tvSeries.candleSeries.setMarkers([]); } catch {}
+  S.tvSeries.candleSeries.setData([]);
+  S.tvSeries.volumeSeries.setData([]);
+  S.tvSeries.ema20Series.setData([]);
+  S.tvSeries.ema50Series.setData([]);
+  S.tvSeries.ema100Series.setData([]);
+  S.tvSeries.ema200Series.setData([]);
+  S.tvSeries.krSeries.setData([]);
+
+  // ✅ FIX: Price scale ko auto pe reset karo
+  try { S.tvChart.priceScale('right').applyOptions({ autoScale: true }); } catch {}
+  try { S.tvChart.priceScale('vol').applyOptions({ autoScale: true }); } catch {}
+
+  // ✅ Ab naya data set karo
   S.tvSeries.candleSeries.setData(d.map(c => ({
     time: Math.floor(c.time/1000),
     open: c.open, high: c.high, low: c.low, close: c.close,
@@ -1695,15 +1714,17 @@ function updateChartData() {
   applyPriceLines();
   applyMarkers();
 
-  if (!S._fitDone || (d.length > 100 && S._lastLen !== d.length)) {
-    setTimeout(() => { try { S.tvChart.timeScale().fitContent(); } catch {} }, 50);
-    S._fitDone = true;
-    S._lastLen = d.length;
-  }
+  // ✅ Hamesha fitContent karo (kyunki ye function sirf load/switch pe call hota hai)
+  setTimeout(() => { try { S.tvChart.timeScale().fitContent(); } catch {} }, 50);
+  S._fitDone = true;
+  S._lastLen = d.length;
+
   resizeOv();
   redrawOverlay();
   updateLive();
 }
+
+  if (!S._fitDone || 
 
 function updateChartLast(c) {
   if (!S.tvChart || !S.tvSeries.candleSeries) return;
