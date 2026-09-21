@@ -102,6 +102,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .ohlc-item{text-align:center}
 .ohlc-item .l{color:var(--muted);font-size:8px;letter-spacing:1px;display:block}
 .ohlc-item .v{color:var(--text);font-weight:700;font-size:10px}
+.mode-row{display:flex;gap:5px;margin-bottom:8px}
+.mode-btn{flex:1;padding:7px 4px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.mode-btn.active{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border-color:transparent;box-shadow:0 2px 10px rgba(59,130,246,.4)}
 .levels-panel{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
 .levels-title{font-size:10px;color:var(--muted);letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
 .levels-badge{font-size:9px;padding:3px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace}
@@ -150,7 +153,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .liq-tag{font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:1px;white-space:nowrap}
 .liq-tag.int{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.4)}
 .liq-tag.ext{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.4)}
-.liq-tag.swept{background:rgba(100,116,139,.15);color:var(--muted);border:1px solid rgba(100,116,139,.4);text-decoration:line-through}
 .pattern-row{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-family:'JetBrains Mono',monospace}
 .pattern-row:last-child{margin-bottom:0}
 .pattern-row .pname{font-weight:700;letter-spacing:1px}
@@ -217,12 +219,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .spin{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .disc{background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.15);border-radius:9px;padding:10px;font-size:10px;color:rgba(245,158,11,.6);line-height:1.7;text-align:center;margin-bottom:14px}
-.ov-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
-.ov-btn{padding:5px 9px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer}
-.ov-btn.on{color:var(--amber);border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.08)}
-.chart-legend{font-size:8px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-align:center;margin-top:4px;line-height:1.7;opacity:.85}
 .chart-sig{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px}
-/* SCANNER */
 .scan-row{display:grid;grid-template-columns:70px 1fr 60px 70px 60px;gap:6px;align-items:center;padding:8px 6px;border-bottom:1px solid var(--dim);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:background .15s}
 .scan-row:hover{background:rgba(255,255,255,.02)}
 .scan-row:last-child{border-bottom:none}
@@ -305,7 +302,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="chart-sig" id="candleTimer" style="color:var(--cyan)">⏳ --:--</div>
       <div class="chart-price" id="chartPrice">---</div>
     </div>
-    <div class="ov-row" id="ovRow"></div>
+    <div class="mode-row">
+      <button class="mode-btn" onclick="setChartMode('clean')" id="modeBtnClean">🧹 CLEAN</button>
+      <button class="mode-btn active" onclick="setChartMode('normal')" id="modeBtnNormal">📊 NORMAL</button>
+      <button class="mode-btn" onclick="setChartMode('pro')" id="modeBtnPro">🔥 PRO</button>
+    </div>
     <div class="ohlc-row">
       <div class="ohlc-item"><span class="l">O</span><span class="v" id="ohlcO">--</span></div>
       <div class="ohlc-item"><span class="l">H</span><span class="v" id="ohlcH">--</span></div>
@@ -315,10 +316,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
     <div id="tvChart"><canvas id="overlayCanvas"></canvas></div>
     <div class="chart-hint">👆 Pinch to zoom · Drag to pan · Tap candle for OHLC</div>
-    <div class="chart-legend">SH/SL first swing · HH HL <span style="color:var(--green)">bull</span> · LH LL <span style="color:var(--red)">bear</span> · EQH/EQL equal · NEW = latest swing · BOS/CHoCH/MSS = structure break · IDM = inducement<br>FVG box · EXT/INT BSL/SSL = liquidity · ◆ SWEEP · ▲ BUY / ▼ SELL = sweep + reclaim signal</div>
   </div>
 
-  <!-- 📡 MULTI-SYMBOL SCANNER -->
   <div class="ultra-panel">
     <div class="panel-title">
       📡 MULTI-SYMBOL SCANNER
@@ -328,7 +327,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <span>SYMBOL</span><span style="text-align:right">PRICE</span><span style="text-align:center">SIGNAL</span><span style="text-align:right">STRENGTH</span><span style="text-align:center">TREND</span>
     </div>
     <div id="scanList"><div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:8px 0">Scanning all markets...</div></div>
-    <div style="font-size:8px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:8px;text-align:center;line-height:1.5">Tap any row to switch chart · Sorted by signal strength · Auto-refresh every 30s</div>
   </div>
 
   <div class="ultra-panel">
@@ -345,7 +343,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div id="htfText" style="font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:8px;text-align:center;line-height:1.5">Analyzing higher timeframes...</div>
   </div>
 
-  <!-- 💧 CVD PANEL -->
   <div class="ultra-panel">
     <div class="panel-title">
       💧 CVD · CUMULATIVE VOLUME DELTA
@@ -358,7 +355,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
     <canvas id="cvdChart"></canvas>
     <div id="cvdMsg" style="font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:8px;text-align:center;line-height:1.5">Analyzing buy/sell pressure...</div>
-    <div style="font-size:8px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:6px;line-height:1.5;opacity:.85">CVD = cumulative (buy volume − sell volume). <b style="color:var(--green)">Rising CVD</b> = buyers strong. <b style="color:var(--red)">Falling CVD</b> = sellers strong. <b style="color:var(--amber)">Divergence:</b> price up but CVD down = fake rally (or vice versa).</div>
   </div>
 
   <div class="ultra-panel">
@@ -392,12 +388,12 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="sr-box res"><div class="sr-lbl">RESISTANCE</div><div class="sr-val" id="lvl-res1">---</div><div class="sr-sub" id="lvl-res1-dist">---</div></div>
     </div>
     <div class="tl-grid">
-      <div class="tl-box entry"><div class="tl-lbl">ENTRY ZONE</div><div class="tl-val" id="lvl-entry">---</div><div class="tl-sub" id="lvl-entry-sub">---</div></div>
+      <div class="tl-box entry"><div class="tl-lbl">ENTRY</div><div class="tl-val" id="lvl-entry">---</div><div class="tl-sub" id="lvl-entry-sub">---</div></div>
       <div class="tl-box sl"><div class="tl-lbl">STOP LOSS</div><div class="tl-val" id="lvl-sl">---</div><div class="tl-sub" id="lvl-sl-sub">---</div></div>
       <div class="tl-box tp1"><div class="tl-lbl">TP 1</div><div class="tl-val" id="lvl-tp1">---</div><div class="tl-sub" id="lvl-tp1-sub">---</div></div>
       <div class="tl-box tp2"><div class="tl-lbl">TP 2</div><div class="tl-val" id="lvl-tp2">---</div><div class="tl-sub" id="lvl-tp2-sub">---</div></div>
       <div class="tl-box tp3"><div class="tl-lbl">TP 3</div><div class="tl-val" id="lvl-tp3">---</div><div class="tl-sub" id="lvl-tp3-sub">---</div></div>
-      <div class="tl-box tp3"><div class="tl-lbl">EXIT ZONE</div><div class="tl-val" id="lvl-exit">---</div><div class="tl-sub" id="lvl-exit-sub">---</div></div>
+      <div class="tl-box tp3"><div class="tl-lbl">EXIT</div><div class="tl-val" id="lvl-exit">---</div><div class="tl-sub" id="lvl-exit-sub">---</div></div>
     </div>
     <div class="rr-row">
       <div class="rr-lbl">R:R</div><div class="rr-val" id="lvl-rr">---</div>
@@ -430,7 +426,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </div>
 
   <div class="ultra-panel">
-    <div class="panel-title">📊 VOLUME PROFILE <span id="vpBadge" style="font-size:9px;padding:3px 8px;border-radius:5px;background:rgba(100,116,139,.1);color:var(--muted);font-family:'JetBrains Mono',monospace">FIXED RANGE</span></div>
+    <div class="panel-title">📊 VOLUME PROFILE <span id="vpBadge" style="font-size:9px;padding:3px 8px;border-radius:5px;background:rgba(100,116,139,.1);color:var(--muted);font-family:'JetBrains Mono',monospace">FIXED</span></div>
     <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px">
       <span>POC <b id="vpPOC" style="color:var(--amber)">---</b></span>
       <span>VAH <b id="vpVAH" style="color:var(--green)">---</b></span>
@@ -467,8 +463,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="struct-box"><div class="struct-lbl">LAST MSS</div><div class="struct-val" id="structMss">--</div></div>
       <div class="struct-box"><div class="struct-lbl">IDM</div><div class="struct-val" id="structIdm">--</div></div>
       <div class="struct-box"><div class="struct-lbl">SWINGS</div><div class="struct-val" id="structSwings">--</div></div>
-      <div class="struct-box"><div class="struct-lbl">LATEST SWING HIGH</div><div class="struct-val" id="structSH">--</div></div>
-      <div class="struct-box"><div class="struct-lbl">LATEST SWING LOW</div><div class="struct-val" id="structSL">--</div></div>
+      <div class="struct-box"><div class="struct-lbl">LATEST SH</div><div class="struct-val" id="structSH">--</div></div>
+      <div class="struct-box"><div class="struct-lbl">LATEST SL</div><div class="struct-val" id="structSL">--</div></div>
     </div>
     <div class="fvg-section">
       <div class="fvg-title">UNFILLED FVGs</div>
@@ -511,7 +507,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </div>
 
   <div class="disc">
-    ⚡ YADAV TRADE PRO+ ULTRA · Binance feed · EMA + Kernel + SMC + Volume + Fibonacci + Liquidity + VP + HTF + Sessions + Divergence + CVD + Scanner<br>
+    ⚡ YADAV TRADE PRO+ ULTRA · Full SMC Edition<br>
     <span style="font-size:9px;opacity:.7">Not financial advice · Always use your own risk management</span>
   </div>
 </div>
@@ -524,10 +520,10 @@ const SYMS = [
   { id:'ETH', label:'ETHUSDT', icon:'⟠', color:'#6366f1', binance:'ethusdt', decimals:2, contractValue:0.01, contractCurrency:'ETH' },
   { id:'SOL', label:'SOLUSDT', icon:'◎', color:'#9945ff', binance:'solusdt', decimals:3, contractValue:1, contractCurrency:'SOL' },
   { id:'BNB', label:'BNBUSDT', icon:'🟡', color:'#f0b90b', binance:'bnbusdt', decimals:2, contractValue:0.01, contractCurrency:'BNB' },
-  { id:'XAUT',label:'XAUTUSDT', icon:'🪙', color:'#ffd700', binance:'xautusdt',decimals:2, contractValue:0.01, contractCurrency:'XAUT' },
+  { id:'PAXG',label:'PAXGUSDT', icon:'🥇', color:'#fbbf24', binance:'paxgusdt', decimals:2, contractValue:0.01, contractCurrency:'PAXG' },
 ];
 const TIMEFRAMES = [
-  { label:'1s', binance:'1s' }, { label:'1m', binance:'1m' }, { label:'3m', binance:'3m' },
+  { label:'1m', binance:'1m' }, { label:'3m', binance:'3m' },
   { label:'5m', binance:'5m' }, { label:'15m', binance:'15m' }, { label:'30m', binance:'30m' },
   { label:'1h', binance:'1h' }, { label:'2h', binance:'2h' }, { label:'4h', binance:'4h' },
   { label:'6h', binance:'6h' }, { label:'12h', binance:'12h' }, { label:'1D', binance:'1d' },
@@ -543,7 +539,8 @@ const S = {
   liq:{}, vp:{}, patterns:{}, magnets:{}, hist:[], divergence:{}, cvd:{}, scanner:[],
   lastAlertAt:{BUY:0,SELL:0}, tvChart:null, tvSeries:{}, overlayCtx:null,
   loadInProgress:false, _fitDone:false, _lastLen:0, _priceLines:[], _lastRecompute:0,
-  show:{struct:true,liq:true,fvg:true,vp:true,sweep:true,sig:true}, _smcSeen:{},
+  chartMode: 'normal', // 'clean' | 'normal' | 'pro'
+  _smcSeen:{},
 };
 SYMS.forEach(s => { S.prices[s.id] = null; S.open24h[s.id] = null; });
 
@@ -577,6 +574,25 @@ function toast(msg, type) {
 function setText(id, v) { const e = $(id); if (e) e.textContent = v; }
 function setColor(id, c) { const e = $(id); if (e) e.style.color = c; }
 
+// ═══ CHART MODE ═══
+function setChartMode(mode) {
+  S.chartMode = mode;
+  ['clean','normal','pro'].forEach(m => {
+    const el = $('modeBtn' + m.charAt(0).toUpperCase() + m.slice(1));
+    if (el) el.classList.toggle('active', m === mode);
+  });
+  // EMA lines visibility
+  if (S.tvSeries.ema20Series) {
+    const showEma = mode !== 'clean';
+    [S.tvSeries.ema20Series, S.tvSeries.ema50Series, S.tvSeries.ema100Series, S.tvSeries.ema200Series].forEach(s => {
+      if (s) try { s.applyOptions({ visible: showEma }); } catch {}
+    });
+  }
+  redrawOverlay();
+  applyMarkers();
+}
+
+// ═══ INDICATORS ═══
 function ema(arr, n) {
   if (arr.length < n) return arr.map(() => null);
   const k = 2 / (n + 1); const out = arr.map(() => null);
@@ -629,6 +645,14 @@ function atr(candles, p=14) {
   }
   return sum / p;
 }
+function atrAt(candles, j, p = 14) {
+  let sum = 0, cnt = 0;
+  for (let k = Math.max(1, j - p + 1); k <= j; k++) {
+    const c = candles[k], pc = candles[k-1].close;
+    sum += Math.max(c.high - c.low, Math.abs(c.high - pc), Math.abs(c.low - pc)); cnt++;
+  }
+  return cnt ? sum / cnt : (candles[j].high - candles[j].low) || 1e-9;
+}
 function kernelReg(prices, h=8) {
   const n = prices.length; const res = new Array(n).fill(null);
   const adaptH = h * Math.sqrt(Math.min(n, 150) / 150);
@@ -639,44 +663,28 @@ function kernelReg(prices, h=8) {
   }
   return res;
 }
-
-// ═══════════════════════════════════════════════════════════════════════
-//  💧 CVD CALCULATION
-// ═══════════════════════════════════════════════════════════════════════
 function calcCVD(candles) {
   if (!candles || candles.length < 20) return null;
-  // Delta approximation: volume * (close - open) / (high - low)
   const deltas = candles.map(c => {
     const rng = c.high - c.low;
     if (rng === 0) return 0;
     return (c.volume || 0) * ((c.close - c.open) / rng);
   });
-  // CVD = running sum, normalized so it starts at 0
-  const cvd = [];
-  let sum = 0;
+  const cvd = []; let sum = 0;
   for (let i = 0; i < deltas.length; i++) { sum += deltas[i]; cvd.push(sum); }
   const n = cvd.length - 1;
   const last = cvd[n];
-  // 20-candle delta (net buy-sell pressure)
   const delta20 = deltas.slice(-20).reduce((a, b) => a + b, 0);
-  // Trend: compare last 10 vs previous 10 CVD
   const cvdLast10 = cvd[n] - (cvd[n-10] || 0);
   const trend = cvdLast10 > 0 ? 'RISING' : cvdLast10 < 0 ? 'FALLING' : 'FLAT';
-  // CVD vs Price divergence: last 30 candles
   const startIdx = Math.max(0, cvd.length - 30);
-  const priceStart = candles[startIdx].close, priceEnd = candles[n].close;
-  const cvdStart = cvd[startIdx], cvdEnd = cvd[n];
-  const priceChange = priceEnd - priceStart;
-  const cvdChange = cvdEnd - cvdStart;
+  const priceChange = candles[n].close - candles[startIdx].close;
+  const cvdChange = cvd[n] - cvd[startIdx];
   let cvdDiv = 'NONE';
-  if (priceChange > 0 && cvdChange < 0) cvdDiv = 'BEARISH'; // price up, cvd down → fake rally
-  else if (priceChange < 0 && cvdChange > 0) cvdDiv = 'BULLISH'; // price down, cvd up → fake drop
+  if (priceChange > 0 && cvdChange < 0) cvdDiv = 'BEARISH';
+  else if (priceChange < 0 && cvdChange > 0) cvdDiv = 'BULLISH';
   return { cvd, deltas, last, delta20, trend, cvdDiv, priceChange, cvdChange };
 }
-
-// ═══════════════════════════════════════════════════════════════════════
-//  DIVERGENCE DETECTOR
-// ═══════════════════════════════════════════════════════════════════════
 function detectDivergence(candles) {
   const result = { bull:[], bear:[], text:'➖ None', quality:'NONE' };
   if (!candles || candles.length < 40) return result;
@@ -712,91 +720,10 @@ function detectDivergence(candles) {
     result.text = '🔺 Bullish (' + result.bull.map(x => x.type).join('+') + ')';
     result.quality = result.bull.length >= 2 ? 'STRONG_BULL' : 'BULL';
   } else if (result.bull.length && result.bear.length) {
-    result.text = '⚠️ Conflicting';
-    result.quality = 'MIXED';
+    result.text = '⚠️ Conflicting'; result.quality = 'MIXED';
   }
   return result;
 }
-
-function calcSR(candles) {
-  if (candles.length < 50) return { supports:[], resistances:[], allLevels:[] };
-  const cl = candles.map(c => c.close), hi = candles.map(c => c.high), lo = candles.map(c => c.low);
-  const n = cl.length - 1, p = cl[n], tol = p * 0.003, raw = [], LB = 5;
-  for (let i = LB; i < candles.length - LB; i++) {
-    const isSH = hi.slice(i-LB, i).every(v => v <= hi[i]) && hi.slice(i+1, i+LB+1).every(v => v <= hi[i]);
-    const isSL = lo.slice(i-LB, i).every(v => v >= lo[i]) && lo.slice(i+1, i+LB+1).every(v => v >= lo[i]);
-    const rec = i / candles.length;
-    if (isSH) raw.push({ price: hi[i], type: hi[i] >= p ? 'resistance' : 'support', source: 'SWING', recency: rec });
-    if (isSL) raw.push({ price: lo[i], type: lo[i] <= p ? 'support' : 'resistance', source: 'SWING', recency: rec });
-  }
-  const e20 = ema(cl, 20), e50 = ema(cl, 50);
-  const e100 = cl.length >= 100 ? ema(cl, 100) : cl.map(() => null);
-  const e200 = cl.length >= 200 ? ema(cl, 200) : cl.map(() => null);
-  [{v:e20[n],l:'EMA20'},{v:e50[n],l:'EMA50'},{v:e100[n],l:'EMA100'},{v:e200[n],l:'EMA200'}].forEach(({v,l}) => {
-    if (!v) return; raw.push({ price: v, type: v <= p ? 'support' : 'resistance', source: l, recency: 1 });
-  });
-  const { upper:bu, lower:bl, mid:bm } = bbC(cl);
-  if (bu[n]) raw.push({ price: bu[n], type: 'resistance', source: 'BB_UP', recency: 1 });
-  if (bm[n]) raw.push({ price: bm[n], type: bm[n] <= p ? 'support' : 'resistance', source: 'BB_MID', recency: 1 });
-  if (bl[n]) raw.push({ price: bl[n], type: 'support', source: 'BB_LO', recency: 1 });
-  const clustered = []; const used = new Array(raw.length).fill(false);
-  for (let i = 0; i < raw.length; i++) {
-    if (used[i]) continue;
-    const grp = [raw[i]]; used[i] = true;
-    for (let j = i+1; j < raw.length; j++) { if (!used[j] && Math.abs(raw[j].price - raw[i].price) <= tol) { grp.push(raw[j]); used[j] = true; } }
-    const avg = grp.reduce((s,x) => s + x.price, 0) / grp.length;
-    const rec = grp.reduce((s,x) => s + x.recency, 0) / grp.length;
-    const strength = Math.min(grp.length, 5);
-    const type = avg <= p ? 'support' : 'resistance';
-    clustered.push({ price: avg, type, strength, sources: [...new Set(grp.map(x => x.source))], recency: rec });
-  }
-  const supports = clustered.filter(l => l.type === 'support').sort((a,b) => b.price - a.price);
-  const resistances = clustered.filter(l => l.type === 'resistance').sort((a,b) => a.price - b.price);
-  return { supports, resistances, allLevels: [...supports, ...resistances].sort((a,b) => b.price - a.price) };
-}
-
-function calcTradeLevels(candles, sig, sr) {
-  if (!candles.length || !sr) return null;
-  const cl = candles.map(c => c.close), n = cl.length - 1, p = cl[n];
-  const { supports, resistances } = sr;
-  const atr14 = atr(candles, 14) || p * 0.005;
-  const { upper:bu, lower:bl } = bbC(cl);
-  const bbU = bu[n], bbL = bl[n], maxSL = atr14 * 2;
-  let entry, sl, tp1, tp2, tp3, exit;
-  if (sig === 'BUY') {
-    const ns = supports[0]?.price;
-    entry = ns && ns > p * 0.995 ? Math.min(p, ns + atr14 * 0.2) : p;
-    let csl = ns ? Math.min(ns - atr14 * 0.5, entry - atr14 * 1.5) : entry - atr14 * 1.5;
-    if (Math.abs(entry - csl) > maxSL) csl = entry - maxSL;
-    sl = csl;
-    const up = resistances.map(r => r.price).filter(x => x > entry + atr14 * 0.5);
-    tp1 = up[0] ?? entry + atr14 * 1.5;
-    tp2 = up[1] ?? Math.max(entry + atr14 * 3, tp1 + atr14);
-    tp3 = up[2] ?? Math.max(entry + atr14 * 5, tp2 + atr14);
-    exit = bbU && bbU > entry && bbU < tp3 ? bbU : tp3;
-  } else if (sig === 'SELL') {
-    const nr = resistances[0]?.price;
-    entry = nr && nr < p * 1.005 ? Math.max(p, nr - atr14 * 0.2) : p;
-    let csl = nr ? Math.max(nr + atr14 * 0.5, entry + atr14 * 1.5) : entry + atr14 * 1.5;
-    if (Math.abs(csl - entry) > maxSL) csl = entry + maxSL;
-    sl = csl;
-    const dn = supports.map(x => x.price).filter(x => x < entry - atr14 * 0.5);
-    tp1 = dn[0] ?? entry - atr14 * 1.5;
-    tp2 = dn[1] ?? Math.min(entry - atr14 * 3, tp1 - atr14);
-    tp3 = dn[2] ?? Math.min(entry - atr14 * 5, tp2 - atr14);
-    exit = bbL && bbL < entry && bbL > tp3 ? bbL : tp3;
-  } else {
-    entry = p;
-    sl = supports[0]?.price ?? p - atr14 * 1.5;
-    tp1 = resistances[0]?.price ?? p + atr14 * 1.5;
-    tp2 = resistances[1]?.price ?? p + atr14 * 3;
-    tp3 = resistances[2]?.price ?? p + atr14 * 5;
-    exit = tp3;
-  }
-  const risk = Math.abs(entry - sl), reward = Math.abs(tp3 - entry);
-  return { entry, sl, tp1, tp2, tp3, exit, risk, reward, rr: risk > 0 ? (reward / risk).toFixed(2) : '---', atr14 };
-}
-
 function findPivots(candles, LB) {
   const n = candles.length, out = [];
   for (let p = LB; p < n - LB; p++) {
@@ -811,18 +738,9 @@ function findPivots(candles, LB) {
   }
   return out;
 }
-function atrAt(candles, j, p = 14) {
-  let sum = 0, cnt = 0;
-  for (let k = Math.max(1, j - p + 1); k <= j; k++) {
-    const c = candles[k], pc = candles[k-1].close;
-    sum += Math.max(c.high - c.low, Math.abs(c.high - pc), Math.abs(c.low - pc)); cnt++;
-  }
-  return cnt ? sum / cnt : (candles[j].high - candles[j].low) || 1e-9;
-}
-
 function detectStructure(candles) {
   const n = candles.length;
-  const empty = { swings:[], minorSwings:[], trend:'NEUTRAL', events:[], lastHigh:null, lastLow:null, idm:null, idms:[], trendAt:new Array(n).fill(0), lastSwingHigh:null, lastSwingLow:null, anchorI:null };
+  const empty = { swings:[], trend:'NEUTRAL', events:[], lastHigh:null, lastLow:null, idm:null, idms:[], trendAt:new Array(n).fill(0), lastSwingHigh:null, lastSwingLow:null, anchorI:null };
   if (n < 20) return empty;
   const LB = 3, EQ = 0.0006;
   const piv = findPivots(candles, LB);
@@ -837,11 +755,11 @@ function detectStructure(candles) {
       if (s.type === 'H') {
         s.label = !prevH ? 'SH' : Math.abs(s.price - prevH.price) / prevH.price <= EQ ? 'EQH' : s.price > prevH.price ? 'HH' : 'LH';
         prevH = s; lastSH = { i:s.i, price:s.price, crossed:false };
-        if (pending && pending.dir === 'BEARISH' && s.i > pending.after) { idms.push({ i:s.i, price:s.price, dir:'BEARISH', label:'IDM', taken:false, takenAt:null }); pending = null; }
+        if (pending && pending.dir === 'BEARISH' && s.i > pending.after) { idms.push({ i:s.i, price:s.price, dir:'BEARISH', taken:false, takenAt:null }); pending = null; }
       } else {
         s.label = !prevL ? 'SL' : Math.abs(s.price - prevL.price) / prevL.price <= EQ ? 'EQL' : s.price > prevL.price ? 'HL' : 'LL';
         prevL = s; lastSL = { i:s.i, price:s.price, crossed:false };
-        if (pending && pending.dir === 'BULLISH' && s.i > pending.after) { idms.push({ i:s.i, price:s.price, dir:'BULLISH', label:'IDM', taken:false, takenAt:null }); pending = null; }
+        if (pending && pending.dir === 'BULLISH' && s.i > pending.after) { idms.push({ i:s.i, price:s.price, dir:'BULLISH', taken:false, takenAt:null }); pending = null; }
       }
       swings.push(s);
     }
@@ -879,20 +797,13 @@ function detectStructure(candles) {
   const lastSwingLow = lows.length ? lows[lows.length - 1] : null;
   let lastHigh = lastSwingHigh ? lastSwingHigh.price : null, lastLow = lastSwingLow ? lastSwingLow.price : null;
   let anchorI = null;
-  if (trend === 1 && protLow) {
-    lastLow = protLow.price; anchorI = originI;
-    let m = -Infinity; for (let k = protLow.i; k < n; k++) m = Math.max(m, candles[k].high); lastHigh = m;
-  } else if (trend === -1 && protHigh) {
-    lastHigh = protHigh.price; anchorI = originI;
-    let m = Infinity; for (let k = protHigh.i; k < n; k++) m = Math.min(m, candles[k].low); lastLow = m;
-  }
+  if (trend === 1 && protLow) { lastLow = protLow.price; anchorI = originI; let m = -Infinity; for (let k = protLow.i; k < n; k++) m = Math.max(m, candles[k].high); lastHigh = m; }
+  else if (trend === -1 && protHigh) { lastHigh = protHigh.price; anchorI = originI; let m = Infinity; for (let k = protHigh.i; k < n; k++) m = Math.min(m, candles[k].low); lastLow = m; }
   const want = trend === -1 ? 'BEARISH' : 'BULLISH';
   const mine = idms.filter(m => m.dir === want);
   const idm = mine.length ? mine[mine.length - 1] : null;
-  return { swings, minorSwings:[], trend: trend === 1 ? 'UP' : trend === -1 ? 'DOWN' : 'NEUTRAL',
-    events: events.slice(-14), lastHigh, lastLow, idm, idms, trendAt, lastSwingHigh, lastSwingLow, anchorI };
+  return { swings, trend: trend === 1 ? 'UP' : trend === -1 ? 'DOWN' : 'NEUTRAL', events: events.slice(-14), lastHigh, lastLow, idm, idms, trendAt, lastSwingHigh, lastSwingLow, anchorI };
 }
-
 function detectFVG(candles, lb = 500) {
   const n = candles.length; if (n < 5) return [];
   const a = atr(candles, 14) || candles[n-1].close * 0.005;
@@ -914,7 +825,6 @@ function detectFVG(candles, lb = 500) {
   });
   return out;
 }
-
 function detectSweeps(candles) {
   const n = candles.length; if (n < 20) return [];
   const minor = findPivots(candles, 3), major = findPivots(candles, 8);
@@ -933,13 +843,10 @@ function detectSweeps(candles) {
     else if (bl) { pick = bl; side = 'BULL'; }
     else if (bh) { pick = bh; side = 'BEAR'; }
     if (!pick) continue;
-    const up = levels.filter(l => l.type === 'H' && !l.taken && l.price > c.close).map(l => l.price).sort((a, b) => a - b).slice(0, 4);
-    const dn = levels.filter(l => l.type === 'L' && !l.taken && l.price < c.close).map(l => l.price).sort((a, b) => b - a).slice(0, 4);
-    sweeps.push({ i:j, time:c.time, side, level:pick.price, levelI:pick.i, ext:pick.ext, up, dn });
+    sweeps.push({ i:j, time:c.time, side, level:pick.price, ext:pick.ext });
   }
   return sweeps;
 }
-
 function calcSmcSignals(candles, structure, fvgs, sweeps) {
   const n = candles.length, out = [];
   if (n < 30 || !sweeps.length) return out;
@@ -948,7 +855,6 @@ function calcSmcSignals(candles, structure, fvgs, sweeps) {
     const j = sw.i; if (j < 25) return;
     const c = candles[j], bull = sw.side === 'BULL';
     const rng = (c.high - c.low) || 1e-9;
-    const a = atrAt(candles, j);
     let score = 2;
     const why = [bull ? 'SSL sweep + reclaim' : 'BSL sweep + reclaim'];
     const wick = bull ? (Math.min(c.open, c.close) - c.low) / rng : (c.high - Math.max(c.open, c.close)) / rng;
@@ -958,7 +864,7 @@ function calcSmcSignals(candles, structure, fvgs, sweeps) {
     let hh = -Infinity, ll = Infinity;
     for (let k = Math.max(0, j - 60); k <= j; k++) { hh = Math.max(hh, candles[k].high); ll = Math.min(ll, candles[k].low); }
     const eq = (hh + ll) / 2;
-    if (bull ? c.close < eq : c.close > eq) { score++; why.push(bull ? 'discount zone' : 'premium zone'); }
+    if (bull ? c.close < eq : c.close > eq) { score++; why.push(bull ? 'discount' : 'premium'); }
     const fv = fvgs.some(f => f.dir === (bull ? 'BULLISH' : 'BEARISH') && f.i < j && (f.filledAt === null || f.filledAt >= j) &&
       (bull ? (c.low <= f.origTop && c.close >= f.origBottom) : (c.high >= f.origBottom && c.close <= f.origTop)));
     if (fv) { score++; why.push('FVG'); }
@@ -966,33 +872,86 @@ function calcSmcSignals(candles, structure, fvgs, sweeps) {
     const vavg = vs / Math.max(1, Math.min(20, j));
     if (vavg > 0 && (c.volume || 0) >= vavg * 1.2) { score++; why.push('volume'); }
     if (sw.ext) { score++; why.push('external liquidity'); }
-    if (structure.idms.some(m => m.i === sw.levelI && m.dir === (bull ? 'BULLISH' : 'BEARISH'))) { score++; why.push('IDM sweep'); }
     if (score < MIN_SCORE) return;
     const entry = c.close;
+    const a = atrAt(candles, j);
     let sl = bull ? c.low - a * 0.2 : c.high + a * 0.2;
     if (Math.abs(entry - sl) < a * 0.8) sl = bull ? entry - a * 0.8 : entry + a * 0.8;
     const R = Math.abs(entry - sl);
-    const tg = bull ? sw.up.filter(x => x >= entry + R * 1.2) : sw.dn.filter(x => x <= entry - R * 1.2);
-    let tp1 = (tg.length && Math.abs(tg[0] - entry) <= R * 2.5) ? tg[0] : (bull ? entry + R * 1.5 : entry - R * 1.5);
-    let tp2 = tg.find(x => bull ? x > tp1 + R * 0.5 : x < tp1 - R * 0.5);
-    if (tp2 === undefined) tp2 = bull ? Math.max(entry + R * 3, tp1 + R) : Math.min(entry - R * 3, tp1 - R);
+    let tp1 = bull ? entry + R * 1.5 : entry - R * 1.5;
     let status = 'ACTIVE';
     for (let k = j + 1; k < n; k++) {
       const x = candles[k];
       if (bull ? x.low <= sl : x.high >= sl) { status = 'SL'; break; }
       if (bull ? x.high >= tp1 : x.low <= tp1) { status = 'TP1'; break; }
     }
-    out.push({ i:j, time:c.time, dir: bull ? 'BUY' : 'SELL', side:sw.side, score, why,
-      grade: score >= 7 ? 'A' : 'B', level:sw.level, entry, sl, tp1, tp2, rr1: Math.abs(tp1 - entry) / R, status });
+    out.push({ i:j, dir: bull ? 'BUY' : 'SELL', score, why, grade: score >= 7 ? 'A' : 'B', entry, sl, tp1, rr1: Math.abs(tp1 - entry) / R, status });
   });
   return out;
 }
-function smcStats(signals) {
-  const s = { total:signals.length, tp1:0, sl:0, open:0 };
-  signals.forEach(x => { if (x.status === 'TP1') s.tp1++; else if (x.status === 'SL') s.sl++; else s.open++; });
-  return s;
+function calcSR(candles) {
+  if (candles.length < 50) return { supports:[], resistances:[] };
+  const cl = candles.map(c => c.close), hi = candles.map(c => c.high), lo = candles.map(c => c.low);
+  const n = cl.length - 1, p = cl[n], tol = p * 0.003, raw = [], LB = 5;
+  for (let i = LB; i < candles.length - LB; i++) {
+    const isSH = hi.slice(i-LB, i).every(v => v <= hi[i]) && hi.slice(i+1, i+LB+1).every(v => v <= hi[i]);
+    const isSL = lo.slice(i-LB, i).every(v => v >= lo[i]) && lo.slice(i+1, i+LB+1).every(v => v >= lo[i]);
+    if (isSH) raw.push({ price: hi[i], type: hi[i] >= p ? 'resistance' : 'support' });
+    if (isSL) raw.push({ price: lo[i], type: lo[i] <= p ? 'support' : 'resistance' });
+  }
+  const clustered = []; const used = new Array(raw.length).fill(false);
+  for (let i = 0; i < raw.length; i++) {
+    if (used[i]) continue;
+    const grp = [raw[i]]; used[i] = true;
+    for (let j = i+1; j < raw.length; j++) { if (!used[j] && Math.abs(raw[j].price - raw[i].price) <= tol) { grp.push(raw[j]); used[j] = true; } }
+    const avg = grp.reduce((s,x) => s + x.price, 0) / grp.length;
+    const type = avg <= p ? 'support' : 'resistance';
+    clustered.push({ price: avg, type });
+  }
+  const supports = clustered.filter(l => l.type === 'support').sort((a,b) => b.price - a.price);
+  const resistances = clustered.filter(l => l.type === 'resistance').sort((a,b) => a.price - b.price);
+  return { supports, resistances };
 }
-
+function calcTradeLevels(candles, sig, sr) {
+  if (!candles.length || !sr) return null;
+  const cl = candles.map(c => c.close), n = cl.length - 1, p = cl[n];
+  const { supports, resistances } = sr;
+  const atr14 = atr(candles, 14) || p * 0.005;
+  const maxSL = atr14 * 2;
+  let entry, sl, tp1, tp2, tp3, exit;
+  if (sig === 'BUY') {
+    const ns = supports[0]?.price;
+    entry = ns && ns > p * 0.995 ? Math.min(p, ns + atr14 * 0.2) : p;
+    let csl = ns ? Math.min(ns - atr14 * 0.5, entry - atr14 * 1.5) : entry - atr14 * 1.5;
+    if (Math.abs(entry - csl) > maxSL) csl = entry - maxSL;
+    sl = csl;
+    const up = resistances.map(r => r.price).filter(x => x > entry + atr14 * 0.5);
+    tp1 = up[0] ?? entry + atr14 * 1.5;
+    tp2 = up[1] ?? Math.max(entry + atr14 * 3, tp1 + atr14);
+    tp3 = up[2] ?? Math.max(entry + atr14 * 5, tp2 + atr14);
+    exit = tp3;
+  } else if (sig === 'SELL') {
+    const nr = resistances[0]?.price;
+    entry = nr && nr < p * 1.005 ? Math.max(p, nr - atr14 * 0.2) : p;
+    let csl = nr ? Math.max(nr + atr14 * 0.5, entry + atr14 * 1.5) : entry + atr14 * 1.5;
+    if (Math.abs(csl - entry) > maxSL) csl = entry + maxSL;
+    sl = csl;
+    const dn = supports.map(x => x.price).filter(x => x < entry - atr14 * 0.5);
+    tp1 = dn[0] ?? entry - atr14 * 1.5;
+    tp2 = dn[1] ?? Math.min(entry - atr14 * 3, tp1 - atr14);
+    tp3 = dn[2] ?? Math.min(entry - atr14 * 5, tp2 - atr14);
+    exit = tp3;
+  } else {
+    entry = p;
+    sl = supports[0]?.price ?? p - atr14 * 1.5;
+    tp1 = resistances[0]?.price ?? p + atr14 * 1.5;
+    tp2 = resistances[1]?.price ?? p + atr14 * 3;
+    tp3 = resistances[2]?.price ?? p + atr14 * 5;
+    exit = tp3;
+  }
+  const risk = Math.abs(entry - sl), reward = Math.abs(tp3 - entry);
+  return { entry, sl, tp1, tp2, tp3, exit, risk, reward, rr: risk > 0 ? (reward / risk).toFixed(2) : '---' };
+}
 function calcPositions(candles, structure, fvgs) {
   if (!candles.length) return { long:null, short:null, scalper:null };
   const cl = candles.map(c => c.close), p = cl[cl.length - 1];
@@ -1001,25 +960,22 @@ function calcPositions(candles, structure, fvgs) {
   const mid = f => (f.top + f.bottom) / 2;
   const bf = uf.filter(f => f.dir === 'BULLISH' && mid(f) < p).sort((a, b) => mid(b) - mid(a))[0];
   const sf = uf.filter(f => f.dir === 'BEARISH' && mid(f) > p).sort((a, b) => mid(a) - mid(b))[0];
-  const idmTxt = structure.idm ? (structure.idm.taken ? ' + IDM taken' : ' + IDM open') : '';
   let long = null, short = null;
   if (structure.trend === 'UP') {
     const entry = bf ? mid(bf) : p;
     let sl = structure.lastLow != null ? structure.lastLow - atr14 * 0.2 : entry - atr14 * 1.5;
-    if (!(sl < entry) || entry - sl > atr14 * 4) sl = bf ? Math.min(bf.bottom - atr14 * 0.3, entry - atr14 * 0.8) : entry - atr14 * 1.5;
     if (!(sl < entry)) sl = entry - atr14 * 1.5;
     const tp = structure.lastHigh && structure.lastHigh > entry ? structure.lastHigh : entry + atr14 * 3;
     const rr = entry !== sl ? (Math.abs(tp - entry) / Math.abs(entry - sl)).toFixed(2) : '---';
-    long = { entry, sl, tp, rr, basis: (bf ? 'Bullish FVG + UP structure' : 'UP structure') + idmTxt };
+    long = { entry, sl, tp, rr, basis: bf ? 'FVG + UP' : 'UP trend' };
   }
   if (structure.trend === 'DOWN') {
     const entry = sf ? mid(sf) : p;
     let sl = structure.lastHigh != null ? structure.lastHigh + atr14 * 0.2 : entry + atr14 * 1.5;
-    if (!(sl > entry) || sl - entry > atr14 * 4) sl = sf ? Math.max(sf.top + atr14 * 0.3, entry + atr14 * 0.8) : entry + atr14 * 1.5;
     if (!(sl > entry)) sl = entry + atr14 * 1.5;
     const tp = structure.lastLow && structure.lastLow < entry ? structure.lastLow : entry - atr14 * 3;
     const rr = entry !== sl ? (Math.abs(entry - tp) / Math.abs(sl - entry)).toFixed(2) : '---';
-    short = { entry, sl, tp, rr, basis: (sf ? 'Bearish FVG + DOWN structure' : 'DOWN structure') + idmTxt };
+    short = { entry, sl, tp, rr, basis: sf ? 'FVG + DOWN' : 'DOWN trend' };
   }
   const nf = uf.slice().sort((a, b) => Math.abs(mid(a) - p) - Math.abs(mid(b) - p))[0];
   let scalper = null;
@@ -1033,7 +989,6 @@ function calcPositions(candles, structure, fvgs) {
   }
   return { long, short, scalper };
 }
-
 function calcSig(candles) {
   if (candles.length < 50) return { sig:'HOLD', strength:0, ind:{}, insufficientData:true, needed:50, have:candles.length };
   const cl = candles.map(c => c.close);
@@ -1071,7 +1026,6 @@ function calcSig(candles) {
       e20: e20[n], e50: e50[n], e100: e100 ? e100[n] : null, e200: e200 ? e200[n] : null,
       krVal: kr[n], krRising: krs, bu: bu[n], bl: bl[n], bm: bm[n], momPct: mp.toFixed(2) } };
 }
-
 function calcFibonacci(candles) {
   if (candles.length < 30) return null;
   const slice = candles.slice(-60);
@@ -1115,10 +1069,9 @@ function calcLiquidity(candles) {
   const items = minor.map(pv => {
     let taken = false;
     for (let j = pv.conf; j < n; j++) { if (pv.type === 'H' ? candles[j].high > pv.price : candles[j].low < pv.price) { taken = true; break; } }
-    return { price:pv.price, type:pv.type, kind:pv.type, i:pv.i, swept:taken, level: ext.has(pv.type + pv.i) ? 'EXT' : 'INT', eq:false };
+    return { price:pv.price, type:pv.type, kind:pv.type, i:pv.i, swept:taken, level: ext.has(pv.type + pv.i) ? 'EXT' : 'INT' };
   });
   const active = items.filter(x => !x.swept);
-  active.forEach(a => { a.eq = active.some(b => b !== a && b.type === a.type && Math.abs(b.price - a.price) / a.price <= 0.001); });
   const bsl = active.filter(x => x.type === 'H' && x.price > p).sort((a, b) => a.price - b.price);
   const ssl = active.filter(x => x.type === 'L' && x.price < p).sort((a, b) => b.price - a.price);
   const pick = lvl => [...bsl.filter(x => x.level === lvl).slice(0, 2), ...ssl.filter(x => x.level === lvl).slice(0, 2)]
@@ -1169,9 +1122,8 @@ function altSwings(candles, LB = 5) {
   const out = [];
   raw.forEach(sw => {
     const last = out[out.length - 1];
-    if (last && last.type === sw.type) {
-      if ((sw.type === 'H' && sw.price > last.price) || (sw.type === 'L' && sw.price < last.price)) out[out.length - 1] = sw;
-    } else out.push(sw);
+    if (last && last.type === sw.type) { if ((sw.type === 'H' && sw.price > last.price) || (sw.type === 'L' && sw.price < last.price)) out[out.length - 1] = sw; }
+    else out.push(sw);
   });
   return out;
 }
@@ -1199,7 +1151,7 @@ function detectXABCD(candles) {
     else if (within(AB, 0.382, 0.5) && within(bcR, 0.382, 0.886) && near(AD, 0.886, 0.05) && within(CD, 1.618, 2.618)) { name = 'Bat'; conf = 80; }
     else if (near(AB, 0.786, 0.05) && within(bcR, 0.382, 0.886) && within(AD, 1.27, 1.618) && within(CD, 1.618, 2.24)) { name = 'Butterfly'; conf = 74; }
     else if (within(AB, 0.382, 0.618) && within(bcR, 0.382, 0.886) && near(AD, 1.618, 0.08) && within(CD, 2.24, 3.618)) { name = 'Crab'; conf = 82; }
-    if (name) patterns.push({ name, dir: sg > 0 ? 'BULL' : 'BEAR', conf, points: [X, A, B, C, D].map(p => ({ price: p.price, type: p.type, i: p.i })), D: D.price });
+    if (name) patterns.push({ name, dir: sg > 0 ? 'BULL' : 'BEAR', conf });
   }
   return patterns.slice(-3);
 }
@@ -1215,13 +1167,10 @@ function detectHS(candles) {
     const neckline = (s1.price + s3.price) / 2;
     if (Math.abs(s1.price - s3.price) / Math.abs(head) > 0.04) continue;
     if (Math.abs(ls - rs) / Math.abs(head) > 0.05) continue;
-    if (s0.type === 'H') {
-      if (head > Math.max(ls, rs) * 1.005 && Math.max(ls, rs) > neckline)
-        patterns.push({ name: 'H&S TOP', dir: 'BEAR', conf: 72, neckline, target: neckline - (head - neckline) });
-    } else {
-      if (head < Math.min(ls, rs) * 0.995 && Math.min(ls, rs) < neckline)
-        patterns.push({ name: 'INV H&S', dir: 'BULL', conf: 72, neckline, target: neckline + (neckline - head) });
-    }
+    if (s0.type === 'H' && head > Math.max(ls, rs) * 1.005 && Math.max(ls, rs) > neckline)
+      patterns.push({ name: 'H&S TOP', dir: 'BEAR', conf: 72 });
+    else if (s0.type === 'L' && head < Math.min(ls, rs) * 0.995 && Math.min(ls, rs) < neckline)
+      patterns.push({ name: 'INV H&S', dir: 'BULL', conf: 72 });
   }
   return patterns.slice(-2);
 }
@@ -1234,16 +1183,6 @@ function calcMagnets(candles, vp) {
     const top = [...vp.buckets].sort((a,b) => b.vol - a.vol).slice(0, 3);
     top.forEach((b, i) => { if (Math.abs(b.price - vp.poc) > 0.001) magnets.push({ price: b.price, label: 'HVN', strength: 2 }); });
   }
-  const hi = candles.map(c => c.high), lo = candles.map(c => c.low);
-  const LB = 5; const swings = [];
-  for (let i = candles.length - 60; i < candles.length - LB; i++) {
-    if (i < LB) continue;
-    const isSH = hi.slice(i-LB, i).every(v => v <= hi[i]) && hi.slice(i+1, i+LB+1).every(v => v <= hi[i]);
-    const isSL = lo.slice(i-LB, i).every(v => v >= lo[i]) && lo.slice(i+1, i+LB+1).every(v => v >= lo[i]);
-    if (isSH) swings.push({ price: hi[i], label: 'Swing High', strength: 2 });
-    if (isSL) swings.push({ price: lo[i], label: 'Swing Low', strength: 2 });
-  }
-  swings.slice(-4).forEach(s => magnets.push(s));
   const step = p > 1000 ? 500 : p > 100 ? 50 : p > 10 ? 5 : 1;
   magnets.push({ price: Math.ceil(p / step) * step, label: 'Round', strength: 1 });
   magnets.push({ price: Math.floor(p / step) * step, label: 'Round', strength: 1 });
@@ -1251,12 +1190,16 @@ function calcMagnets(candles, vp) {
     .sort((a,b) => Math.abs(a.price - p) - Math.abs(b.price - p)).slice(0, 6);
 }
 
+// ═══ FETCH ═══
 async function fetchKlines(symId, tfLabel, lim=500) {
   const s = SYMS.find(x => x.id === symId);
   const t = TIMEFRAMES.find(x => x.label === tfLabel);
   if (!s || !t) return [];
   try {
-    const r = await fetch(`${BINANCE_REST}/klines?symbol=${s.binance.toUpperCase()}&interval=${t.binance}&limit=${lim}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const r = await fetch(`${BINANCE_REST}/klines?symbol=${s.binance.toUpperCase()}&interval=${t.binance}&limit=${lim}`, { signal: controller.signal });
+    clearTimeout(timeoutId);
     if (!r.ok) throw 0;
     const raw = await r.json();
     if (!Array.isArray(raw)) return [];
@@ -1266,158 +1209,56 @@ async function fetchKlines(symId, tfLabel, lim=500) {
 async function fetch24h(symId) {
   const s = SYMS.find(x => x.id === symId); if (!s) return null;
   try {
-    const r = await fetch(`${BINANCE_REST}/ticker/24hr?symbol=${s.binance.toUpperCase()}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const r = await fetch(`${BINANCE_REST}/ticker/24hr?symbol=${s.binance.toUpperCase()}`, { signal: controller.signal });
+    clearTimeout(timeoutId);
     if (!r.ok) return null;
     const d = await r.json();
     return { price: +d.lastPrice, open: +d.openPrice };
   } catch { return null; }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-//  📡 MULTI-SYMBOL SCANNER
-// ═══════════════════════════════════════════════════════════════════════
-async function fetchScannerData() {
-  const tf = S.activeTf;
-  const results = [];
-  const badge = $('scanBadge');
-  if (badge) badge.textContent = 'SCANNING...';
-  for (const sym of SYMS) {
-    try {
-      const cd = await fetchKlines(sym.id, tf, 200);
-      if (!cd || cd.length < 60) { results.push({ sym, sig:'HOLD', strength:0, price:null, trend:'--', div:'NONE' }); continue; }
-      const sig = calcSig(cd);
-      const div = detectDivergence(cd);
-      const cl = cd.map(c => c.close);
-      const n = cl.length - 1;
-      const e20 = ema(cl, 20), e50 = ema(cl, 50);
-      let trend = '—';
-      if (e20[n] && e50[n] && cl[n] > e20[n] && e20[n] > e50[n]) trend = '↗';
-      else if (e20[n] && e50[n] && cl[n] < e20[n] && e20[n] < e50[n]) trend = '↘';
-      results.push({ sym, sig: sig.sig, strength: sig.strength, price: cl[n], trend, div: div.quality });
-    } catch (e) { results.push({ sym, sig:'HOLD', strength:0, price:null, trend:'--', div:'NONE' }); }
-  }
-  // Sort: highest strength first (BUY/SELL above HOLD)
-  results.sort((a, b) => {
-    const aActive = a.sig !== 'HOLD' ? 1 : 0;
-    const bActive = b.sig !== 'HOLD' ? 1 : 0;
-    if (aActive !== bActive) return bActive - aActive;
-    return b.strength - a.strength;
-  });
-  S.scanner = results;
-  renderScanner();
-  if (badge) badge.textContent = results.filter(r => r.sig !== 'HOLD').length + ' SIGNALS';
+// ═══ WEBSOCKET ═══
+function buildWsUrl() {
+  const s = asd(), t = atd(); if (!s || !t) return null;
+  return BINANCE_WS + `${s.binance}@kline_${t.binance}`;
 }
-
-function renderScanner() {
-  const el = $('scanList'); if (!el) return;
-  const list = S.scanner || [];
-  if (!list.length) { el.innerHTML = '<div style="font-size:10px;color:var(--muted);font-family:\'JetBrains Mono\',monospace;padding:8px 0">No data yet...</div>'; return; }
-  el.innerHTML = list.map(r => {
-    const isActive = r.sym.id === S.activeSym;
-    const sigCls = r.sig.toLowerCase();
-    // Divergence indicator: if signal and divergence conflict → show ⚠️
-    let divIcon = '';
-    if (r.sig === 'BUY' && (r.div === 'BEAR' || r.div === 'STRONG_BEAR')) divIcon = ' <span style="color:var(--red)" title="Fake BUY">⚠️</span>';
-    else if (r.sig === 'SELL' && (r.div === 'BULL' || r.div === 'STRONG_BULL')) divIcon = ' <span style="color:var(--red)" title="Fake SELL">⚠️</span>';
-    else if (r.sig === 'BUY' && (r.div === 'BULL' || r.div === 'STRONG_BULL')) divIcon = ' <span style="color:var(--green)" title="Confirmed">🔥</span>';
-    else if (r.sig === 'SELL' && (r.div === 'BEAR' || r.div === 'STRONG_BEAR')) divIcon = ' <span style="color:var(--green)" title="Confirmed">🔥</span>';
-    const trendColor = r.trend === '↗' ? 'var(--green)' : r.trend === '↘' ? 'var(--red)' : 'var(--muted)';
-    const strColor = r.sig === 'BUY' ? 'var(--green)' : r.sig === 'SELL' ? 'var(--red)' : 'var(--muted)';
-    return `<div class="scan-row${isActive ? ' active' : ''}" data-sym="${r.sym.id}">
-      <span class="scan-sym" style="color:${r.sym.color}">${r.sym.icon} ${r.sym.id}</span>
-      <span class="scan-price">${r.price != null ? '$' + fmtP(r.price, r.sym.id) : '---'}</span>
-      <span class="scan-sig ${sigCls}">${r.sig}${divIcon}</span>
-      <span class="scan-str" style="color:${strColor}">${r.strength}%</span>
-      <span class="scan-trend" style="color:${trendColor}">${r.trend}</span>
-    </div>`;
-  }).join('');
-  el.querySelectorAll('.scan-row').forEach(row => row.addEventListener('click', () => {
-    const sym = row.dataset.sym;
-    if (sym && sym !== S.activeSym) switchSym(sym);
-  }));
+function connectWs() {
+  disconnectWs();
+  const url = buildWsUrl(); if (!url) return;
+  try { S.ws = new WebSocket(url); } catch { scheduleReconnect(); return; }
+  S.ws.onopen = () => { S.connected = true; updateConn(); };
+  S.ws.onmessage = e => { let m; try { m = JSON.parse(e.data); } catch { return; } const k = m?.data?.k; if (!k) return; handleLive(k); };
+  S.ws.onclose = () => { S.connected = false; updateConn(); scheduleReconnect(); };
+  S.ws.onerror = () => { try { S.ws.close(); } catch {} };
 }
-
-// ═══════════════════════════════════════════════════════════════════════
-//  💧 CVD RENDER
-// ═══════════════════════════════════════════════════════════════════════
-function drawCVD() {
-  const cv = $('cvdChart'); if (!cv) return;
+function disconnectWs() {
+  if (S.ws) { S.ws.onclose = null; S.ws.onerror = null; S.ws.onmessage = null; try { S.ws.close(); } catch {} S.ws = null; }
+}
+function scheduleReconnect() {
+  clearTimeout(S.retryTimer);
+  S.retryTimer = setTimeout(() => { if (!document.hidden) connectWs(); }, 3000);
+}
+function handleLive(k) {
   const sk = ak();
-  const cvdData = S.cvd[sk];
-  if (!cvdData) return;
-  const w = cv.clientWidth, h = cv.clientHeight;
-  if (!w || !h) return;
-  const dpr = window.devicePixelRatio || 1;
-  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
-  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-  const N = Math.min(120, cvdData.cvd.length), off = cvdData.cvd.length - N;
-  const slice = cvdData.cvd.slice(off);
-  const minV = Math.min(...slice, 0);
-  const maxV = Math.max(...slice, 0);
-  const range = maxV - minV || 1;
-  const X = i => 2 + (i / (N - 1)) * (w - 4);
-  const Y = v => (h - 4) - ((v - minV) / range) * (h - 8);
-  // Zero line
-  const yZero = Y(0);
-  g.strokeStyle = 'rgba(100,116,139,.5)'; g.lineWidth = 1; g.setLineDash([3, 3]);
-  g.beginPath(); g.moveTo(0, yZero); g.lineTo(w, yZero); g.stroke(); g.setLineDash([]);
-  // Fill area above/below zero
-  for (let i = 0; i < N - 1; i++) {
-    const x1 = X(i), x2 = X(i + 1);
-    const y1 = Y(slice[i]), y2 = Y(slice[i + 1]);
-    const pos = slice[i] >= 0;
-    g.fillStyle = pos ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.15)';
-    g.beginPath(); g.moveTo(x1, yZero); g.lineTo(x1, y1); g.lineTo(x2, y2); g.lineTo(x2, yZero); g.closePath(); g.fill();
-  }
-  // Line
-  g.strokeStyle = '#06b6d4'; g.lineWidth = 2; g.beginPath();
-  for (let i = 0; i < N; i++) {
-    const x = X(i), y = Y(slice[i]);
-    if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
-  }
-  g.stroke();
-  // Current dot
-  const lastY = Y(slice[N - 1]);
-  g.fillStyle = slice[N - 1] >= 0 ? '#10b981' : '#ef4444';
-  g.beginPath(); g.arc(X(N - 1), lastY, 3, 0, 6.2832); g.fill();
+  if (!S.candles[sk]) S.candles[sk] = [];
+  const c = { time: k.t, open: +k.o, high: +k.h, low: +k.l, close: +k.c, volume: +k.v };
+  const a = S.candles[sk];
+  const last = a[a.length - 1];
+  if (last && last.time === c.time) a[a.length - 1] = c;
+  else if (!last || c.time > last.time) { a.push(c); if (a.length > 600) a.shift(); }
+  S.prices[S.activeSym] = c.close;
+  try { updateChartLast(c); } catch {}
+  updateLive(); updateOhlc(c); throttledRecompute();
+}
+function updateConn() {
+  const e = $('liveLabel'); if (!e) return;
+  e.textContent = S.connected ? 'LIVE' : 'OFFLINE';
+  e.style.color = S.connected ? 'var(--green)' : 'var(--red)';
 }
 
-function renderCVD() {
-  const sk = ak();
-  const d = S.candles[sk];
-  if (!d || !d.length) return;
-  const cvdData = calcCVD(d);
-  if (!cvdData) return;
-  S.cvd[sk] = cvdData;
-  setText('cvdValue', '$' + fmtVol(cvdData.last));
-  setText('cvdDelta', '$' + fmtVol(cvdData.delta20));
-  const trendEl = $('cvdTrend');
-  if (trendEl) {
-    trendEl.textContent = cvdData.trend;
-    trendEl.style.color = cvdData.trend === 'RISING' ? 'var(--green)' : cvdData.trend === 'FALLING' ? 'var(--red)' : 'var(--muted)';
-  }
-  const badge = $('cvdBadge');
-  if (badge) {
-    let text = 'NEUTRAL', col = 'var(--muted)', bg = 'rgba(100,116,139,.1)';
-    if (cvdData.cvdDiv === 'BEARISH') { text = '⚠️ FAKE RALLY'; col = 'var(--red)'; bg = 'rgba(239,68,68,.15)'; }
-    else if (cvdData.cvdDiv === 'BULLISH') { text = '⚠️ FAKE DROP'; col = 'var(--green)'; bg = 'rgba(16,185,129,.15)'; }
-    else if (cvdData.trend === 'RISING') { text = '🔥 BUYERS'; col = 'var(--green)'; bg = 'rgba(16,185,129,.12)'; }
-    else if (cvdData.trend === 'FALLING') { text = '🔻 SELLERS'; col = 'var(--red)'; bg = 'rgba(239,68,68,.12)'; }
-    badge.textContent = text;
-    badge.style.color = col;
-    badge.style.background = bg;
-  }
-  const msg = $('cvdMsg');
-  if (msg) {
-    if (cvdData.cvdDiv === 'BEARISH') msg.innerHTML = '⚠️ <b style="color:var(--red)">Price UP but CVD DOWN</b> — rally may be fake. Sellers absorbing.';
-    else if (cvdData.cvdDiv === 'BULLISH') msg.innerHTML = '⚠️ <b style="color:var(--green)">Price DOWN but CVD UP</b> — drop may be fake. Buyers absorbing.';
-    else if (cvdData.trend === 'RISING' && cvdData.priceChange > 0) msg.innerHTML = '🔥 <b style="color:var(--green)">Healthy uptrend</b> — buyers in control, CVD confirms.';
-    else if (cvdData.trend === 'FALLING' && cvdData.priceChange < 0) msg.innerHTML = '🔻 <b style="color:var(--red)">Healthy downtrend</b> — sellers in control, CVD confirms.';
-    else msg.innerHTML = '➖ CVD and price aligned. No divergence.';
-  }
-  try { drawCVD(); } catch {}
-}
-
+// ═══ CHART ═══
 function initChart() {
   const c = $('tvChart'); if (!c) return;
   if (typeof LightweightCharts === 'undefined') { setStatus('CHART LIB FAILED', 'err'); return; }
@@ -1444,13 +1285,12 @@ function initChart() {
   const e50s = ch.addLineSeries({ color: '#3b82f6', lineWidth: 1.5, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
   const e100s = ch.addLineSeries({ color: '#06b6d4', lineWidth: 1.2, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
   const e200s = ch.addLineSeries({ color: '#64748b', lineWidth: 1, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
-  const krs = ch.addLineSeries({ color: '#10b981', lineWidth: 2.5, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
   S.tvChart = ch;
-  S.tvSeries = { candleSeries: cs, volumeSeries: vs, ema20Series: e20s, ema50Series: e50s, ema100Series: e100s, ema200Series: e200s, krSeries: krs };
+  S.tvSeries = { candleSeries: cs, volumeSeries: vs, ema20Series: e20s, ema50Series: e50s, ema100Series: e100s, ema200Series: e200s };
   let _ovRaf = false;
   const scheduleOv = () => { if (_ovRaf) return; _ovRaf = true; requestAnimationFrame(() => { _ovRaf = false; redrawOverlay(); }); };
   ch.timeScale().subscribeVisibleLogicalRangeChange(scheduleOv);
-  ['touchmove', 'wheel', 'pointermove'].forEach(ev => c.addEventListener(ev, scheduleOv, { passive: true }));
+  ['touchmove','wheel','pointermove'].forEach(ev => c.addEventListener(ev, scheduleOv, { passive: true }));
   ch.subscribeCrosshairMove(p => {
     if (!p || !p.time) return;
     const d = S.candles[ak()]; if (!d) return;
@@ -1461,15 +1301,11 @@ function initChart() {
     if (w > 0 && h > 0) { ch.applyOptions({ width: w, height: h }); resizeOv(); redrawOverlay(); }
   }).observe(c);
 }
-
 function updateChartData() {
   if (!S.tvChart) return;
-  const kkey = ak();
-  const d = S.candles[kkey] || [];
+  const d = S.candles[ak()] || [];
   const s = asd(); if (!s) return;
-  if (S._priceLines && S._priceLines.length) {
-    S._priceLines.forEach(p => { try { S.tvSeries.candleSeries.removePriceLine(p); } catch {} });
-  }
+  if (S._priceLines && S._priceLines.length) S._priceLines.forEach(p => { try { S.tvSeries.candleSeries.removePriceLine(p); } catch {} });
   S._priceLines = [];
   try { S.tvSeries.candleSeries.setMarkers([]); } catch {}
   S.tvSeries.candleSeries.setData([]);
@@ -1478,11 +1314,10 @@ function updateChartData() {
   S.tvSeries.ema50Series.setData([]);
   S.tvSeries.ema100Series.setData([]);
   S.tvSeries.ema200Series.setData([]);
-  S.tvSeries.krSeries.setData([]);
   try { S.tvChart.priceScale('right').applyOptions({ autoScale: true }); } catch {}
   try { S.tvChart.priceScale('vol').applyOptions({ autoScale: true }); } catch {}
   S.tvSeries.candleSeries.setData(d.map(c => ({ time: Math.floor(c.time/1000), open: c.open, high: c.high, low: c.low, close: c.close })));
-  S.tvSeries.volumeSeries.setData(d.map(c => ({ time: Math.floor(c.time/1000), value: c.volume, color: c.close >= c.open ? 'rgba(16,185,129,.85)' : 'rgba(239,68,68,.85)' })));
+  S.tvSeries.volumeSeries.setData(d.map(c => ({ time: Math.floor(c.time/1000), value: c.volume, color: c.close >= c.open ? 'rgba(16,185,129,.7)' : 'rgba(239,68,68,.7)' })));
   const cl = d.map(c => c.close);
   const ts = d.map(c => Math.floor(c.time/1000));
   const ln = v => v.map((x, i) => ({ time: ts[i], value: x })).filter(y => y.value !== null && isFinite(y.value));
@@ -1490,36 +1325,18 @@ function updateChartData() {
   S.tvSeries.ema50Series.setData(ln(ema(cl, 50)));
   S.tvSeries.ema100Series.setData(ln(cl.length >= 100 ? ema(cl, 100) : cl.map(() => null)));
   S.tvSeries.ema200Series.setData(ln(cl.length >= 200 ? ema(cl, 200) : cl.map(() => null)));
-  S.tvSeries.krSeries.setData(ln(kernelReg(cl, 8)));
   applyPriceLines();
   applyMarkers();
   setTimeout(() => { try { S.tvChart.timeScale().fitContent(); } catch {} }, 50);
-  S._fitDone = true;
-  S._lastLen = d.length;
+  S._fitDone = true; S._lastLen = d.length;
   resizeOv(); redrawOverlay(); updateLive();
 }
-
 function updateChartLast(c) {
   if (!S.tvChart || !S.tvSeries.candleSeries) return;
   const t = Math.floor(c.time/1000);
   S.tvSeries.candleSeries.update({ time: t, open: c.open, high: c.high, low: c.low, close: c.close });
-  S.tvSeries.volumeSeries.update({ time: t, value: c.volume, color: c.close >= c.open ? 'rgba(16,185,129,.55)' : 'rgba(239,68,68,.55)' });
-  const d = S.candles[ak()];
-  if (d && d.length > 20) {
-    const cl = d.map(c => c.close);
-    const e20 = ema(cl, 20), e50 = ema(cl, 50);
-    const e100 = d.length >= 100 ? ema(cl, 100) : null;
-    const e200 = d.length >= 200 ? ema(cl, 200) : null;
-    const kr = kernelReg(cl, 8);
-    const li = cl.length - 1;
-    if (e20[li] != null) S.tvSeries.ema20Series.update({ time: t, value: e20[li] });
-    if (e50[li] != null) S.tvSeries.ema50Series.update({ time: t, value: e50[li] });
-    if (e100 && e100[li] != null) S.tvSeries.ema100Series.update({ time: t, value: e100[li] });
-    if (e200 && e200[li] != null) S.tvSeries.ema200Series.update({ time: t, value: e200[li] });
-    if (kr[li] != null) S.tvSeries.krSeries.update({ time: t, value: kr[li] });
-  }
+  S.tvSeries.volumeSeries.update({ time: t, value: c.volume, color: c.close >= c.open ? 'rgba(16,185,129,.5)' : 'rgba(239,68,68,.5)' });
 }
-
 function applyPriceLines() {
   if (!S.tvSeries.candleSeries) return;
   const cs = S.tvSeries.candleSeries;
@@ -1537,7 +1354,6 @@ function applyPriceLines() {
   add(t.tp2, 'rgba(16,185,129,.8)', 'TP2', 1, 1);
   add(t.tp3, '#10b981', 'TP3', 1, 2);
 }
-
 function resizeOv() {
   const c = $('tvChart'), cv = $('overlayCanvas'); if (!c || !cv) return;
   const dpr = window.devicePixelRatio || 1;
@@ -1568,6 +1384,8 @@ function redrawOverlay() {
   ctx.clearRect(0, 0, w, h);
   const sk = ak(), smc = S.smc[sk], d = S.candles[sk];
   if (!smc || !d || !d.length) return;
+  if (S.chartMode === 'clean') return; // Only candles + vol + price lines
+
   const ts = S.tvChart.timeScale(), cs = S.tvSeries.candleSeries;
   let pw = 56; try { pw = S.tvChart.priceScale('right').width() || 56; } catch {}
   const R = w - pw - 2;
@@ -1575,10 +1393,14 @@ function redrawOverlay() {
   const tY = p => { const y = cs.priceToCoordinate(p); return (y === null || y === undefined) ? null : y; };
   const txt = (t, x, y, col, size, align) => { ctx.font = 'bold ' + (size || 9) + 'px JetBrains Mono, monospace'; ctx.textAlign = align || 'center'; ctx.fillStyle = col; ctx.fillText(t, x, y); };
   const hline = (x1, x2, y, col, dash, lw) => { ctx.strokeStyle = col; ctx.lineWidth = lw || 1; ctx.setLineDash(dash || []); ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke(); ctx.setLineDash([]); };
-  const sh = S.show, st = smc.structure, pr = d[d.length - 1].close;
+  const st = smc.structure, pr = d[d.length - 1].close;
+  const pro = S.chartMode === 'pro';
+
   ctx.save(); ctx.beginPath(); ctx.rect(0, 0, R, h); ctx.clip();
+
+  // VOLUME PROFILE (PRO only)
   const vp = S.vp[sk];
-  if (sh.vp && vp) {
+  if (pro && vp) {
     const x0 = tX(vp.startI);
     if (x0 !== null) {
       const xs = Math.max(0, x0), maxV = Math.max(...vp.buckets.map(b => b.vol)) || 1;
@@ -1586,53 +1408,45 @@ function redrawOverlay() {
       vp.buckets.forEach(b => {
         const y1 = tY(b.price + vp.step / 2), y2 = tY(b.price - vp.step / 2);
         if (y1 === null || y2 === null) return;
-        const inVA = b.price >= vp.val - 1e-9 && b.price <= vp.vah + 1e-9, isPoc = b.price === vp.poc;
-        ctx.fillStyle = isPoc ? 'rgba(245,158,11,.38)' : inVA ? 'rgba(59,130,246,.24)' : 'rgba(100,116,139,.16)';
+        const isPoc = b.price === vp.poc;
+        ctx.fillStyle = isPoc ? 'rgba(245,158,11,.35)' : 'rgba(59,130,246,.18)';
         ctx.fillRect(xs, y1, Math.max(1, (b.vol / maxV) * maxLen), Math.max(1, y2 - y1 - 1));
       });
-      const yP = tY(vp.poc), yH = tY(vp.vah), yL = tY(vp.val);
-      if (yP !== null) { hline(xs, R, yP, 'rgba(245,158,11,.85)', [], 1.2); txt('POC', R - 3, yP - 3, '#f59e0b', 8, 'right'); }
-      if (yH !== null) { hline(xs, R, yH, 'rgba(59,130,246,.6)', [4, 3], 1); txt('VAH', R - 3, yH - 3, '#60a5fa', 8, 'right'); }
-      if (yL !== null) { hline(xs, R, yL, 'rgba(59,130,246,.6)', [4, 3], 1); txt('VAL', R - 3, yL + 9, '#60a5fa', 8, 'right'); }
-      const yT = tY(vp.hi);
-      if (yT !== null) txt('FRVP', xs + 3, yT + 9, 'rgba(148,163,184,.9)', 8, 'left');
     }
   }
-  if (sh.fvg) {
+  // FVG (PRO only)
+  if (pro) {
     const mid = f => (f.top + f.bottom) / 2;
-    smc.fvgs.filter(f => !f.filled).sort((a, b) => Math.abs(mid(a) - pr) - Math.abs(mid(b) - pr)).slice(0, 6).forEach(f => {
+    smc.fvgs.filter(f => !f.filled).sort((a,b) => Math.abs(mid(a)-pr)-Math.abs(mid(b)-pr)).slice(0, 5).forEach(f => {
       const x1 = tX(f.start), yT = tY(f.top), yB = tY(f.bottom);
       if (x1 === null || yT === null || yB === null) return;
       const xs = Math.max(0, x1); if (xs >= R) return;
       const bull = f.dir === 'BULLISH', col = bull ? 'rgba(16,185,129,' : 'rgba(239,68,68,';
-      ctx.fillStyle = col + '.11)'; ctx.fillRect(xs, yT, R - xs, yB - yT);
-      hline(xs, R, yT, col + '.45)', [3, 3], 1); hline(xs, R, yB, col + '.45)', [3, 3], 1);
-      hline(xs, R, (yT + yB) / 2, col + '.3)', [1, 3], 1);
-      txt('FVG', R - 4, yT + 9, col + '.9)', 8, 'right');
+      ctx.fillStyle = col + '.1)'; ctx.fillRect(xs, yT, R - xs, yB - yT);
+      hline(xs, R, yT, col + '.4)', [3, 3], 1); hline(xs, R, yB, col + '.4)', [3, 3], 1);
     });
   }
-  if (sh.liq) {
+  // LIQUIDITY (PRO only)
+  if (pro) {
     const lq = S.liq[sk];
-    if (lq) [...lq.external, ...lq.internal].forEach(l => {
+    if (lq) [...lq.external, ...lq.internal].slice(0, 6).forEach(l => {
       const x1 = tX(l.i), y = tY(l.price);
       if (x1 === null || y === null) return;
       const isExt = l.level === 'EXT', col = isExt ? 'rgba(245,158,11,.85)' : 'rgba(96,165,250,.8)';
       hline(Math.max(0, x1), R, y, col, isExt ? [7, 3] : [2, 3], isExt ? 1.3 : 1);
-      txt(l.level + ' ' + (l.kind === 'H' ? 'BSL' : 'SSL') + (l.eq ? ' EQ' : ''), R - 3, l.kind === 'H' ? y - 3 : y + 10, col, 8, 'right');
+      txt(l.level + ' ' + (l.kind === 'H' ? 'BSL' : 'SSL'), R - 3, l.kind === 'H' ? y - 3 : y + 10, col, 8, 'right');
     });
   }
-  if (sh.struct) {
-    const idm = st.idm;
-    if (idm) {
-      const x1 = tX(idm.i), y = tY(idm.price);
+  // STRUCTURE events + swings (NORMAL + PRO)
+  if (st) {
+    if (pro && st.idm) {
+      const x1 = tX(st.idm.i), y = tY(st.idm.price);
       if (x1 !== null && y !== null) {
-        let x2 = R;
-        if (idm.taken) { const tx = tX(idm.takenAt); if (tx !== null) x2 = tx; }
-        hline(Math.max(0, x1), Math.min(R, x2), y, 'rgba(179,136,255,.9)', [4, 3], 1.1);
-        txt(idm.taken ? 'IDM✓' : 'IDM', Math.max(4, x1) + 2, idm.dir === 'BULLISH' ? y + 10 : y - 3, '#b388ff', 8, 'left');
+        hline(Math.max(0, x1), R, y, 'rgba(179,136,255,.85)', [4, 3], 1.1);
+        txt('IDM', Math.max(4, x1) + 2, st.idm.dir === 'BULLISH' ? y + 10 : y - 3, '#b388ff', 8, 'left');
       }
     }
-    st.events.slice(-14).forEach(ev => {
+    st.events.slice(pro ? -8 : -4).forEach(ev => {
       const x1 = tX(ev.from), x2 = tX(ev.i), y = tY(ev.price);
       if (x1 === null || x2 === null || y === null) return;
       const bull = ev.dir === 'BULLISH', col = bull ? '#10b981' : '#ef4444';
@@ -1642,7 +1456,7 @@ function redrawOverlay() {
       const yOffset = isMSS ? (bull ? -14 : 20) : (bull ? -3 : 10);
       txt(ev.label, (x1 + x2) / 2, y + yOffset, col, isMSS ? 10 : 9);
     });
-    st.swings.slice(-16).forEach(sp => {
+    st.swings.slice(pro ? -12 : -4).forEach(sp => {
       const x = tX(sp.i), y = tY(sp.price);
       if (x === null || y === null || x < -20 || x > R + 5) return;
       const col = (sp.label === 'HH' || sp.label === 'HL') ? '#10b981' : (sp.label === 'LH' || sp.label === 'LL') ? '#ef4444' : '#f59e0b';
@@ -1651,7 +1465,8 @@ function redrawOverlay() {
       txt((isNew ? 'NEW ' : '') + sp.label, x, sp.type === 'H' ? y - 6 : y + 14, col, isNew ? 9 : 8);
     });
   }
-  if (sh.sweep) {
+  // SWEEPS (PRO only)
+  if (pro) {
     const list = smc.sweeps.slice(-5);
     list.forEach((sw, k) => {
       const c = d[sw.i], x = tX(sw.i);
@@ -1659,18 +1474,16 @@ function redrawOverlay() {
       const bull = sw.side === 'BULL', y = tY(bull ? c.low : c.high);
       if (y === null) return;
       const cy = y + (bull ? 8 : -8);
-      ctx.fillStyle = 'rgba(245,158,11,.95)';
+      ctx.fillStyle = 'rgba(245,158,11,.9)';
       ctx.beginPath(); ctx.moveTo(x, cy - 4); ctx.lineTo(x + 4, cy); ctx.lineTo(x, cy + 4); ctx.lineTo(x - 4, cy); ctx.closePath(); ctx.fill();
-      if (k >= list.length - 3) txt('SWEEP', x, cy + (bull ? 13 : -7), 'rgba(245,158,11,.95)', 8);
     });
   }
   ctx.restore();
 }
-
 function applyMarkers() {
   const cs = S.tvSeries && S.tvSeries.candleSeries; if (!cs) return;
   const smc = S.smc[ak()], d = S.candles[ak()];
-  if (!S.show.sig || !smc || !d) { try { cs.setMarkers([]); } catch {} return; }
+  if (!smc || !d || !smc.signals || !smc.signals.length) { try { cs.setMarkers([]); } catch {} return; }
   const m = smc.signals.slice(-10).filter(sg => d[sg.i]).map(sg => ({
     time: Math.floor(d[sg.i].time / 1000),
     position: sg.dir === 'BUY' ? 'belowBar' : 'aboveBar',
@@ -1681,141 +1494,6 @@ function applyMarkers() {
   m.sort((a, b) => a.time - b.time);
   try { cs.setMarkers(m); } catch {}
 }
-
-function renderToggles() {
-  const r = $('ovRow'); if (!r) return;
-  const items = [['struct', 'STRUCT'], ['liq', 'LIQ'], ['fvg', 'FVG'], ['vp', 'VP'], ['sweep', 'SWEEP'], ['sig', 'SIGNALS']];
-  r.innerHTML = items.map(([k, l]) => `<div class="ov-btn${S.show[k] ? ' on' : ''}" data-k="${k}">${l}</div>`).join('');
-  r.querySelectorAll('.ov-btn').forEach(b => b.addEventListener('click', () => {
-    S.show[b.dataset.k] = !S.show[b.dataset.k]; renderToggles(); applyMarkers(); redrawOverlay();
-  }));
-}
-
-async function renderHTFBias() {
-  const sym = S.activeSym;
-  const tfList = ['15m', '1h', '4h', '1d'];
-  const results = {};
-  const badge = $('htfBadge');
-  for (const tf of tfList) {
-    try {
-      const cd = await fetchKlines(sym, tf, 250);
-      if (!cd || cd.length < 60) { results[tf] = null; continue; }
-      const cl = cd.map(c => c.close);
-      const n = cl.length - 1;
-      const e20 = ema(cl, 20), e50 = ema(cl, 50);
-      const p = cl[n];
-      const bull = e20[n] && e50[n] && p > e20[n] && e20[n] > e50[n];
-      const bear = e20[n] && e50[n] && p < e20[n] && e20[n] < e50[n];
-      let trend = 'SIDE';
-      if (bull) trend = 'BULL'; else if (bear) trend = 'BEAR';
-      const last20 = cl.slice(-20).reduce((a,b)=>a+b,0)/20;
-      const prev20 = cl.slice(-40,-20).reduce((a,b)=>a+b,0)/20;
-      const momentum = last20 > prev20 ? '↑' : last20 < prev20 ? '↓' : '→';
-      results[tf] = { trend, momentum };
-    } catch (e) { results[tf] = null; }
-  }
-  const map = { '15m': 'htf15m', '1h': 'htf1h', '4h': 'htf4h', '1d': 'htf1d' };
-  let bullCount = 0, bearCount = 0;
-  Object.entries(map).forEach(([tf, id]) => {
-    const r = results[tf];
-    const el = $(id); if (!el) return;
-    if (!r) { el.textContent = '--'; el.style.color = 'var(--muted)'; return; }
-    let col = 'var(--amber)';
-    if (r.trend === 'BULL') { col = 'var(--green)'; bullCount++; }
-    else if (r.trend === 'BEAR') { col = 'var(--red)'; bearCount++; }
-    el.textContent = r.trend + ' ' + r.momentum;
-    el.style.color = col;
-    el.style.fontSize = '11px';
-  });
-  let overall = 'MIXED', col = 'var(--amber)';
-  if (bullCount >= 3) { overall = 'STRONG BULL'; col = 'var(--green)'; }
-  else if (bearCount >= 3) { overall = 'STRONG BEAR'; col = 'var(--red)'; }
-  else if (bullCount >= 2 && bearCount === 0) { overall = 'BULLISH'; col = 'var(--green)'; }
-  else if (bearCount >= 2 && bullCount === 0) { overall = 'BEARISH'; col = 'var(--red)'; }
-  if (badge) {
-    badge.textContent = overall;
-    badge.style.color = col;
-    badge.style.background = overall.includes('BULL') ? 'rgba(16,185,129,.15)' : overall.includes('BEAR') ? 'rgba(239,68,68,.15)' : 'rgba(100,116,139,.1)';
-  }
-  const txt = $('htfText');
-  if (txt) {
-    const arrow = overall.includes('BULL') ? '📈' : overall.includes('BEAR') ? '📉' : '➡️';
-    txt.innerHTML = `${arrow} Overall: <b style="color:${col}">${overall}</b> · Use this to align your ${S.activeTf} trades`;
-  }
-}
-
-function calcSessions(candles) {
-  if (!candles.length) return null;
-  const lastT = candles[candles.length - 1].time;
-  const dayStart = Math.floor(lastT / 86400000) * 86400000;
-  const today = candles.filter(c => c.time >= dayStart);
-  if (!today.length) return null;
-  const nowUTC = new Date(lastT);
-  const hourUTC = nowUTC.getUTCHours() + nowUTC.getUTCMinutes() / 60;
-  const sessions = {
-    asia: { start: 0, end: 8, active: hourUTC >= 0 && hourUTC < 8 },
-    london: { start: 8, end: 16, active: hourUTC >= 8 && hourUTC < 16 },
-    ny: { start: 13, end: 21, active: hourUTC >= 13 && hourUTC < 21 },
-  };
-  const result = {};
-  for (const [name, s] of Object.entries(sessions)) {
-    const startMs = dayStart + s.start * 3600000;
-    const endMs = dayStart + s.end * 3600000;
-    const slice = today.filter(c => c.time >= startMs && c.time < endMs);
-    if (!slice.length) { result[name] = null; continue; }
-    result[name] = { high: Math.max(...slice.map(c => c.high)), low: Math.min(...slice.map(c => c.low)), active: s.active };
-  }
-  let activeName = 'NONE';
-  if (sessions.asia.active) activeName = '🇯🇵 ASIA';
-  if (sessions.london.active) activeName = '🇬🇧 LONDON';
-  if (sessions.ny.active) activeName = '🇺🇸 NEW YORK';
-  if (sessions.london.active && sessions.ny.active) activeName = '🇬🇧🇺🇸 LONDON + NY';
-  return { result, activeName };
-}
-
-function renderSessions(sess) {
-  const fields = {
-    'sessAsiaH': ['asia', 'high'], 'sessAsiaL': ['asia', 'low'],
-    'sessLonH': ['london', 'high'], 'sessLonL': ['london', 'low'],
-    'sessNyH': ['ny', 'high'], 'sessNyL': ['ny', 'low'],
-  };
-  Object.entries(fields).forEach(([id, [sessName, key]]) => {
-    const el = $(id); if (!el) return;
-    const s = sess?.result[sessName];
-    if (!s) { el.textContent = '---'; el.style.opacity = '0.4'; return; }
-    el.textContent = '$' + fmtP(s[key], S.activeSym);
-    el.style.opacity = s.active ? '1' : '0.6';
-  });
-  const badge = $('sessionBadge');
-  const txt = $('sessCurrent');
-  if (sess) {
-    if (badge) { badge.textContent = sess.activeName; badge.style.color = 'var(--cyan)'; badge.style.background = 'rgba(6,182,212,.15)'; }
-    if (txt) txt.innerHTML = `Current session: <b style="color:var(--cyan)">${sess.activeName}</b> · Session H/L = prime liquidity targets`;
-  }
-}
-
-function updateCandleTimer() {
-  const el = $('candleTimer'); if (!el) return;
-  const tf = S.activeTf;
-  const tfMap = { '1s':1000, '1m':60000, '3m':180000, '5m':300000, '15m':900000, '30m':1800000, '1h':3600000, '2h':7200000, '4h':14400000, '6h':21600000, '12h':43200000, '1D':86400000, '1W':604800000, '1M':2592000000 };
-  const ms = tfMap[tf] || 300000;
-  const now = Date.now();
-  const next = Math.ceil(now / ms) * ms;
-  const remaining = Math.max(0, next - now);
-  const totalSec = Math.floor(remaining / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  let txt;
-  if (h > 0) txt = `${h}h ${String(m).padStart(2, '0')}m`;
-  else if (m > 0) txt = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  else txt = `00:${String(s).padStart(2, '0')}`;
-  el.textContent = `⏳ ${txt}`;
-  const pct = remaining / ms;
-  el.style.color = pct < 0.1 ? 'var(--red)' : 'var(--cyan)';
-}
-setInterval(updateCandleTimer, 1000);
-
 function updateLive() {
   const p = S.prices[S.activeSym]; if (p == null) return;
   const s = asd();
@@ -1830,6 +1508,8 @@ function updateOhlc(c) {
   setText('ohlcC', fmtP(c.close, S.activeSym));
   setText('ohlcV', fmtVol(c.volume));
 }
+
+// ═══ UI RENDER ═══
 function renderTfRow() {
   const r = $('tfRow'); if (!r) return;
   r.innerHTML = TIMEFRAMES.map(t => `<div class="tf-btn${t.label === S.activeTf ? ' active' : ''}" data-tf="${t.label}">${t.label}</div>`).join('');
@@ -1851,7 +1531,6 @@ function renderTabs() {
   }).join('');
   e.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchSym(t.dataset.sym)));
 }
-
 function renderSigCard(s, sig) {
   const c = $('sigCard'); if (!c || !s) return;
   const a = sig?.sig || 'HOLD', st = sig?.strength || 0, ind = sig?.ind || {};
@@ -1869,56 +1548,31 @@ function renderSigCard(s, sig) {
   setText('sigEmoji', a === 'BUY' ? '🚀' : a === 'SELL' ? '💥' : '⏸');
   setText('confPct', st + '%');
   const f = $('confFill'); if (f) f.style.width = st + '%';
-
   const div = S.divergence[ak()] || { quality:'NONE', text:'➖ None' };
   const cvd = S.cvd[ak()];
   let desc = '', divClass = 'none', divText = div.text;
-  let cvdExtra = '';
-  if (cvd && cvd.cvdDiv === 'BEARISH') cvdExtra = ' · CVD⚠️';
-  else if (cvd && cvd.cvdDiv === 'BULLISH') cvdExtra = ' · CVD⚠️';
-  if (sig?.insufficientData) {
-    desc = `⏳ Data (${sig.have}/${sig.needed})`;
-    divText = 'Waiting for data...';
-  } else if (a === 'BUY') {
+  if (sig?.insufficientData) { desc = `⏳ Data (${sig.have}/${sig.needed})`; divText = 'Waiting for data...'; }
+  else if (a === 'BUY') {
     const divConfirms = div.quality === 'STRONG_BULL' || div.quality === 'BULL';
     const divFakes = div.quality === 'STRONG_BEAR' || div.quality === 'BEAR';
     const cvdConfirms = cvd && cvd.trend === 'RISING' && cvd.cvdDiv !== 'BEARISH';
     const cvdFakes = cvd && cvd.cvdDiv === 'BEARISH';
-    if ((divConfirms || cvdConfirms) && !divFakes && !cvdFakes) {
-      desc = '🔥 CONFIRMED BUY — Divergence + CVD aligned';
-      divClass = 'good'; divText = '🔥 ' + div.text + (cvdConfirms ? ' · CVD rising' : '');
-    } else if (divFakes || cvdFakes) {
-      desc = '⚠️ FAKE BUY — ' + (cvdFakes ? 'CVD diverging' : 'Bearish divergence');
-      divClass = 'warn'; divText = '❌ ' + (cvdFakes ? 'CVD fake rally' : div.text);
-    } else {
-      desc = '✅ BUY — bullish alignment' + cvdExtra;
-      divClass = 'none';
-    }
+    if ((divConfirms || cvdConfirms) && !divFakes && !cvdFakes) { desc = '🔥 CONFIRMED BUY — Div+CVD aligned'; divClass = 'good'; divText = '🔥 Confirmed by Div+CVD'; }
+    else if (divFakes || cvdFakes) { desc = '⚠️ FAKE BUY — ' + (cvdFakes ? 'CVD diverging' : 'Bearish divergence'); divClass = 'warn'; divText = '❌ ' + (cvdFakes ? 'CVD fake rally' : div.text); }
+    else { desc = '✅ BUY — bullish alignment'; divClass = 'none'; }
   } else if (a === 'SELL') {
     const divConfirms = div.quality === 'STRONG_BEAR' || div.quality === 'BEAR';
     const divFakes = div.quality === 'STRONG_BULL' || div.quality === 'BULL';
     const cvdConfirms = cvd && cvd.trend === 'FALLING' && cvd.cvdDiv !== 'BULLISH';
     const cvdFakes = cvd && cvd.cvdDiv === 'BULLISH';
-    if ((divConfirms || cvdConfirms) && !divFakes && !cvdFakes) {
-      desc = '🔥 CONFIRMED SELL — Divergence + CVD aligned';
-      divClass = 'good'; divText = '🔥 ' + div.text + (cvdConfirms ? ' · CVD falling' : '');
-    } else if (divFakes || cvdFakes) {
-      desc = '⚠️ FAKE SELL — ' + (cvdFakes ? 'CVD diverging' : 'Bullish divergence');
-      divClass = 'warn'; divText = '❌ ' + (cvdFakes ? 'CVD fake drop' : div.text);
-    } else {
-      desc = '🔴 SELL — bearish alignment' + cvdExtra;
-      divClass = 'none';
-    }
-  } else {
-    desc = '⚠️ WAIT for clear confirmation';
-    divClass = div.quality.includes('BULL') || div.quality.includes('BEAR') ? 'mixed' : 'none';
-  }
-  if (div.quality === 'MIXED') { divClass = 'mixed'; divText = '⚠️ ' + div.text; }
+    if ((divConfirms || cvdConfirms) && !divFakes && !cvdFakes) { desc = '🔥 CONFIRMED SELL — Div+CVD aligned'; divClass = 'good'; divText = '🔥 Confirmed by Div+CVD'; }
+    else if (divFakes || cvdFakes) { desc = '⚠️ FAKE SELL — ' + (cvdFakes ? 'CVD diverging' : 'Bullish divergence'); divClass = 'warn'; divText = '❌ ' + (cvdFakes ? 'CVD fake drop' : div.text); }
+    else { desc = '🔴 SELL — bearish alignment'; divClass = 'none'; }
+  } else { desc = '⚠️ WAIT for clear confirmation'; divClass = div.quality.includes('BULL') || div.quality.includes('BEAR') ? 'mixed' : 'none'; }
+  if (div.quality === 'MIXED') divClass = 'mixed';
   setText('sigDesc', desc);
-  const divRow = $('divRow');
-  if (divRow) { divRow.className = 'div-row ' + divClass; }
+  const divRow = $('divRow'); if (divRow) divRow.className = 'div-row ' + divClass;
   setText('divText', divText);
-
   const inds = [ind.emaSig, ind.krSig, ind.rsiSig, ind.macdSig, ind.bbSig, ind.momSig];
   const bv = inds.filter(x => x === 'BUY').length;
   const sv = inds.filter(x => x === 'SELL').length;
@@ -1944,7 +1598,6 @@ function renderSigCard(s, sig) {
     setI('mom', ind.momPct != null ? ind.momPct + '%' : '--', ind.momPct > 0.3 ? 'BUY' : ind.momPct < -0.3 ? 'SELL' : 'HOLD');
   }
 }
-
 function renderLevels(lvl) {
   if (!lvl) return;
   const { sr, trade } = lvl;
@@ -1958,11 +1611,9 @@ function renderLevels(lvl) {
   setText('lvl-res1', res1 ? '$' + fmtP(res1.price, S.activeSym) : '---');
   setText('lvl-res1-dist', res1 ? distPct(res1.price, p) : '---');
   if (trade) {
-    const iB = sig === 'BUY';
     setText('lvl-entry', '$' + fmtP(trade.entry, S.activeSym));
-    setText('lvl-entry-sub', sig === 'HOLD' ? 'Current price' : (iB ? 'LONG entry' : 'SHORT entry'));
-    setText('lvl-sl', '$' + fmtP(trade.sl, S.activeSym));
-    setText('lvl-sl-sub', distPct(trade.sl, trade.entry) + ' · ATR-based');
+    setText('lvl-entry-sub', sig === 'HOLD' ? 'Current' : (sig === 'BUY' ? 'LONG' : 'SHORT'));
+    setText('lvl-sl', '$' + fmtP(trade.sl, S.activeSym)); setText('lvl-sl-sub', distPct(trade.sl, trade.entry));
     setText('lvl-tp1', '$' + fmtP(trade.tp1, S.activeSym)); setText('lvl-tp1-sub', distPct(trade.tp1, trade.entry));
     setText('lvl-tp2', '$' + fmtP(trade.tp2, S.activeSym)); setText('lvl-tp2-sub', distPct(trade.tp2, trade.entry));
     setText('lvl-tp3', '$' + fmtP(trade.tp3, S.activeSym)); setText('lvl-tp3-sub', distPct(trade.tp3, trade.entry));
@@ -1996,7 +1647,7 @@ function renderLiquidity(liq) {
   if (!all.length) { el.innerHTML = '<div style="font-size:10px;color:var(--muted);font-family:\'JetBrains Mono\',monospace;padding:8px 0">No active levels</div>'; return; }
   const p = S.prices[S.activeSym];
   el.innerHTML = all.map(l => `<div class="liq-row">
-      <span class="liq-tag ${l.level === 'EXT' ? 'ext' : 'int'}">${l.level} ${l.kind === 'H' ? 'BSL' : 'SSL'}${l.eq ? ' · EQ' : ''}</span>
+      <span class="liq-tag ${l.level === 'EXT' ? 'ext' : 'int'}">${l.level} ${l.kind === 'H' ? 'BSL' : 'SSL'}</span>
       <span>$${fmtP(l.price, S.activeSym)}</span>
       <span style="color:var(--muted)">${distPct(l.price, p)}</span>
     </div>`).join('');
@@ -2007,9 +1658,9 @@ function renderVP(vp) {
   setText('vpPOC', '$' + fmtP(vp.poc, S.activeSym));
   setText('vpVAH', '$' + fmtP(vp.vah, S.activeSym));
   setText('vpVAL', '$' + fmtP(vp.val, S.activeSym));
-  const vb = $('vpBadge'); if (vb) vb.textContent = 'FIXED · ' + vp.count + ' candles';
+  const vb = $('vpBadge'); if (vb) vb.textContent = vp.count + ' candles';
   const max = Math.max(...vp.buckets.map(b => b.vol));
-  el.innerHTML = vp.buckets.slice().reverse().map(b => {
+  el.innerHTML = vp.buckets.slice().reverse().slice(0, 12).map(b => {
     const pct = max > 0 ? (b.vol / max * 100) : 0;
     const isPoc = Math.abs(b.price - vp.poc) < 0.0001;
     return `<div class="vp-row"><span class="vp-lbl">$${fmtP(b.price, S.activeSym)}</span>
@@ -2029,7 +1680,7 @@ function renderMagnets(m) {
   if (!m || !m.length) { el.innerHTML = '<div style="font-size:10px;color:var(--muted);font-family:\'JetBrains Mono\',monospace;padding:8px 0">No magnets</div>'; return; }
   const p = S.prices[S.activeSym];
   el.innerHTML = m.map(x => `<div class="liq-row">
-      <span class="liq-tag ${x.strength >= 3 ? 'ext' : x.strength === 2 ? 'int' : ''}" style="${x.strength === 1 ? 'background:rgba(100,116,139,.15);color:var(--muted);border:1px solid rgba(100,116,139,.4)' : ''}">${x.label}</span>
+      <span class="liq-tag ${x.strength >= 3 ? 'ext' : x.strength === 2 ? 'int' : ''}">${x.label}</span>
       <span>$${fmtP(x.price, S.activeSym)}</span>
       <span style="color:var(--muted)">${distPct(x.price, p)}</span></div>`).join('');
 }
@@ -2042,7 +1693,7 @@ function renderPositions(pos) {
       <div class="pos-line"><span>SL</span><span>$${fmtP(p.sl, S.activeSym)}</span></div>
       <div class="pos-line"><span>TP</span><span>$${fmtP(p.tp, S.activeSym)}</span></div>
       <div class="pos-line"><span>R:R</span><span>1 : ${p.rr}</span></div>
-      <div class="pos-line"><span>BASIS</span><span style="font-size:9px">${p.basis}</span></div>`;
+      <div class="pos-line"><span>BASIS</span><span style="font-size:9px">${p.basis || ''}</span></div>`;
   };
   draw('longPosBody', pos.long, 'long');
   draw('shortPosBody', pos.short, 'short');
@@ -2062,13 +1713,13 @@ function renderPositions(pos) {
 }
 function renderSMC(smc) {
   if (!smc) return;
-  const { structure, fvgs } = smc;
+  const { structure } = smc;
   const b = $('structBadge');
   if (b) { b.textContent = structure.trend; b.style.background = structure.trend === 'UP' ? 'rgba(16,185,129,.15)' : structure.trend === 'DOWN' ? 'rgba(239,68,68,.15)' : 'rgba(100,116,139,.1)'; b.style.color = structure.trend === 'UP' ? 'var(--green)' : structure.trend === 'DOWN' ? 'var(--red)' : 'var(--muted)'; }
   const setV = (id, v, c) => { setText(id, v); if (c) setColor(id, c); };
   const dirCol = e => e.dir === 'BULLISH' ? 'var(--green)' : 'var(--red)';
   setV('structTrend', structure.trend === 'UP' ? '▲ BULLISH' : structure.trend === 'DOWN' ? '▼ BEARISH' : 'NEUTRAL', structure.trend === 'UP' ? 'var(--green)' : structure.trend === 'DOWN' ? 'var(--red)' : 'var(--muted)');
-  ['BOS', 'CHoCH', 'MSS'].forEach(k => {
+  ['BOS','CHoCH','MSS'].forEach(k => {
     const e = [...structure.events].reverse().find(x => x.label === k);
     setV('struct' + (k === 'BOS' ? 'Bos' : k === 'CHoCH' ? 'Choch' : 'Mss'), e ? `${e.dir} @ $${fmtP(e.price, S.activeSym)}` : '--', e ? dirCol(e) : 'var(--muted)');
   });
@@ -2076,11 +1727,11 @@ function renderSMC(smc) {
   setV('structSwings', String(structure.swings.length), 'var(--text)');
   const lc = l => (l === 'HH' || l === 'HL') ? 'var(--green)' : (l === 'LH' || l === 'LL') ? 'var(--red)' : 'var(--amber)';
   const nh = structure.lastSwingHigh, nl = structure.lastSwingLow;
-  setV('structSH', nh ? `NEW ${nh.label} $${fmtP(nh.price, S.activeSym)}` : '--', nh ? lc(nh.label) : 'var(--muted)');
-  setV('structSL', nl ? `NEW ${nl.label} $${fmtP(nl.price, S.activeSym)}` : '--', nl ? lc(nl.label) : 'var(--muted)');
+  setV('structSH', nh ? `${nh.label} $${fmtP(nh.price, S.activeSym)}` : '--', nh ? lc(nh.label) : 'var(--muted)');
+  setV('structSL', nl ? `${nl.label} $${fmtP(nl.price, S.activeSym)}` : '--', nl ? lc(nl.label) : 'var(--muted)');
   const fl = $('fvgList');
   if (fl) {
-    const u = fvgs.filter(f => !f.filled).slice(-5).reverse();
+    const u = (smc.fvgs || []).filter(f => !f.filled).slice(-5).reverse();
     if (!u.length) fl.innerHTML = '<div style="font-size:10px;color:var(--muted);font-family:\'JetBrains Mono\',monospace;padding:8px 0">None</div>';
     else fl.innerHTML = u.map(f => `<div class="fvg-row">
         <span class="fvg-tag ${f.dir === 'BULLISH' ? 'bull' : 'bear'}">${f.dir === 'BULLISH' ? 'BULL' : 'BEAR'}</span>
@@ -2090,8 +1741,8 @@ function renderSMC(smc) {
 function renderSmcSignal(smc, liq) {
   const body = $('smcSigBody'); if (!smc || !body) return;
   const d = S.candles[ak()] || [];
-  const sg = smc.signals.length ? smc.signals[smc.signals.length - 1] : null;
-  const st = smc.stats || { total: 0, tp1: 0, sl: 0, open: 0 };
+  const sg = smc.signals && smc.signals.length ? smc.signals[smc.signals.length - 1] : null;
+  const st = smc.stats || { total: smc.signals?.length || 0, tp1: 0, sl: 0, open: 0 };
   const mono = "font-family:'JetBrains Mono',monospace";
   const dim = 'font-size:9px;color:var(--muted);' + mono;
   let h = '';
@@ -2101,42 +1752,28 @@ function renderSmcSignal(smc, liq) {
     const stCol = sg.status === 'TP1' ? 'var(--green)' : sg.status === 'SL' ? 'var(--red)' : 'var(--amber)';
     const line = (a, b) => `<div class="pos-line"><span>${a}</span><span>${b}</span></div>`;
     h += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div style="font-size:26px;font-weight:700;letter-spacing:2px;color:${col}">${buy ? '▲ BUY' : '▼ SELL'} <span style="font-size:12px">GRADE ${sg.grade}</span></div>
+        <div style="font-size:24px;font-weight:700;letter-spacing:2px;color:${col}">${buy ? '▲ BUY' : '▼ SELL'} <span style="font-size:12px">GRADE ${sg.grade}</span></div>
         <div style="${dim};text-align:right">${age === 0 ? 'just closed' : age + ' candles ago'}<br><span style="color:${stCol};font-weight:700">${sg.status === 'ACTIVE' ? 'ACTIVE' : sg.status === 'TP1' ? 'TP1 HIT' : 'SL HIT'}</span></div>
       </div>` + line('ENTRY', '$' + fmtP(sg.entry, S.activeSym)) + line('SL', '$' + fmtP(sg.sl, S.activeSym)) +
-      line('TP1', '$' + fmtP(sg.tp1, S.activeSym)) + line('TP2', '$' + fmtP(sg.tp2, S.activeSym)) +
-      line('R:R (TP1)', '1 : ' + sg.rr1.toFixed(2)) +
+      line('TP1', '$' + fmtP(sg.tp1, S.activeSym)) + line('R:R (TP1)', '1 : ' + sg.rr1.toFixed(2)) +
       `<div style="${dim};margin-top:6px;line-height:1.6">${sg.why.join(' · ')}</div>`;
-  } else { h += `<div style="${dim};padding:4px 0 6px">No sweep + reclaim setup on this chart yet</div>`; }
+  } else { h += `<div style="${dim};padding:4px 0 6px">No sweep + reclaim setup yet</div>`; }
   const lq = liq ? [...liq.external, ...liq.internal] : [];
   const bsl = lq.filter(x => x.kind === 'H').sort((a, b) => a.price - b.price)[0];
   const ssl = lq.filter(x => x.kind === 'L').sort((a, b) => b.price - a.price)[0];
   if (bsl || ssl) {
     h += `<div style="${dim};margin-top:8px;padding-top:8px;border-top:1px solid var(--dim);line-height:1.7">WATCH · ` +
-      (ssl ? `<span style="color:var(--green)">BUY</span> if SSL $${fmtP(ssl.price, S.activeSym)} is swept &amp; reclaimed` : '') +
+      (ssl ? `<span style="color:var(--green)">BUY</span> if SSL $${fmtP(ssl.price, S.activeSym)} swept` : '') +
       (ssl && bsl ? ' · ' : '') +
-      (bsl ? `<span style="color:var(--red)">SELL</span> if BSL $${fmtP(bsl.price, S.activeSym)} is swept &amp; rejected` : '') + `</div>`;
+      (bsl ? `<span style="color:var(--red)">SELL</span> if BSL $${fmtP(bsl.price, S.activeSym)} swept` : '') + `</div>`;
   }
-  h += `<div style="font-size:8px;color:var(--muted);${mono};margin-top:6px;line-height:1.6;opacity:.85">Past signals (worst case): ${st.total} · TP1 ${st.tp1} · SL ${st.sl} · open ${st.open}.<br>Sweep + reclaim confirmed on candle close. Not a prediction.</div>`;
+  h += `<div style="font-size:8px;color:var(--muted);${mono};margin-top:6px;line-height:1.6;opacity:.85">Past signals: ${st.total} · TP1 ${st.tp1} · SL ${st.sl} · open ${st.open}</div>`;
   body.innerHTML = h;
   const bd = $('smcSigBadge');
-  if (bd) { bd.textContent = sg ? sg.dir + ' ' + sg.grade : 'WATCH'; bd.style.color = sg ? (sg.dir === 'BUY' ? 'var(--green)' : 'var(--red)') : 'var(--muted)'; bd.style.background = sg ? (sg.dir === 'BUY' ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.15)') : 'rgba(100,116,139,.1)'; }
-}
-function maybeSmcAlert(sk) {
-  const smc = S.smc[sk], d = S.candles[sk];
-  if (!smc || !d || !smc.signals.length) return;
-  const sg = smc.signals[smc.signals.length - 1];
-  if (sg.i < d.length - 2) return;
-  const key = sk + ':' + sg.time;
-  if (S._smcSeen[key]) return;
-  S._smcSeen[key] = 1;
-  const s = asd();
-  S.hist.unshift({ ts: new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:false }), id: s.id, label: s.label, icon: s.icon, sig: sg.dir, price: sg.entry, strength: Math.round(sg.score / 9 * 100), tf: S.activeTf + ' SMC' });
-  if (S.hist.length > 50) S.hist.pop();
-  renderHistory();
-  toast(`🎯 ${sg.dir} setup ${sg.grade} — ${s.label} ${S.activeTf}`, sg.dir === 'BUY' ? 'green' : 'red');
-  beep(sg.dir === 'BUY');
-  if (navigator.vibrate) navigator.vibrate(sg.dir === 'BUY' ? [40, 60, 40] : [100]);
+  if (bd) {
+    if (sg) { bd.textContent = sg.dir + ' ' + sg.grade; bd.style.color = sg.dir === 'BUY' ? 'var(--green)' : 'var(--red)'; bd.style.background = sg.dir === 'BUY' ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.15)'; }
+    else { bd.textContent = 'WATCH'; bd.style.color = 'var(--muted)'; bd.style.background = 'rgba(100,116,139,.1)'; }
+  }
 }
 function renderEMA(sig) {
   const ind = sig?.ind || {}; const p = S.prices[S.activeSym];
@@ -2199,7 +1836,220 @@ function drawRsi() {
   const lr = rsi[rsi.length - 1];
   if (lr != null) { g.textAlign = 'right'; g.fillStyle = '#f59e0b'; g.fillText('RSI ' + lr.toFixed(1), w - 3, 10); }
 }
+function drawCVD() {
+  const cv = $('cvdChart'); if (!cv) return;
+  const cvdData = S.cvd[ak()]; if (!cvdData) return;
+  const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+  const dpr = window.devicePixelRatio || 1;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+  const N = Math.min(120, cvdData.cvd.length), off = cvdData.cvd.length - N;
+  const slice = cvdData.cvd.slice(off);
+  const minV = Math.min(...slice, 0), maxV = Math.max(...slice, 0);
+  const range = maxV - minV || 1;
+  const X = i => 2 + (i / (N - 1)) * (w - 4);
+  const Y = v => (h - 4) - ((v - minV) / range) * (h - 8);
+  const yZero = Y(0);
+  g.strokeStyle = 'rgba(100,116,139,.5)'; g.lineWidth = 1; g.setLineDash([3, 3]);
+  g.beginPath(); g.moveTo(0, yZero); g.lineTo(w, yZero); g.stroke(); g.setLineDash([]);
+  for (let i = 0; i < N - 1; i++) {
+    const x1 = X(i), x2 = X(i + 1);
+    const y1 = Y(slice[i]), y2 = Y(slice[i + 1]);
+    g.fillStyle = slice[i] >= 0 ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.15)';
+    g.beginPath(); g.moveTo(x1, yZero); g.lineTo(x1, y1); g.lineTo(x2, y2); g.lineTo(x2, yZero); g.closePath(); g.fill();
+  }
+  g.strokeStyle = '#06b6d4'; g.lineWidth = 2; g.beginPath();
+  for (let i = 0; i < N; i++) {
+    const x = X(i), y = Y(slice[i]);
+    if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+  }
+  g.stroke();
+  const lastY = Y(slice[N - 1]);
+  g.fillStyle = slice[N - 1] >= 0 ? '#10b981' : '#ef4444';
+  g.beginPath(); g.arc(X(N - 1), lastY, 3, 0, 6.2832); g.fill();
+}
+function renderCVD() {
+  const sk = ak(); const d = S.candles[sk];
+  if (!d || !d.length) return;
+  const cvdData = calcCVD(d); if (!cvdData) return;
+  S.cvd[sk] = cvdData;
+  setText('cvdValue', '$' + fmtVol(cvdData.last));
+  setText('cvdDelta', '$' + fmtVol(cvdData.delta20));
+  const trendEl = $('cvdTrend');
+  if (trendEl) { trendEl.textContent = cvdData.trend; trendEl.style.color = cvdData.trend === 'RISING' ? 'var(--green)' : cvdData.trend === 'FALLING' ? 'var(--red)' : 'var(--muted)'; }
+  const badge = $('cvdBadge');
+  if (badge) {
+    let text = 'NEUTRAL', col = 'var(--muted)', bg = 'rgba(100,116,139,.1)';
+    if (cvdData.cvdDiv === 'BEARISH') { text = '⚠️ FAKE RALLY'; col = 'var(--red)'; bg = 'rgba(239,68,68,.15)'; }
+    else if (cvdData.cvdDiv === 'BULLISH') { text = '⚠️ FAKE DROP'; col = 'var(--green)'; bg = 'rgba(16,185,129,.15)'; }
+    else if (cvdData.trend === 'RISING') { text = '🔥 BUYERS'; col = 'var(--green)'; bg = 'rgba(16,185,129,.12)'; }
+    else if (cvdData.trend === 'FALLING') { text = '🔻 SELLERS'; col = 'var(--red)'; bg = 'rgba(239,68,68,.12)'; }
+    badge.textContent = text; badge.style.color = col; badge.style.background = bg;
+  }
+  const msg = $('cvdMsg');
+  if (msg) {
+    if (cvdData.cvdDiv === 'BEARISH') msg.innerHTML = '⚠️ <b style="color:var(--red)">Price UP but CVD DOWN</b> — rally may be fake.';
+    else if (cvdData.cvdDiv === 'BULLISH') msg.innerHTML = '⚠️ <b style="color:var(--green)">Price DOWN but CVD UP</b> — drop may be fake.';
+    else if (cvdData.trend === 'RISING') msg.innerHTML = '🔥 <b style="color:var(--green)">Healthy uptrend</b> — buyers in control.';
+    else if (cvdData.trend === 'FALLING') msg.innerHTML = '🔻 <b style="color:var(--red)">Healthy downtrend</b> — sellers in control.';
+    else msg.innerHTML = '➖ CVD and price aligned.';
+  }
+  try { drawCVD(); } catch {}
+}
+async function renderHTFBias() {
+  const sym = S.activeSym;
+  const tfList = ['15m','1h','4h','1d'];
+  const results = {}; const badge = $('htfBadge');
+  for (const tf of tfList) {
+    try {
+      const cd = await fetchKlines(sym, tf, 250);
+      if (!cd || cd.length < 60) { results[tf] = null; continue; }
+      const cl = cd.map(c => c.close);
+      const n = cl.length - 1;
+      const e20 = ema(cl, 20), e50 = ema(cl, 50);
+      const p = cl[n];
+      const bull = e20[n] && e50[n] && p > e20[n] && e20[n] > e50[n];
+      const bear = e20[n] && e50[n] && p < e20[n] && e20[n] < e50[n];
+      let trend = 'SIDE'; if (bull) trend = 'BULL'; else if (bear) trend = 'BEAR';
+      const last20 = cl.slice(-20).reduce((a,b)=>a+b,0)/20;
+      const prev20 = cl.slice(-40,-20).reduce((a,b)=>a+b,0)/20;
+      const momentum = last20 > prev20 ? '↑' : last20 < prev20 ? '↓' : '→';
+      results[tf] = { trend, momentum };
+    } catch (e) { results[tf] = null; }
+  }
+  const map = { '15m':'htf15m', '1h':'htf1h', '4h':'htf4h', '1d':'htf1d' };
+  let bullCount = 0, bearCount = 0;
+  Object.entries(map).forEach(([tf, id]) => {
+    const r = results[tf]; const el = $(id); if (!el) return;
+    if (!r) { el.textContent = '--'; el.style.color = 'var(--muted)'; return; }
+    let col = 'var(--amber)';
+    if (r.trend === 'BULL') { col = 'var(--green)'; bullCount++; }
+    else if (r.trend === 'BEAR') { col = 'var(--red)'; bearCount++; }
+    el.textContent = r.trend + ' ' + r.momentum; el.style.color = col; el.style.fontSize = '11px';
+  });
+  let overall = 'MIXED', col = 'var(--amber)';
+  if (bullCount >= 3) { overall = 'STRONG BULL'; col = 'var(--green)'; }
+  else if (bearCount >= 3) { overall = 'STRONG BEAR'; col = 'var(--red)'; }
+  else if (bullCount >= 2 && bearCount === 0) { overall = 'BULLISH'; col = 'var(--green)'; }
+  else if (bearCount >= 2 && bullCount === 0) { overall = 'BEARISH'; col = 'var(--red)'; }
+  if (badge) { badge.textContent = overall; badge.style.color = col; badge.style.background = overall.includes('BULL') ? 'rgba(16,185,129,.15)' : overall.includes('BEAR') ? 'rgba(239,68,68,.15)' : 'rgba(100,116,139,.1)'; }
+  const txt = $('htfText');
+  if (txt) { const arrow = overall.includes('BULL') ? '📈' : overall.includes('BEAR') ? '📉' : '➡️'; txt.innerHTML = `${arrow} Overall: <b style="color:${col}">${overall}</b> · Align ${S.activeTf} trades with bias`; }
+}
+function calcSessions(candles) {
+  if (!candles.length) return null;
+  const lastT = candles[candles.length - 1].time;
+  const dayStart = Math.floor(lastT / 86400000) * 86400000;
+  const today = candles.filter(c => c.time >= dayStart);
+  if (!today.length) return null;
+  const nowUTC = new Date(lastT);
+  const hourUTC = nowUTC.getUTCHours() + nowUTC.getUTCMinutes() / 60;
+  const sessions = {
+    asia: { start: 0, end: 8, active: hourUTC >= 0 && hourUTC < 8 },
+    london: { start: 8, end: 16, active: hourUTC >= 8 && hourUTC < 16 },
+    ny: { start: 13, end: 21, active: hourUTC >= 13 && hourUTC < 21 },
+  };
+  const result = {};
+  for (const [name, s] of Object.entries(sessions)) {
+    const slice = today.filter(c => c.time >= dayStart + s.start * 3600000 && c.time < dayStart + s.end * 3600000);
+    if (!slice.length) { result[name] = null; continue; }
+    result[name] = { high: Math.max(...slice.map(c => c.high)), low: Math.min(...slice.map(c => c.low)), active: s.active };
+  }
+  let activeName = 'NONE';
+  if (sessions.asia.active) activeName = '🇯🇵 ASIA';
+  if (sessions.london.active) activeName = '🇬🇧 LONDON';
+  if (sessions.ny.active) activeName = '🇺🇸 NEW YORK';
+  if (sessions.london.active && sessions.ny.active) activeName = '🇬🇧🇺🇸 LONDON+NY';
+  return { result, activeName };
+}
+function renderSessions(sess) {
+  const fields = { 'sessAsiaH':['asia','high'], 'sessAsiaL':['asia','low'], 'sessLonH':['london','high'], 'sessLonL':['london','low'], 'sessNyH':['ny','high'], 'sessNyL':['ny','low'] };
+  Object.entries(fields).forEach(([id, [sessName, key]]) => {
+    const el = $(id); if (!el) return;
+    const s = sess?.result[sessName];
+    if (!s) { el.textContent = '---'; el.style.opacity = '0.4'; return; }
+    el.textContent = '$' + fmtP(s[key], S.activeSym);
+    el.style.opacity = s.active ? '1' : '0.6';
+  });
+  const badge = $('sessionBadge');
+  const txt = $('sessCurrent');
+  if (sess) {
+    if (badge) { badge.textContent = sess.activeName; badge.style.color = 'var(--cyan)'; badge.style.background = 'rgba(6,182,212,.15)'; }
+    if (txt) txt.innerHTML = `Current: <b style="color:var(--cyan)">${sess.activeName}</b> · Session H/L = prime targets`;
+  }
+}
+function updateCandleTimer() {
+  const el = $('candleTimer'); if (!el) return;
+  const tf = S.activeTf;
+  const tfMap = { '1m':60000, '3m':180000, '5m':300000, '15m':900000, '30m':1800000, '1h':3600000, '2h':7200000, '4h':14400000, '6h':21600000, '12h':43200000, '1D':86400000, '1W':604800000, '1M':2592000000 };
+  const ms = tfMap[tf] || 300000;
+  const now = Date.now();
+  const next = Math.ceil(now / ms) * ms;
+  const remaining = Math.max(0, next - now);
+  const totalSec = Math.floor(remaining / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  let txt;
+  if (h > 0) txt = `${h}h ${String(m).padStart(2, '0')}m`;
+  else if (m > 0) txt = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  else txt = `00:${String(s).padStart(2, '0')}`;
+  el.textContent = `⏳ ${txt}`;
+  const pct = remaining / ms;
+  el.style.color = pct < 0.1 ? 'var(--red)' : 'var(--cyan)';
+}
+setInterval(updateCandleTimer, 1000);
+async function fetchScannerData() {
+  const tf = S.activeTf;
+  const results = [];
+  const badge = $('scanBadge');
+  if (badge) badge.textContent = 'SCANNING...';
+  for (const sym of SYMS) {
+    try {
+      const cd = await fetchKlines(sym.id, tf, 200);
+      if (!cd || cd.length < 60) { results.push({ sym, sig:'HOLD', strength:0, price:null, trend:'--' }); continue; }
+      const sig = calcSig(cd);
+      const cl = cd.map(c => c.close);
+      const n = cl.length - 1;
+      const e20 = ema(cl, 20), e50 = ema(cl, 50);
+      let trend = '—';
+      if (e20[n] && e50[n] && cl[n] > e20[n] && e20[n] > e50[n]) trend = '↗';
+      else if (e20[n] && e50[n] && cl[n] < e20[n] && e20[n] < e50[n]) trend = '↘';
+      results.push({ sym, sig: sig.sig, strength: sig.strength, price: cl[n], trend });
+    } catch (e) { results.push({ sym, sig:'HOLD', strength:0, price:null, trend:'--' }); }
+  }
+  results.sort((a, b) => {
+    const aA = a.sig !== 'HOLD' ? 1 : 0, bA = b.sig !== 'HOLD' ? 1 : 0;
+    if (aA !== bA) return bA - aA;
+    return b.strength - a.strength;
+  });
+  S.scanner = results; renderScanner();
+  if (badge) badge.textContent = results.filter(r => r.sig !== 'HOLD').length + ' SIGNALS';
+}
+function renderScanner() {
+  const el = $('scanList'); if (!el) return;
+  const list = S.scanner || [];
+  if (!list.length) { el.innerHTML = '<div style="font-size:10px;color:var(--muted);font-family:\'JetBrains Mono\',monospace;padding:8px 0">Scanning...</div>'; return; }
+  el.innerHTML = list.map(r => {
+    const isActive = r.sym.id === S.activeSym;
+    const sigCls = r.sig.toLowerCase();
+    const trendColor = r.trend === '↗' ? 'var(--green)' : r.trend === '↘' ? 'var(--red)' : 'var(--muted)';
+    const strColor = r.sig === 'BUY' ? 'var(--green)' : r.sig === 'SELL' ? 'var(--red)' : 'var(--muted)';
+    return `<div class="scan-row${isActive ? ' active' : ''}" data-sym="${r.sym.id}">
+      <span class="scan-sym" style="color:${r.sym.color}">${r.sym.icon} ${r.sym.id}</span>
+      <span class="scan-price">${r.price != null ? '$' + fmtP(r.price, r.sym.id) : '---'}</span>
+      <span class="scan-sig ${sigCls}">${r.sig}</span>
+      <span class="scan-str" style="color:${strColor}">${r.strength}%</span>
+      <span class="scan-trend" style="color:${trendColor}">${r.trend}</span>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.scan-row').forEach(row => row.addEventListener('click', () => {
+    const sym = row.dataset.sym;
+    if (sym && sym !== S.activeSym) switchSym(sym);
+  }));
+}
 
+// ═══ RECOMPUTE ═══
 function recomputeAll() {
   const sk = ak(), cd = S.candles[sk];
   if (!cd || !cd.length) return;
@@ -2215,7 +2065,8 @@ function recomputeAll() {
   const sweeps = detectSweeps(cc);
   const signals = calcSmcSignals(cc, structure, fvgs, sweeps);
   const positions = calcPositions(cd, structure, fvgs);
-  S.smc[sk] = { structure, fvgs, positions, sweeps, signals, stats: smcStats(signals) };
+  const stats = { total: signals.length, tp1: signals.filter(s => s.status === 'TP1').length, sl: signals.filter(s => s.status === 'SL').length, open: signals.filter(s => s.status === 'ACTIVE').length };
+  S.smc[sk] = { structure, fvgs, sweeps, signals, positions, stats };
   S.fib[sk] = calcFibonacci(cd);
   S.range[sk] = calcPriceRange(cd);
   const vp = calcVolumeProfile(cc, structure); S.vp[sk] = vp;
@@ -2254,14 +2105,10 @@ function updateAll() {
   redrawOverlay();
   const chip = $('chartSig');
   if (chip && sig) { chip.textContent = `${sig.sig} ${sig.strength}%`; chip.style.color = sig.sig === 'BUY' ? 'var(--green)' : sig.sig === 'SELL' ? 'var(--red)' : 'var(--muted)'; }
-  maybeSmcAlert(sk);
-  if (sig && sig.sig !== 'HOLD') maybeAlert(s, sig);
-  else if (S._lastAlertSig) delete S._lastAlertSig[sk];
   const sess = calcSessions(S.candles[sk] || []);
   renderSessions(sess);
   try { drawRsi(); drawCVD(); } catch {}
 }
-
 async function loadActiveData() {
   while (S.loadInProgress) await new Promise(r => setTimeout(r, 120));
   S.loadInProgress = true;
@@ -2271,9 +2118,7 @@ async function loadActiveData() {
   try {
     const sk = ak();
     let cd = await fetchKlines(sym, tf, 500);
-    if (cd.length < 30) { await new Promise(r => setTimeout(r, 1500)); cd = await fetchKlines(sym, tf, 500); }
-    if (cd.length < 30) { await new Promise(r => setTimeout(r, 3000)); cd = await fetchKlines(sym, tf, 500); }
-    if (cd.length < 30) { setStatus('DATA UNAVAILABLE — retry in 5s', 'warn'); S.loadInProgress = false; setTimeout(() => loadActiveData(), 5000); return; }
+    if (cd.length < 30) { setStatus('DATA UNAVAILABLE', 'warn'); S.loadInProgress = false; setTimeout(() => loadActiveData(), 3000); return; }
     S.candles[sk] = cd;
     S.prices[sym] = cd[cd.length - 1].close;
     if (sk === ak()) {
@@ -2282,7 +2127,7 @@ async function loadActiveData() {
       updateChartData();
       updateAll();
     }
-  } catch (e) { setStatus('RETRYING IN 3s...', 'warn'); setTimeout(() => { S.loadInProgress = false; loadActiveData(); }, 3000); return; }
+  } catch (e) { setStatus('RETRYING...', 'warn'); setTimeout(() => { S.loadInProgress = false; loadActiveData(); }, 3000); return; }
   S.loadInProgress = false;
 }
 let _navTok = 0;
@@ -2310,49 +2155,12 @@ async function switchSym(s) {
   renderHTFBias();
   renderScanner();
 }
-let _ac = null;
-function beep(isBuy) {
-  try {
-    if (!_ac) _ac = new (window.AudioContext || window.webkitAudioContext)();
-    const c = _ac; if (c.state === 'suspended') c.resume();
-    const o = c.createOscillator(), g = c.createGain();
-    o.type = 'sine'; o.frequency.value = isBuy ? 880 : 440;
-    g.gain.setValueAtTime(.08, c.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001, c.currentTime + .4);
-    o.connect(g); g.connect(c.destination);
-    o.start(); o.stop(c.currentTime + .4);
-  } catch {}
-}
-function maybeAlert(s, sig) {
-  const n = Date.now();
-  if (n - (S.lastAlertAt[sig.sig] || 0) < 60000) return;
-  const k = ak(); const pv = S._lastAlertSig || {};
-  if (pv[k] === sig.sig) return;
-  S.lastAlertAt[sig.sig] = n; S._lastAlertSig = { ...pv, [k]: sig.sig };
-  const div = S.divergence[k] || {};
-  const cvd = S.cvd[k];
-  let tag = sig.sig;
-  const divConfirms = (sig.sig === 'BUY' && (div.quality === 'STRONG_BULL' || div.quality === 'BULL')) ||
-                      (sig.sig === 'SELL' && (div.quality === 'STRONG_BEAR' || div.quality === 'BEAR'));
-  const divFakes = (sig.sig === 'BUY' && (div.quality === 'STRONG_BEAR' || div.quality === 'BEAR')) ||
-                   (sig.sig === 'SELL' && (div.quality === 'STRONG_BULL' || div.quality === 'BULL'));
-  const cvdConfirms = cvd && ((sig.sig === 'BUY' && cvd.trend === 'RISING') || (sig.sig === 'SELL' && cvd.trend === 'FALLING'));
-  const cvdFakes = cvd && ((sig.sig === 'BUY' && cvd.cvdDiv === 'BEARISH') || (sig.sig === 'SELL' && cvd.cvdDiv === 'BULLISH'));
-  if ((divConfirms || cvdConfirms) && !divFakes && !cvdFakes) tag = '🔥 ' + sig.sig;
-  else if (divFakes || cvdFakes) tag = '⚠️ ' + sig.sig;
-  S.hist.unshift({ ts: new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:false }), id: s.id, label: s.label, icon: s.icon, sig: sig.sig, price: S.prices[s.id], strength: sig.strength, tf: S.activeTf });
-  if (S.hist.length > 50) S.hist.pop();
-  renderHistory();
-  toast(`⚡ ${tag} — ${s.label} ${S.activeTf}`, sig.sig === 'BUY' ? 'green' : 'red');
-  beep(sig.sig === 'BUY');
-  if (navigator.vibrate) navigator.vibrate(sig.sig === 'BUY' ? [40,60,40] : [100]);
-}
 function renderHistory() {
   const e = $('histList'); if (!e) return;
   if (!S.hist.length) { e.innerHTML = '<div class="loading"><div class="spin"></div>WAITING FOR SIGNALS...</div>'; return; }
-  e.innerHTML = S.hist.map(h => `<div class="hist-row">
+  e.innerHTML = S.hist.slice(0, 20).map(h => `<div class="hist-row">
       <div style="display:flex;align-items:center;gap:8px">
-        <div style="min-width:44px;text-align:center;padding:3px 0;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono',monospace;background:${h.sig === 'BUY' ? 'var(--green-dim)' : 'var(--red-dim)'};color:${h.sig === 'BUY' ? 'var(--green)' : 'var(--red)'}">${h.sig}</div>
+        <div style="min-width:44px;text-align:center;padding:3px 0;border-radius:5px;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;background:${h.sig === 'BUY' ? 'var(--green-dim)' : 'var(--red-dim)'};color:${h.sig === 'BUY' ? 'var(--green)' : 'var(--red)'}">${h.sig}</div>
         <div><div style="font-size:12px;font-weight:600">${h.icon} ${h.label} <span style="color:var(--muted);font-size:10px">${h.tf || ''}</span></div>
         <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace">${h.ts}</div></div>
       </div>
@@ -2367,19 +2175,21 @@ function copyLevels() {
   const t = lvl.trade;
   const div = S.divergence[ak()] || {};
   const cvd = S.cvd[ak()];
-  const txt = `⚡ YADAV TRADE\n${s.label} · ${sg} · ${S.activeTf}\nPrice: $${fmtP(p, S.activeSym)}\nDivergence: ${div.text || 'None'}\nCVD: ${cvd ? cvd.trend : '--'}${cvd && cvd.cvdDiv !== 'NONE' ? ' ⚠️ ' + cvd.cvdDiv : ''}\n────────\nEntry: $${fmtP(t.entry, S.activeSym)}\nSL: $${fmtP(t.sl, S.activeSym)} (${distPct(t.sl, t.entry)})\nTP1: $${fmtP(t.tp1, S.activeSym)} (${distPct(t.tp1, t.entry)})\nTP2: $${fmtP(t.tp2, S.activeSym)} (${distPct(t.tp2, t.entry)})\nTP3: $${fmtP(t.tp3, S.activeSym)} (${distPct(t.tp3, t.entry)})\nR:R 1:${t.rr}\n────────\n${new Date().toLocaleString()}\nNot financial advice.`;
+  const txt = `⚡ YADAV TRADE\n${s.label} · ${sg} · ${S.activeTf}\nPrice: $${fmtP(p, S.activeSym)}\nDivergence: ${div.text || 'None'}\nCVD: ${cvd ? cvd.trend : '--'}\n────────\nEntry: $${fmtP(t.entry, S.activeSym)}\nSL: $${fmtP(t.sl, S.activeSym)} (${distPct(t.sl, t.entry)})\nTP1: $${fmtP(t.tp1, S.activeSym)} (${distPct(t.tp1, t.entry)})\nTP2: $${fmtP(t.tp2, S.activeSym)} (${distPct(t.tp2, t.entry)})\nTP3: $${fmtP(t.tp3, S.activeSym)} (${distPct(t.tp3, t.entry)})\nR:R 1:${t.rr}\n────────\n${new Date().toLocaleString()}`;
   const b = $('copyBtn');
-  const done = () => { if (b) { b.textContent = '✅ COPIED'; b.classList.add('done'); setTimeout(() => { b.textContent = '📋 COPY LEVELS'; b.classList.remove('done'); }, 2000); } toast('Levels copied', 'green'); if (navigator.vibrate) navigator.vibrate(30); };
+  const done = () => { if (b) { b.textContent = '✅ COPIED'; b.classList.add('done'); setTimeout(() => { b.textContent = '📋 COPY LEVELS'; b.classList.remove('done'); }, 2000); } toast('Levels copied', 'green'); };
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(() => {}); else done();
 }
 window.copyLevels = copyLevels;
+window.setChartMode = setChartMode;
 
 async function boot() {
   setStatus('INITIALIZING...', '');
-  renderTfRow(); renderTabs(); renderHistory(); renderToggles();
+  renderTfRow(); renderTabs(); renderHistory();
   setText('chartTitle', `${asd()?.label} · ${S.activeTf}`);
   initChart();
   updateCandleTimer();
+  setChartMode('normal');
   try {
     setStatus('LOADING MARKET DATA...', '');
     await Promise.all(SYMS.map(async s => { const t = await fetch24h(s.id); if (t) { S.prices[s.id] = t.price; S.open24h[s.id] = t.open; } }));
@@ -2394,27 +2204,18 @@ async function boot() {
   } catch (e) { setStatus('BOOT FAILED', 'err'); }
   setInterval(async () => {
     await Promise.all(SYMS.map(async s => { const t = await fetch24h(s.id); if (t) { S.prices[s.id] = t.price; S.open24h[s.id] = t.open; } }));
-    renderTabs();
-    renderHTFBias();
+    renderTabs(); renderHTFBias();
   }, 60000);
-  setInterval(() => {
-    if (document.hidden) return;
-    const sess = calcSessions(S.candles[ak()] || []);
-    renderSessions(sess);
-    recomputeAll(); updateAll();
-  }, 15000);
-  // Scanner auto-refresh every 30s
+  setInterval(() => { if (!document.hidden) { recomputeAll(); updateAll(); } }, 15000);
   setInterval(() => { if (!document.hidden) fetchScannerData(); }, 30000);
-  window.addEventListener('resize', () => setTimeout(() => { resizeOv(); redrawOverlay(); drawCVD(); }, 150));
-  window.addEventListener('orientationchange', () => setTimeout(() => { resizeOv(); redrawOverlay(); drawCVD(); }, 350));
+  window.addEventListener('resize', () => setTimeout(() => { resizeOv(); redrawOverlay(); drawCVD(); drawRsi(); }, 150));
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) { if (!S.ws || S.ws.readyState > 1) connectWs(); recomputeAll(); updateAll(); fetchScannerData(); }
   });
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();
-
-window.YadavTrade = { S, SYMS, TIMEFRAMES, switchSym, switchTf, copyLevels };
+window.YadavTrade = { S, SYMS, TIMEFRAMES, switchSym, switchTf, copyLevels, setChartMode };
 </script>
 </body>
 </html>
