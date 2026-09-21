@@ -21,6 +21,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:glow 2s infinite}
 @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}50%{box-shadow:0 0 0 5px rgba(16,185,129,0)}}
 .live{font-size:10px;color:var(--green);font-family:'JetBrains Mono',monospace;letter-spacing:2px}
+.tg-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:10px;padding:4px 8px;border-radius:5px;cursor:pointer;font-family:'JetBrains Mono',monospace}
+.tg-btn:hover{border-color:var(--cyan);color:var(--cyan)}
 .tabs{display:flex;gap:6px;padding:10px 14px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);background:var(--bg2)}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all .2s;min-width:68px}
@@ -245,6 +247,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="hdr-title">YADAV TRADE</div>
   </div>
   <div class="hdr-right">
+    <button class="tg-btn" onclick="openTelegramSetup()">📲 ALERTS</button>
     <div class="pulse"></div>
     <div class="live" id="liveLabel">LIVE</div>
   </div>
@@ -539,8 +542,7 @@ const S = {
   liq:{}, vp:{}, patterns:{}, magnets:{}, hist:[], divergence:{}, cvd:{}, scanner:[],
   lastAlertAt:{BUY:0,SELL:0}, tvChart:null, tvSeries:{}, overlayCtx:null,
   loadInProgress:false, _fitDone:false, _lastLen:0, _priceLines:[], _lastRecompute:0,
-  chartMode: 'normal', // 'clean' | 'normal' | 'pro'
-  _smcSeen:{},
+  chartMode: 'normal', _smcSeen:{}, _lastAlertSig:{},
 };
 SYMS.forEach(s => { S.prices[s.id] = null; S.open24h[s.id] = null; });
 
@@ -581,7 +583,6 @@ function setChartMode(mode) {
     const el = $('modeBtn' + m.charAt(0).toUpperCase() + m.slice(1));
     if (el) el.classList.toggle('active', m === mode);
   });
-  // EMA lines visibility
   if (S.tvSeries.ema20Series) {
     const showEma = mode !== 'clean';
     [S.tvSeries.ema20Series, S.tvSeries.ema50Series, S.tvSeries.ema100Series, S.tvSeries.ema200Series].forEach(s => {
@@ -590,6 +591,96 @@ function setChartMode(mode) {
   }
   redrawOverlay();
   applyMarkers();
+}
+
+// ═══ ALERTS ═══
+let tgToken = localStorage.getItem('yadavTgToken') || '';
+let tgChatId = localStorage.getItem('yadavTgChatId') || '';
+
+function openTelegramSetup() {
+  const token = prompt('Enter your Telegram Bot Token:\n(Example: 123456:ABC-DEF...)', tgToken);
+  if (token !== null) { tgToken = token.trim(); localStorage.setItem('yadavTgToken', tgToken); }
+  const chatId = prompt('Enter your Telegram Chat ID:\n(Example: 123456789)', tgChatId);
+  if (chatId !== null) { tgChatId = chatId.trim(); localStorage.setItem('yadavTgChatId', tgChatId); }
+  if (tgToken && tgChatId) {
+    toast('✅ Telegram Alerts Enabled!', 'green');
+    sendTelegramMessage('🎉 *Yadav Trade Alerts Active!*\nAapko ab har signal ka message milega.');
+  } else {
+    toast('⚠️ Alerts disabled or incomplete.', 'red');
+  }
+}
+
+async function sendTelegramMessage(text) {
+  if (!tgToken || !tgChatId) return;
+  try {
+    const url = `https://api.telegram.org/bot${tgToken}/sendMessage`;
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: tgChatId, text: text, parse_mode: 'Markdown' })
+    });
+  } catch (e) { console.log('Telegram error:', e); }
+}
+
+let _ac = null;
+function beep(isBuy) {
+  try {
+    if (!_ac) _ac = new (window.AudioContext || window.webkitAudioContext)();
+    const c = _ac;
+    if (c.state === 'suspended') c.resume();
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine';
+    o.frequency.value = isBuy ? 880 : 440;
+    g.gain.setValueAtTime(.08, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001, c.currentTime + .4);
+    o.connect(g); g.connect(c.destination);
+    o.start(); o.stop(c.currentTime + .4);
+  } catch {}
+}
+
+function maybeAlert(s, sig) {
+  const n = Date.now();
+  if (n - (S.lastAlertAt[sig.sig] || 0) < 60000) return;
+  const k = ak();
+  if (S._lastAlertSig[k] === sig.sig) return;
+  S.lastAlertAt[sig.sig] = n;
+  S._lastAlertSig[k] = sig.sig;
+  const div = S.divergence[k] || {};
+  const cvd = S.cvd[k];
+  let tag = sig.sig;
+  const divConfirms = (sig.sig === 'BUY' && (div.quality === 'STRONG_BULL' || div.quality === 'BULL')) ||
+                      (sig.sig === 'SELL' && (div.quality === 'STRONG_BEAR' || div.quality === 'BEAR'));
+  const divFakes = (sig.sig === 'BUY' && (div.quality === 'STRONG_BEAR' || div.quality === 'BEAR')) ||
+                   (sig.sig === 'SELL' && (div.quality === 'STRONG_BULL' || div.quality === 'BULL'));
+  const cvdConfirms = cvd && ((sig.sig === 'BUY' && cvd.trend === 'RISING') || (sig.sig === 'SELL' && cvd.trend === 'FALLING'));
+  const cvdFakes = cvd && ((sig.sig === 'BUY' && cvd.cvdDiv === 'BEARISH') || (sig.sig === 'SELL' && cvd.cvdDiv === 'BULLISH'));
+  if ((divConfirms || cvdConfirms) && !divFakes && !cvdFakes) tag = '🔥 ' + sig.sig;
+  else if (divFakes || cvdFakes) tag = '⚠️ ' + sig.sig;
+  S.hist.unshift({ ts: new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:false }), id: s.id, label: s.label, icon: s.icon, sig: sig.sig, price: S.prices[s.id], strength: sig.strength, tf: S.activeTf });
+  if (S.hist.length > 50) S.hist.pop();
+  renderHistory();
+  toast(`⚡ ${tag} — ${s.label} ${S.activeTf}`, sig.sig === 'BUY' ? 'green' : 'red');
+  beep(sig.sig === 'BUY');
+  if (navigator.vibrate) navigator.vibrate(sig.sig === 'BUY' ? [40, 60, 40] : [100]);
+  const alertMsg = `🚨 *YADAV TRADE SIGNAL* 🚨\n\n*Symbol:* ${s.label}\n*Signal:* ${tag}\n*Price:* $${fmtP(S.prices[s.id], s.id)}\n*Timeframe:* ${S.activeTf}\n*Confidence:* ${sig.strength}%\n*Divergence:* ${div.text || 'None'}\n*CVD:* ${cvd ? cvd.trend : '--'}\n\n_${new Date().toLocaleString()}_`;
+  sendTelegramMessage(alertMsg);
+}
+
+function maybeSmcAlert(sk) {
+  const smc = S.smc[sk], d = S.candles[sk];
+  if (!smc || !d || !smc.signals || !smc.signals.length) return;
+  const sg = smc.signals[smc.signals.length - 1];
+  if (sg.i < d.length - 2) return;
+  const key = sk + ':' + (d[sg.i] ? d[sg.i].time : sg.i);
+  if (S._smcSeen[key]) return;
+  S._smcSeen[key] = 1;
+  const s = asd();
+  S.hist.unshift({ ts: new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:false }), id: s.id, label: s.label, icon: s.icon, sig: sg.dir, price: sg.entry, strength: Math.round(sg.score / 9 * 100), tf: S.activeTf + ' SMC' });
+  if (S.hist.length > 50) S.hist.pop();
+  renderHistory();
+  toast(`🎯 ${sg.dir} setup ${sg.grade} — ${s.label} ${S.activeTf}`, sg.dir === 'BUY' ? 'green' : 'red');
+  beep(sg.dir === 'BUY');
+  if (navigator.vibrate) navigator.vibrate(sg.dir === 'BUY' ? [40, 60, 40] : [100]);
 }
 
 // ═══ INDICATORS ═══
@@ -1190,7 +1281,6 @@ function calcMagnets(candles, vp) {
     .sort((a,b) => Math.abs(a.price - p) - Math.abs(b.price - p)).slice(0, 6);
 }
 
-// ═══ FETCH ═══
 async function fetchKlines(symId, tfLabel, lim=500) {
   const s = SYMS.find(x => x.id === symId);
   const t = TIMEFRAMES.find(x => x.label === tfLabel);
@@ -1219,7 +1309,6 @@ async function fetch24h(symId) {
   } catch { return null; }
 }
 
-// ═══ WEBSOCKET ═══
 function buildWsUrl() {
   const s = asd(), t = atd(); if (!s || !t) return null;
   return BINANCE_WS + `${s.binance}@kline_${t.binance}`;
@@ -1258,7 +1347,6 @@ function updateConn() {
   e.style.color = S.connected ? 'var(--green)' : 'var(--red)';
 }
 
-// ═══ CHART ═══
 function initChart() {
   const c = $('tvChart'); if (!c) return;
   if (typeof LightweightCharts === 'undefined') { setStatus('CHART LIB FAILED', 'err'); return; }
@@ -1361,13 +1449,6 @@ function resizeOv() {
   cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + 'px'; cv.style.height = h + 'px';
   const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); S.overlayCtx = ctx;
 }
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r); ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
-}
 function redrawOverlay() {
   if (!S.tvChart || !S.overlayCtx) return;
   const cv = $('overlayCanvas'); if (!cv) return;
@@ -1384,7 +1465,7 @@ function redrawOverlay() {
   ctx.clearRect(0, 0, w, h);
   const sk = ak(), smc = S.smc[sk], d = S.candles[sk];
   if (!smc || !d || !d.length) return;
-  if (S.chartMode === 'clean') return; // Only candles + vol + price lines
+  if (S.chartMode === 'clean') return;
 
   const ts = S.tvChart.timeScale(), cs = S.tvSeries.candleSeries;
   let pw = 56; try { pw = S.tvChart.priceScale('right').width() || 56; } catch {}
@@ -1398,7 +1479,6 @@ function redrawOverlay() {
 
   ctx.save(); ctx.beginPath(); ctx.rect(0, 0, R, h); ctx.clip();
 
-  // VOLUME PROFILE (PRO only)
   const vp = S.vp[sk];
   if (pro && vp) {
     const x0 = tX(vp.startI);
@@ -1414,10 +1494,9 @@ function redrawOverlay() {
       });
     }
   }
-  // FVG (PRO only)
   if (pro) {
     const mid = f => (f.top + f.bottom) / 2;
-    smc.fvgs.filter(f => !f.filled).sort((a,b) => Math.abs(mid(a)-pr)-Math.abs(mid(b)-pr)).slice(0, 5).forEach(f => {
+    (smc.fvgs || []).filter(f => !f.filled).sort((a,b) => Math.abs(mid(a)-pr)-Math.abs(mid(b)-pr)).slice(0, 5).forEach(f => {
       const x1 = tX(f.start), yT = tY(f.top), yB = tY(f.bottom);
       if (x1 === null || yT === null || yB === null) return;
       const xs = Math.max(0, x1); if (xs >= R) return;
@@ -1426,7 +1505,6 @@ function redrawOverlay() {
       hline(xs, R, yT, col + '.4)', [3, 3], 1); hline(xs, R, yB, col + '.4)', [3, 3], 1);
     });
   }
-  // LIQUIDITY (PRO only)
   if (pro) {
     const lq = S.liq[sk];
     if (lq) [...lq.external, ...lq.internal].slice(0, 6).forEach(l => {
@@ -1437,7 +1515,6 @@ function redrawOverlay() {
       txt(l.level + ' ' + (l.kind === 'H' ? 'BSL' : 'SSL'), R - 3, l.kind === 'H' ? y - 3 : y + 10, col, 8, 'right');
     });
   }
-  // STRUCTURE events + swings (NORMAL + PRO)
   if (st) {
     if (pro && st.idm) {
       const x1 = tX(st.idm.i), y = tY(st.idm.price);
@@ -1465,9 +1542,8 @@ function redrawOverlay() {
       txt((isNew ? 'NEW ' : '') + sp.label, x, sp.type === 'H' ? y - 6 : y + 14, col, isNew ? 9 : 8);
     });
   }
-  // SWEEPS (PRO only)
   if (pro) {
-    const list = smc.sweeps.slice(-5);
+    const list = (smc.sweeps || []).slice(-5);
     list.forEach((sw, k) => {
       const c = d[sw.i], x = tX(sw.i);
       if (!c || x === null) return;
@@ -1509,7 +1585,6 @@ function updateOhlc(c) {
   setText('ohlcV', fmtVol(c.volume));
 }
 
-// ═══ UI RENDER ═══
 function renderTfRow() {
   const r = $('tfRow'); if (!r) return;
   r.innerHTML = TIMEFRAMES.map(t => `<div class="tf-btn${t.label === S.activeTf ? ' active' : ''}" data-tf="${t.label}">${t.label}</div>`).join('');
@@ -1557,7 +1632,7 @@ function renderSigCard(s, sig) {
     const divFakes = div.quality === 'STRONG_BEAR' || div.quality === 'BEAR';
     const cvdConfirms = cvd && cvd.trend === 'RISING' && cvd.cvdDiv !== 'BEARISH';
     const cvdFakes = cvd && cvd.cvdDiv === 'BEARISH';
-    if ((divConfirms || cvdConfirms) && !divFakes && !cvdFakes) { desc = '🔥 CONFIRMED BUY — Div+CVD aligned'; divClass = 'good'; divText = '🔥 Confirmed by Div+CVD'; }
+    if ((divConfirms || cvdConfirms) && !divFakes && !cvdFakes) { desc = '🔥 CONFIRMED BUY — Div+CVD aligned'; divClass = 'good'; divText = '🔥 Confirmed'; }
     else if (divFakes || cvdFakes) { desc = '⚠️ FAKE BUY — ' + (cvdFakes ? 'CVD diverging' : 'Bearish divergence'); divClass = 'warn'; divText = '❌ ' + (cvdFakes ? 'CVD fake rally' : div.text); }
     else { desc = '✅ BUY — bullish alignment'; divClass = 'none'; }
   } else if (a === 'SELL') {
@@ -1565,7 +1640,7 @@ function renderSigCard(s, sig) {
     const divFakes = div.quality === 'STRONG_BULL' || div.quality === 'BULL';
     const cvdConfirms = cvd && cvd.trend === 'FALLING' && cvd.cvdDiv !== 'BULLISH';
     const cvdFakes = cvd && cvd.cvdDiv === 'BULLISH';
-    if ((divConfirms || cvdConfirms) && !divFakes && !cvdFakes) { desc = '🔥 CONFIRMED SELL — Div+CVD aligned'; divClass = 'good'; divText = '🔥 Confirmed by Div+CVD'; }
+    if ((divConfirms || cvdConfirms) && !divFakes && !cvdFakes) { desc = '🔥 CONFIRMED SELL — Div+CVD aligned'; divClass = 'good'; divText = '🔥 Confirmed'; }
     else if (divFakes || cvdFakes) { desc = '⚠️ FAKE SELL — ' + (cvdFakes ? 'CVD diverging' : 'Bullish divergence'); divClass = 'warn'; divText = '❌ ' + (cvdFakes ? 'CVD fake drop' : div.text); }
     else { desc = '🔴 SELL — bearish alignment'; divClass = 'none'; }
   } else { desc = '⚠️ WAIT for clear confirmation'; divClass = div.quality.includes('BULL') || div.quality.includes('BEAR') ? 'mixed' : 'none'; }
@@ -2049,7 +2124,6 @@ function renderScanner() {
   }));
 }
 
-// ═══ RECOMPUTE ═══
 function recomputeAll() {
   const sk = ak(), cd = S.candles[sk];
   if (!cd || !cd.length) return;
@@ -2105,6 +2179,10 @@ function updateAll() {
   redrawOverlay();
   const chip = $('chartSig');
   if (chip && sig) { chip.textContent = `${sig.sig} ${sig.strength}%`; chip.style.color = sig.sig === 'BUY' ? 'var(--green)' : sig.sig === 'SELL' ? 'var(--red)' : 'var(--muted)'; }
+  // 🔔 SIGNAL ALERTS — Toast + Sound + Telegram
+  if (sig && sig.sig !== 'HOLD') maybeAlert(s, sig);
+  else if (S._lastAlertSig) delete S._lastAlertSig[sk];
+  maybeSmcAlert(sk);
   const sess = calcSessions(S.candles[sk] || []);
   renderSessions(sess);
   try { drawRsi(); drawCVD(); } catch {}
@@ -2182,6 +2260,7 @@ function copyLevels() {
 }
 window.copyLevels = copyLevels;
 window.setChartMode = setChartMode;
+window.openTelegramSetup = openTelegramSetup;
 
 async function boot() {
   setStatus('INITIALIZING...', '');
